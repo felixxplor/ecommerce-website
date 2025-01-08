@@ -1,0 +1,648 @@
+fragment MenuItemContent on MenuItem {
+  id
+  uri
+  title
+  label
+  cssClasses
+}
+
+fragment MenuItemRecursive on MenuItem {
+  ...MenuItemContent
+  childItems {
+    nodes {
+      ...MenuItemContent
+    }
+  }
+}
+
+fragment MenuContent on Menu {
+  id
+  name
+  locations
+  slug
+  menuItems(first: 20, where: { parentId: 0 }) {
+    nodes {
+      ...MenuItemRecursive
+    }
+  }
+}
+
+fragment CustomerContent on Customer {
+  id
+  sessionToken
+  firstName
+  shipping {
+    postcode
+    state
+    city
+    country
+  }
+}
+
+fragment ProductContentSlice on Product {
+  id
+  databaseId
+  name
+  slug
+  type
+  image {
+    id
+    sourceUrl(size: WOOCOMMERCE_THUMBNAIL)
+    altText
+  }
+  ... on SimpleProduct {
+    price
+    regularPrice
+    soldIndividually
+  }
+  ... on VariableProduct {
+    price
+    regularPrice
+    soldIndividually
+  }
+}
+
+fragment ProductVariationContentSlice on ProductVariation {
+  id
+  databaseId
+  name
+  slug
+  image {
+    id
+    sourceUrl(size: WOOCOMMERCE_THUMBNAIL)
+    altText
+  }
+  price
+  regularPrice
+}
+
+fragment ProductContentSmall on Product {
+  id
+  databaseId
+  slug
+  name
+  type
+  shortDescription(format: RAW)
+  image {
+    id
+    sourceUrl(size: WOOCOMMERCE_THUMBNAIL)
+    altText
+  }
+  productCategories(first: 20) {
+    nodes {
+      id
+      slug
+      name
+    }
+  }
+  productTags(first: 20) {
+    nodes {
+      id
+      slug
+      name
+    }
+  }
+  allPaColor(first: 100) {
+    nodes {
+      id
+      slug
+      name
+    }
+  }
+  ... on SimpleProduct {
+    onSale
+    stockStatus
+    price
+    rawPrice: price(format: RAW)
+    regularPrice
+    salePrice
+    soldIndividually
+  }
+  ... on VariableProduct {
+    onSale
+    stockStatus
+    price
+    rawPrice: price(format: RAW)
+    regularPrice
+    salePrice
+    soldIndividually
+  }
+}
+
+fragment ProductContentFull on Product {
+  id
+  databaseId
+  slug
+  name
+  type
+  description
+  shortDescription(format: RAW)
+  image {
+    id
+    sourceUrl
+    altText
+  }
+  galleryImages {
+    nodes {
+      id
+      sourceUrl(size: WOOCOMMERCE_THUMBNAIL)
+      altText
+    }
+  }
+  productTags(first: 20) {
+    nodes {
+      id
+      slug
+      name
+    }
+  }
+  attributes {
+    nodes {
+      id
+      attributeId
+      ... on LocalProductAttribute {
+        name
+        label
+        options
+        variation
+      }
+      ... on GlobalProductAttribute {
+        name
+        label
+        options
+        variation
+        slug
+        terms(first: 100) {
+          nodes {
+            id
+            name
+            slug
+          }
+        }
+      }
+    }
+  }
+  ... on SimpleProduct {
+    onSale
+    stockStatus
+    price
+    rawPrice: price(format: RAW)
+    regularPrice
+    salePrice
+    stockStatus
+    stockQuantity
+    soldIndividually
+    defaultAttributes(first: 100) {
+      nodes {
+        id
+        attributeId
+        name
+        value
+        label
+      }
+    }
+  }
+  ... on VariableProduct {
+    onSale
+    price
+    rawPrice: price(format: RAW)
+    regularPrice
+    salePrice
+    stockStatus
+    stockQuantity
+    soldIndividually
+    defaultAttributes(first: 100) {
+      nodes {
+        id
+        attributeId
+        label
+        name
+        value
+      }
+    }
+    variations(first: 50) {
+      nodes {
+        id
+        databaseId
+        name
+        price
+        rawPrice: price(format: RAW)
+        regularPrice
+        salePrice
+        onSale
+        attributes {
+          nodes {
+            name
+            label
+            value
+          }
+        }
+        image {
+          id
+          sourceUrl
+          altText
+        }
+      }
+    }
+  }
+}
+
+fragment VariationContent on ProductVariation {
+  id
+  name
+  slug
+  price
+  regularPrice
+  salePrice
+  stockStatus
+  stockQuantity
+  onSale
+  image {
+    id
+    sourceUrl
+    altText
+  }
+}
+
+fragment CartItemContent on CartItem {
+  key
+  product {
+    node {
+      ...ProductContentSlice
+    }
+  }
+  variation {
+    attributes {
+      id
+      label
+      name
+      value
+    }
+    node {
+      ...ProductVariationContentSlice
+    }
+  }
+  quantity
+  total
+  subtotal
+  subtotalTax
+  extraData {
+    key
+    value
+  }
+}
+
+fragment CartContent on Cart {
+  contents(first: 100) {
+    itemCount
+    nodes {
+      ...CartItemContent
+    }
+  }
+  appliedCoupons {
+    code
+    discountAmount
+    discountTax
+  }
+  needsShippingAddress
+  availableShippingMethods {
+    packageDetails
+    supportsShippingCalculator
+    rates {
+      id
+      instanceId
+      methodId
+      label
+      cost
+    }
+  }
+  subtotal
+  subtotalTax
+  shippingTax
+  shippingTotal
+  total
+  totalTax
+  feeTax
+  feeTotal
+  discountTax
+  discountTotal
+}
+
+fragment CustomerFields on Customer {
+  id
+  databaseId
+  firstName
+  lastName
+  displayName
+  email
+  sessionToken
+  metaData {
+    key
+    value
+  }
+}
+
+query GetTopNav {
+  menu(id: "primary", idType: LOCATION) {
+    ...MenuContent
+  }
+}
+
+query GetProducts($first: Int, $after: String, $where: RootQueryToProductConnectionWhereArgs) {
+  products(first: $first, after: $after, where: $where) {
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+    edges {
+      cursor
+      node {
+        ...ProductContentSmall
+      }
+    }
+    nodes {
+      ...ProductContentSmall
+    }
+  }
+}
+
+query GetProduct($id: ID!, $idType: ProductIdTypeEnum) {
+  product(id: $id, idType: $idType) {
+    ...ProductContentFull
+  }
+}
+
+query GetShopCategories(
+  $first: Int
+  $after: String
+  $where: RootQueryToProductCategoryConnectionWhereArgs
+) {
+  productCategories(first: $first, after: $after, where: $where) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      node {
+        id
+        name
+        slug
+      }
+    }
+    nodes {
+      id
+      name
+      slug
+    }
+  }
+}
+
+query GetShopTags($first: Int, $after: String, $where: RootQueryToProductTagConnectionWhereArgs) {
+  productTags(first: $first, after: $after, where: $where) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      node {
+        id
+        name
+        slug
+      }
+    }
+    nodes {
+      id
+      name
+      slug
+    }
+  }
+}
+
+query GetShopColors($first: Int, $after: String, $where: RootQueryToPaColorConnectionWhereArgs) {
+  allPaColor(first: $first, after: $after, where: $where) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      node {
+        id
+        name
+        slug
+      }
+    }
+    nodes {
+      id
+      name
+      slug
+    }
+  }
+}
+
+query GetSession {
+  cart {
+    ...CartContent
+  }
+  customer {
+    ...CustomerContent
+  }
+}
+
+mutation AddToCart(
+  $productId: Int!
+  $variationId: Int
+  $quantity: Int
+  $variation: [ProductAttributeInput]
+  $extraData: String
+) {
+  addToCart(
+    input: {
+      productId: $productId
+      variationId: $variationId
+      quantity: $quantity
+      variation: $variation
+      extraData: $extraData
+    }
+  ) {
+    cart {
+      ...CartContent
+    }
+    cartItem {
+      ...CartItemContent
+    }
+  }
+}
+
+mutation UpdateCartItemQuantities($items: [CartItemQuantityInput]) {
+  updateItemQuantities(input: { items: $items }) {
+    cart {
+      ...CartContent
+    }
+    items {
+      ...CartItemContent
+    }
+  }
+}
+
+mutation RemoveItemsFromCart($keys: [ID], $all: Boolean) {
+  removeItemsFromCart(input: { keys: $keys, all: $all }) {
+    cart {
+      ...CartContent
+    }
+    cartItems {
+      ...CartItemContent
+    }
+  }
+}
+
+mutation Login($username: String!, $password: String!) {
+  login(input: { username: $username, password: $password }) {
+    authToken
+    refreshToken
+    customer {
+      ...CustomerFields
+    }
+  }
+}
+
+mutation Register($username: String!, $email: String!, $password: String!) {
+  registerCustomer(input: { username: $username, email: $email, password: $password }) {
+    authToken
+    refreshToken
+    customer {
+      ...CustomerFields
+    }
+  }
+}
+
+mutation RefreshAuthToken($refreshToken: String!) {
+  refreshJwtAuthToken(input: { jwtRefreshToken: $refreshToken }) {
+    authToken
+  }
+}
+
+mutation UpdateSession($input: UpdateSessionInput!) {
+  updateSession(input: $input) {
+    session {
+      id
+      key
+      value
+    }
+  }
+}
+
+# Add to your main.graphql
+mutation ProcessCheckout($input: CheckoutInput!) {
+  checkout(input: $input) {
+    clientMutationId
+    order {
+      id
+      orderNumber
+      status
+    }
+    redirect
+  }
+}
+
+mutation Checkout($input: CheckoutInput!) {
+  checkout(input: $input) {
+    order {
+      databaseId
+    }
+    redirect
+    result
+    customer {
+      id
+    }
+  }
+}
+
+mutation EmptyCart($input: EmptyCartInput!) {
+  emptyCart(input: $input) {
+    cart {
+      contents {
+        nodes {
+          key
+        }
+      }
+    }
+  }
+}
+
+query GetCustomerOrders {
+  customer {
+    orders {
+      nodes {
+        id
+        databaseId
+        date
+        status
+        total
+        lineItems {
+          nodes {
+            product {
+              node {
+                name
+              }
+            }
+            total
+            quantity
+          }
+        }
+        shipping {
+          firstName
+          lastName
+          address1
+          address2
+          city
+          state
+          postcode
+          country
+        }
+      }
+    }
+  }
+}
+
+query GetCustomerDetails {
+  customer {
+    firstName
+    lastName
+    email
+    shipping {
+      firstName
+      lastName
+      address1
+      address2
+      city
+      state
+      postcode
+      country
+    }
+  }
+}
+
+query GetCustomerAddresses {
+  customer {
+    billing {
+      firstName
+      lastName
+      address1
+      address2
+      city
+      state
+      postcode
+      country
+    }
+    shipping {
+      firstName
+      lastName
+      address1
+      address2
+      city
+      state
+      postcode
+      country
+    }
+  }
+}
