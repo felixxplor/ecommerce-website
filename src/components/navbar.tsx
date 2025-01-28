@@ -15,6 +15,8 @@ import { SearchBar } from '@/client/searchbar'
 import { ShopProvider } from '@/client/shop-provider'
 import { fetchProducts } from '@/graphql'
 import CartDrawer from './cart-drawer'
+import { User } from 'lucide-react'
+import UserLink from './user-icon'
 
 export interface NavItem {
   label: string
@@ -36,7 +38,7 @@ const Navbar = async ({ menu }: NavBarProps) => {
   return (
     <ShopProvider allProducts={products}>
       <nav className="sticky z-[100] inset-x-0 top-0 w-full bg-white/75 backdrop-blur-md transition-all">
-        <MaxWidthWrapper className="py-6 px-5 xl:px-0">
+        <MaxWidthWrapper className="py-3 px-5 xl:px-0">
           <div className="flex items-center justify-between">
             <Link href="/" className="z-10 font-semibold w-32 h-6 order-2 lg:order-none">
               <Image
@@ -58,7 +60,7 @@ const Navbar = async ({ menu }: NavBarProps) => {
                   </NavigationMenuLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem className="">
-                  <Link href="/shop">
+                  <Link href="/collections">
                     <NavigationMenuTrigger className="hover:underline hover:underline-offset-4 bg-transparent">
                       Shop
                     </NavigationMenuTrigger>
@@ -71,7 +73,7 @@ const Navbar = async ({ menu }: NavBarProps) => {
                           <li className="">
                             <NavigationMenuLink
                               className="focus:shadow-md text-sm"
-                              href="/shop/best-sellers"
+                              href="/collections/best-sellers"
                               tabIndex={-1}
                             >
                               Best Sellers
@@ -80,7 +82,7 @@ const Navbar = async ({ menu }: NavBarProps) => {
                           <li className="">
                             <NavigationMenuLink
                               className="focus:shadow-md text-sm"
-                              href="/shop/new-releases"
+                              href="/collections/new-releases"
                               tabIndex={-1}
                             >
                               New Releases
@@ -89,7 +91,7 @@ const Navbar = async ({ menu }: NavBarProps) => {
                           <li className="">
                             <NavigationMenuLink
                               className="focus:shadow-md text-sm"
-                              href="/shop/custom"
+                              href="/collections/custom"
                               tabIndex={-1}
                             >
                               Custom
@@ -98,7 +100,7 @@ const Navbar = async ({ menu }: NavBarProps) => {
                           <li className="">
                             <NavigationMenuLink
                               className="focus:shadow-md text-sm"
-                              href="/shop/sales"
+                              href="/collections/sales"
                               tabIndex={-1}
                             >
                               On Sale
@@ -107,7 +109,7 @@ const Navbar = async ({ menu }: NavBarProps) => {
                           <li className="">
                             <NavigationMenuLink
                               className="focus:shadow-md text-sm"
-                              href="/shop"
+                              href="/collections"
                               tabIndex={-1}
                             >
                               Shop All
@@ -324,22 +326,7 @@ const Navbar = async ({ menu }: NavBarProps) => {
               </NavigationMenuList>
             </NavigationMenu>
             <div className="flex order-3 lg:order-none">
-              <button className="py-2 px-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="#09090B"
-                  className="h-6 w-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                  />
-                </svg>
-              </button>
+              <UserLink />
               <CartDrawer />
             </div>
 

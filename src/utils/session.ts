@@ -61,14 +61,21 @@ function saveCredentials(authToken: string, sessionToken?: string, refreshToken?
     return
   }
 
+  // Only store auth token in sessionStorage, nothing else
   sessionStorage.setItem(process.env.AUTH_TOKEN_SS_KEY as string, authToken)
-  if (!!sessionToken) {
-    localStorage.setItem(process.env.SESSION_TOKEN_LS_KEY as string, sessionToken)
-    // Set secure cookie with proper attributes
-    document.cookie = `woocommerce-session=${sessionToken}; path=/; secure; samesite=strict`
-  }
+
+  document.cookie = `woo-auth-token=${authToken}; path=/; secure; samesite=strict`
+
+  // Store refresh token if provided
   if (refreshToken) {
     localStorage.setItem(process.env.REFRESH_TOKEN_LS_KEY as string, refreshToken)
+  }
+
+  // Store session token if provided
+  if (sessionToken) {
+    localStorage.setItem(process.env.SESSION_TOKEN_LS_KEY as string, sessionToken)
+    // Set WooCommerce session cookie
+    document.cookie = `woocommerce-session=Session ${sessionToken}; path=/; secure; samesite=strict`
   }
 }
 
@@ -148,6 +155,16 @@ type LoginResponse = {
   sessionToken: string
 }
 export async function login(username: string, password: string): Promise<boolean | string> {
+  try {
+    const sessionResponse = await fetch('/api/auth', { method: 'GET' })
+    const sessionData = await sessionResponse.json()
+    if (sessionData.sessionToken) {
+      localStorage.setItem('woo-session', sessionData.sessionToken)
+    }
+  } catch (error) {
+    console.error('Failed to get new session:', error)
+  }
+
   let json: LoginResponse
   try {
     json = await apiCall<LoginResponse>('/api/login', {
@@ -340,12 +357,6 @@ export async function fetchAuthURLs(): Promise<FetchAuthURLResponse | string> {
   return json
 }
 
-export function hasTokens(request: NextRequest) {
-  const sessionToken = request.cookies.get('woocommerce-session')
-  // Check if there's a value and it's not "null" string
-  return !!sessionToken?.value && sessionToken.value !== 'null'
-}
-
 export function deleteCredentials() {
   if (isSSR()) {
     return
@@ -354,7 +365,15 @@ export function deleteCredentials() {
   if (tokenSetter) {
     clearInterval(tokenSetter)
   }
+
+  // Clear tokens
   localStorage.removeItem(process.env.SESSION_TOKEN_LS_KEY as string)
   sessionStorage.removeItem(process.env.AUTH_TOKEN_SS_KEY as string)
   localStorage.removeItem(process.env.REFRESH_TOKEN_LS_KEY as string)
+  localStorage.removeItem('woo-session')
+  sessionStorage.removeItem(process.env.AUTH_TOKEN_EXPIRY_SS_KEY as string)
+
+  // Remove any existing cookies
+  document.cookie = 'woocommerce-session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
+  document.cookie = 'woo-auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
 }

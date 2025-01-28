@@ -26107,6 +26107,13 @@ export type GetCustomerAddressesQueryVariables = Exact<{ [key: string]: never; }
 
 export type GetCustomerAddressesQuery = { __typename?: 'RootQuery', customer?: { __typename?: 'Customer', billing?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null } | null, shipping?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null } | null } | null };
 
+export type SearchProductsQueryVariables = Exact<{
+  query: Scalars['String']['input'];
+}>;
+
+
+export type SearchProductsQuery = { __typename?: 'RootQuery', products?: { __typename?: 'RootQueryToProductConnection', nodes: Array<{ __typename?: 'ExternalProduct', price?: string | null, regularPrice?: string | null, salePrice?: string | null, id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, salePrice?: string | null, id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, salePrice?: string | null, id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null }> } | null };
+
 export const MenuItemContentFragmentDoc = gql`
     fragment MenuItemContent on MenuItem {
   id
@@ -26778,6 +26785,38 @@ export const GetCustomerAddressesDocument = gql`
   }
 }
     `;
+export const SearchProductsDocument = gql`
+    query SearchProducts($query: String!) {
+  products(where: {search: $query}) {
+    nodes {
+      id
+      databaseId
+      name
+      onSale
+      slug
+      image {
+        sourceUrl
+        altText
+      }
+      ... on SimpleProduct {
+        price
+        regularPrice
+        salePrice
+      }
+      ... on VariableProduct {
+        price
+        regularPrice
+        salePrice
+      }
+      ... on ExternalProduct {
+        price
+        regularPrice
+        salePrice
+      }
+    }
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -26845,6 +26884,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     GetCustomerAddresses(variables?: GetCustomerAddressesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetCustomerAddressesQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetCustomerAddressesQuery>(GetCustomerAddressesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetCustomerAddresses', 'query', variables);
+    },
+    SearchProducts(variables: SearchProductsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<SearchProductsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<SearchProductsQuery>(SearchProductsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'SearchProducts', 'query', variables);
     }
   };
 }

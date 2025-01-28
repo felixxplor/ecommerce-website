@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useSession } from '@/client/session-provider'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
@@ -10,6 +10,7 @@ import MaxWidthWrapper from '@/components/max-width-wrapper'
 import { format } from 'date-fns'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { hasCredentials } from '@/utils/session'
 
 interface CustomerDetails {
   firstName: string
@@ -60,7 +61,19 @@ export default function AccountPage() {
   const router = useRouter()
   const [customer, setCustomer] = useState<CustomerDetails | null>(null)
   const [orders, setOrders] = useState<Order[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setIsLoading] = useState(true)
+  const { logout: killSession, isAuthenticated, fetching } = useSession()
+  const searchParams = useSearchParams()
+  const returnUrl = searchParams.get('returnUrl') || '/'
+
+  // useEffect(() => {
+  //   // Check authentication status immediately
+  //   if (hasCredentials() || isAuthenticated) {
+  //     router.replace(returnUrl) // Replace '/' with returnUrl
+  //   } else {
+  //     setIsLoading(false)
+  //   }
+  // }, [isAuthenticated, returnUrl])
 
   useEffect(() => {
     const authToken = sessionStorage.getItem(process.env.AUTH_TOKEN_SS_KEY as string)
@@ -98,7 +111,7 @@ export default function AccountPage() {
       } catch (error) {
         console.error('Error fetching data:', error)
       } finally {
-        setLoading(false)
+        setIsLoading(false)
       }
     }
 
@@ -128,6 +141,24 @@ export default function AccountPage() {
     }
   }
 
+  const handleLogout = () => {
+    // Check current value
+    const token = sessionStorage.getItem('woo-auth-token')
+    console.log('Current token:', token)
+
+    // Try removing with explicit key
+    sessionStorage.removeItem('woo-auth-token')
+
+    // Call session logout
+    killSession()
+
+    // Verify removal
+    const tokenAfterRemoval = sessionStorage.getItem('woo-auth-token')
+    console.log('Token after removal:', tokenAfterRemoval)
+
+    router.replace('/')
+  }
+
   return (
     <MaxWidthWrapper className="py-14">
       <div className="min-h-[600px]">
@@ -135,9 +166,18 @@ export default function AccountPage() {
         <div className="mb-12">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold">Account Details</h1>
-            <Link href="/account/addresses">
-              <Button variant="outline">Manage Addresses</Button>
-            </Link>
+            <div className="flex gap-3">
+              <Link href="/account/addresses">
+                <Button variant="outline">Manage Addresses</Button>
+              </Link>
+              <Button
+                variant="outline"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            </div>
           </div>
 
           {customer && (

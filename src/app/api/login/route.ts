@@ -8,6 +8,7 @@ import {
   LoginMutation,
   getClient,
 } from '@/graphql'
+import { deleteCredentials } from '@/utils/session'
 
 type RequestBody =
   | {
@@ -37,12 +38,17 @@ export async function POST(request: Request) {
       )
     }
 
-    const data = await graphQLClient.request<LoginMutation>(LoginDocument, { username, password })
-    if (!data?.login) {
+    // First login to get auth tokens
+    const loginData = await graphQLClient.request<LoginMutation>(LoginDocument, {
+      username,
+      password,
+    })
+
+    if (!loginData?.login) {
       return NextResponse.json({ errors: { message: 'Login failed.' } }, { status: 500 })
     }
 
-    const { authToken, refreshToken } = data?.login
+    const { authToken, refreshToken } = loginData.login
     if (!authToken || !refreshToken) {
       return NextResponse.json(
         { errors: { message: 'Failed to retrieve credentials.' } },
@@ -50,22 +56,32 @@ export async function POST(request: Request) {
       )
     }
 
-    graphQLClient.setHeader('Authorization', `Bearer ${data.login.authToken}`)
-    const { data: _, headers } = await graphQLClient.rawRequest<GetSessionQuery>(
-      print(GetSessionDocument)
-    )
+    // Set auth token and try to get session
+    graphQLClient.setHeader('Authorization', `Bearer ${authToken}`)
 
-    const sessionToken = headers.get('woocommerce-session')
-    if (!sessionToken) {
+    // Get customer data which should generate a new session
+    const sessionData = await graphQLClient.request<GetSessionQuery>(GetSessionDocument)
+
+    // Check if we got customer data which means auth is working
+    if (!sessionData?.customer) {
       return NextResponse.json(
-        { errors: { message: 'Failed to retrieve session token.' } },
+        { errors: { message: 'Failed to authenticate with new token.' } },
         { status: 500 }
       )
     }
 
-    return NextResponse.json({ authToken, refreshToken, sessionToken })
+    // Make one more request to ensure we get the session header
+    const { headers } = await graphQLClient.rawRequest<GetSessionQuery>(print(GetSessionDocument))
+
+    const sessionToken = headers.get('woocommerce-session')
+
+    return NextResponse.json({
+      authToken,
+      refreshToken,
+      sessionToken: sessionToken || loginData.login.authToken,
+    })
   } catch (err) {
-    console.log(err)
+    console.error('Login error:', err)
     return NextResponse.json({ errors: { message: 'Login credentials invalid.' } }, { status: 500 })
   }
 }

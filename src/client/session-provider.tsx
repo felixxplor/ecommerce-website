@@ -308,6 +308,8 @@ export function SessionProvider({ children }: PropsWithChildren) {
 
   // Delete logout state and creds store locally.
   const logout = () => {
+    // Clear the auth token
+    sessionStorage.removeItem('woo-auth-token')
     dispatch({ type: 'LOGOUT' })
     deleteCredentials()
     deleteClientCredentials()

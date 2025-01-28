@@ -646,3 +646,34 @@ query GetCustomerAddresses {
     }
   }
 }
+
+query SearchProducts($query: String!) {
+  products(where: { search: $query }) {
+    nodes {
+      id
+      databaseId
+      name
+      onSale
+      slug
+      image {
+        sourceUrl
+        altText
+      }
+      ... on SimpleProduct {
+        price
+        regularPrice
+        salePrice
+      }
+      ... on VariableProduct {
+        price
+        regularPrice
+        salePrice
+      }
+      ... on ExternalProduct {
+        price
+        regularPrice
+        salePrice
+      }
+    }
+  }
+}

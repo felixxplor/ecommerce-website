@@ -37,7 +37,7 @@ export interface ShopContext {
   search: string
   selectedCategories: string[]
   selectedColors: string[]
-  priceRange: [number, number | null]
+  priceRange: [number] | [number, number] | [number, number | null]
   setPriceRange: (priceRange: [number | null, number | null]) => void
   globalMin: number
   globalMax: number
@@ -151,18 +151,13 @@ function filterProducts(products: Product[], state: ShopContext) {
         const prices = price.split(',')
         const min = prices[0]
         const max = prices.slice(-1)[0]
-        return (
-          (min && Number(min) >= state.priceRange[0]) ||
-          (state.priceRange[1] && max && Number(max) <= state.priceRange[1])
-        )
+        return state.priceRange[1]
+          ? min && Number(min) >= state.priceRange[0] && max && Number(max) <= state.priceRange[1]
+          : min && Number(min) >= state.priceRange[0]
       } else if (price && product.type === ProductTypesEnum.SIMPLE) {
-        return (
-          price &&
-          Number(price) >= state.priceRange[0] &&
-          state.priceRange[1] &&
-          price &&
-          Number(price) <= state.priceRange[1]
-        )
+        return state.priceRange[1]
+          ? Number(price) >= state.priceRange[0] && Number(price) <= state.priceRange[1]
+          : Number(price) >= state.priceRange[0]
       }
       return false
     })
@@ -216,34 +211,49 @@ export function ShopProvider({ allProducts, children }: PropsWithChildren<ShopPr
           .get('price')
           ?.trim()
           .split('-')
-          .map((p) => Number(p) || 0)
-          .reverse() as [number, number | null],
+          .map((p) => Number(p) || 0) as [number] | [number, number],
         page: Number(searchParams.get('page')),
         ...params,
       }
 
-      const url = new URL(`${process.env.NEXT_PUBLIC_URL}${pathname}`)
+      // Create base URL
+      const url = new URL(`${process.env.NEXT_PUBLIC_URL}/collections`)
 
+      // Add search parameters
       if (urlParts.search) {
-        if (!url.pathname.startsWith('/shop')) {
-          url.pathname = '/shop' + url.pathname
-        }
         url.searchParams.set('search', urlParts.search)
+      } else {
+        url.pathname = pathname
       }
+
+      // Add other parameters
       if (urlParts.categories.length) {
         url.searchParams.set('categories', urlParts.categories.join('|'))
       }
       if (urlParts.colors.length) {
         url.searchParams.set('colors', urlParts.colors.join('|'))
       }
+
       const price = urlParts.price
-      if (
-        price &&
-        ((0 !== price[0] && state.globalMin !== price[0]) ||
-          (price[1] && state.globalMax !== price[1]))
-      ) {
-        url.searchParams.set('price', price.filter((p) => !!p).join('-'))
+      if (price) {
+        // Handle case where min price is 0
+        if (price[1] === 0 && price[0] > 0) {
+          url.searchParams.set('price', `${price[0]}-0`)
+        }
+        // Handle case where max price is null
+        else if (price[0] > 0 && !price[1]) {
+          url.searchParams.set('price', `${price[0]}`)
+        }
+        // Handle normal price range cases
+        else if (
+          (price[0] !== 0 && state.globalMin !== price[0]) ||
+          (price[1] && state.globalMax !== price[1])
+        ) {
+          url.searchParams.set('price', price.filter((p) => p !== undefined).join('-'))
+        }
       }
+
+      // Handle pagination
       if (urlParts.page && urlParts.page !== 1) {
         url.searchParams.set('page', urlParts.page.toString())
       }

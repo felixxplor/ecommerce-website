@@ -1,9 +1,10 @@
 import { Product, ProductCategory, PaColor } from '@/graphql'
 import { ShopSidebar } from './sidebar'
 import { ProductListing } from '@/client/product-detail'
-import { SearchBar } from '@/client/searchbar'
 import { PaColorPicker } from '@/client/pa-color-picker'
 import { ShopCategories } from '@/client/categories'
+import MaxWidthWrapper from '@/components/max-width-wrapper'
+import { ShopFilters } from '@/components/filter'
 
 export interface ShopProps {
   products: Product[]
@@ -13,11 +14,12 @@ export interface ShopProps {
 
 export function Shop(props: ShopProps) {
   const { products, categories, colors } = props
+  console.log('products', products)
 
   return (
     <div className="">
       <div className="min-h-[420px] bg-[#f6f5f2] p-6">
-        <div className="py-10">
+        <MaxWidthWrapper className="py-10">
           <h1 className="text-5xl font-medium">All products</h1>
           <div className="mt-10 text-lg">
             <p>Well designed products for your home & office.</p>
@@ -28,24 +30,16 @@ export function Shop(props: ShopProps) {
             <button className="border border-black rounded-full px-12 py-3">Lightings</button>
             <button className="border border-black rounded-full px-12 py-3">Smart devices</button>
           </div>
-        </div>
+        </MaxWidthWrapper>
       </div>
-      <div className="flex mt-20">
-        <ShopSidebar>
-          {categories && (
-            <>
-              <p className="font-serif text-lg font-bold mb-2">Categories</p>
-              <ShopCategories categories={categories} />
-            </>
-          )}
-          <p className="font-serif text-lg font-bold mb-2">Colors</p>
-          <PaColorPicker colors={colors} />
-        </ShopSidebar>
-        <div className="w-full px-4 lg:w-5/6">
-          {/* <p className="font-serif text-lg font-bold mb-2">Results</p> */}
-          <ProductListing products={products} />
+      <MaxWidthWrapper className="flex mt-20">
+        <div className="flex gap-8 py-8 w-full">
+          <ShopFilters categories={categories} products={products} colors={colors} />
+          <div className="flex-1">
+            <ProductListing products={products} />
+          </div>
         </div>
-      </div>
+      </MaxWidthWrapper>
     </div>
   )
 }

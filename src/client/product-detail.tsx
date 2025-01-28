@@ -11,6 +11,7 @@ import { useShopContext } from './shop-provider'
 import { Image } from '@/components/ui/image'
 import { useIsMobile } from '@/app/hooks/mobile'
 import MaxWidthWrapper from '@/components/max-width-wrapper'
+import Pagination from '@/components/pagination'
 
 export interface ProductListingProps {
   products: Product[]
@@ -23,13 +24,17 @@ export function ProductListing({ products }: ProductListingProps) {
   const isMobile = useIsMobile()
   const maxPages = isMobile ? 5 : 10
   const { products: filteredProducts, buildUrl, page } = useShopContext()
-  const pageCount = Math.floor((filteredProducts || products).length / pageSize)
+  const totalProducts = (filteredProducts || products).length
+  const pageCount = Math.ceil((filteredProducts || products).length / pageSize)
   const hasNext = page < pageCount
   const hasPrev = page > 1
 
   const displayProducts =
     filteredProducts?.slice((page - 1) * pageSize, page * pageSize) ||
     products.slice((page - 1) * pageSize, page * pageSize)
+
+  const startIndex = (page - 1) * pageSize + 1
+  const endIndex = Math.min(page * pageSize, totalProducts)
 
   useEffect(() => {
     if (page > pageCount) {
@@ -40,97 +45,51 @@ export function ProductListing({ products }: ProductListingProps) {
 
   return (
     <>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-        {/* <p className="font-semibold mb-4">
-        Showing {displayProducts.length} of {(filteredProducts || products).length} items
-      </p> */}
+      <div className="flex items-center justify-between mb-6 w-full">
+        <div className="mb-4 text-sm text-gray-600">
+          Showing {startIndex}–{endIndex} of {totalProducts} results
+        </div>
+        <select className="border rounded-md p-2 self-end">
+          <option>Sort by latest</option>
+          <option>Sort by price: low to high</option>
+          <option>Sort by price: high to low</option>
+        </select>
+      </div>
+
+      <div className="grid grid-cols-3 md:grid-cols-4 gap-6">
         {displayProducts.map((product) => {
           const sourceUrl = product.image?.sourceUrl
           const altText = product.image?.altText || ''
           return (
-            <Link href={`/product/${product.slug}`} key={product.id} className="col-span-1">
-              <Card className="bg-white shadow rounded-sm hover:translate-y-[-0.04rem] hover:shadow-md duration-100 transition-transform overflow-hidden h-full">
-                <CardHeader className="p-4">
-                  <CardTitle className="font-serif whitespace-nowrap truncate w-full">
-                    {product.name}
-                  </CardTitle>
-                  {sourceUrl && (
-                    <Image
-                      className="w-full"
-                      src={sourceUrl}
-                      alt={altText}
-                      ratio={1 / 1}
-                      fill
-                      object-cover
-                    />
-                  )}
-                </CardHeader>
-                <CardContent className="p-4">
-                  <p className="text-sm truncate">{product.shortDescription}</p>
-                </CardContent>
-                <CardFooter className="p-4">
-                  <p className="font-serif font-bold">{(product as SimpleProduct).price}</p>
-                </CardFooter>
-              </Card>
+            <Link href={`/products/${product.slug}`} key={product.id} className="group">
+              <div className="relative aspect-square mb-4 overflow-hidden rounded-lg bg-gray-100">
+                {sourceUrl && (
+                  <Image
+                    src={sourceUrl}
+                    alt={altText}
+                    ratio={1 / 1}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                )}
+                <button
+                  className="absolute bottom-4 right-4 bg-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-label="Add to cart"
+                >
+                  Add to cart
+                </button>
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-sm font-medium">{product.name}</h3>
+                <p className="text-sm text-gray-500">{(product as SimpleProduct).price}</p>
+              </div>
             </Link>
           )
         })}
       </div>
 
-      <div className="flex justify-center my-4 gap-x-2 text-sm">
-        <Link
-          href={buildUrl({ page: Math.max(page - 1, 1) })}
-          role="button"
-          className={cn(
-            hasPrev ? 'text-primary-foreground' : 'text-gray-400 opacity-50 pointer-events-none',
-            'self-center rounded-md text-sm font-medium transition-colors',
-            'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
-            'bg-primary shadow hover:bg-primary/90 h-9 px-4 py-2'
-          )}
-          aria-label="Previous page"
-          shallow
-        >
-          <i className="fa-solid fa-chevron-left leading-[0.95]" aria-hidden />
-        </Link>
-        <div className="flex flex-wrap justify-center gap-2">
-          {Array.from({ length: Math.min(pageCount, maxPages) }).map((_, index) => {
-            const pageNumber =
-              page > Math.floor(maxPages / 2) ? page - Math.floor(maxPages / 2) + index : index + 1
-            return (
-              <Link
-                key={index}
-                href={buildUrl({ page: pageNumber })}
-                role="button"
-                className={cn(
-                  page !== pageNumber
-                    ? 'text-primary-foreground'
-                    : 'text-gray-400 opacity-50 pointer-events-none',
-                  'rounded-md text-sm font-medium transition-colors',
-                  'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
-                  'bg-primary shadow hover:bg-primary/90 h-9 px-4 py-2'
-                )}
-                aria-label={`Page ${pageNumber}`}
-                shallow
-              >
-                {pageNumber}
-              </Link>
-            )
-          })}
-        </div>
-        <Link
-          href={buildUrl({ page: Math.min(page + 1, pageCount) })}
-          role="button"
-          className={cn(
-            hasNext ? 'text-primary-foreground' : 'text-gray-400 opacity-50 pointer-events-none',
-            'self-center rounded-md text-sm font-medium transition-colors',
-            'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
-            'bg-primary shadow hover:bg-primary/90 h-9 px-4 py-2'
-          )}
-          aria-label="Next page"
-          shallow
-        >
-          <i className="fa-solid fa-chevron-right" aria-hidden />
-        </Link>
+      <div className="flex justify-center items-center gap-3 mt-8">
+        <Pagination pageCount={pageCount} />
       </div>
     </>
   )
