@@ -13,6 +13,7 @@ import {
   login as loginApiCall,
   register as registerApiCall,
   updateCart as updateCartApiCall,
+  changePassword as changePasswordApiCall,
   CartAction,
 } from '@/utils/session'
 import { deleteClientCredentials } from '@/utils/client'
@@ -31,6 +32,7 @@ export interface SessionContext {
   login: (username: string, password: string, successMessage?: string) => Promise<boolean>
   register: (username: string, email: string, password: string) => Promise<boolean>
   updateCart: (action: CartAction) => Promise<boolean>
+  changePassword: (currentPassword: string, newPassword: string) => Promise<boolean>
   refetch: () => Promise<boolean>
   findInCart: (
     productId: number,
@@ -62,6 +64,10 @@ const initialContext: SessionContext = {
       resolve(false)
     }),
   updateCart: (action: CartAction) =>
+    new Promise((resolve) => {
+      resolve(false)
+    }),
+  changePassword: (currentPassword: string, newPassword: string) =>
     new Promise((resolve) => {
       resolve(false)
     }),
@@ -246,6 +252,31 @@ export function SessionProvider({ children }: PropsWithChildren) {
     return true
   }
 
+  // Change password
+  const changePassword = (currentPassword: string, newPassword: string) => {
+    dispatch({
+      type: 'UPDATE_STATE',
+      payload: { fetching: true } as SessionContext,
+    })
+
+    return changePasswordApiCall(currentPassword, newPassword).then((success) => {
+      if (typeof success === 'string') {
+        toast({
+          title: 'Password Change Error',
+          description: success,
+          variant: 'destructive',
+        })
+        dispatch({
+          type: 'UPDATE_STATE',
+          payload: { fetching: false } as SessionContext,
+        })
+        return false
+      }
+
+      return fetchSession()
+    })
+  }
+
   // Fetch customer data.
   const fetchSession = () => {
     dispatch({
@@ -362,6 +393,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
     findInCart,
     login,
     register,
+    changePassword,
   }
   return <Provider value={store}>{children}</Provider>
 }

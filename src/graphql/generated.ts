@@ -16605,6 +16605,8 @@ export type RootMutation = {
   updateUser?: Maybe<UpdateUserPayload>;
   /** The updateVisibleProduct mutation */
   updateVisibleProduct?: Maybe<UpdateVisibleProductPayload>;
+  /** The verifyCustomerPassword mutation */
+  verifyCustomerPassword?: Maybe<VerifyCustomerPasswordPayload>;
   /** The writeReview mutation */
   writeReview?: Maybe<WriteReviewPayload>;
 };
@@ -17141,6 +17143,12 @@ export type RootMutationupdateUserArgs = {
 /** The root mutation */
 export type RootMutationupdateVisibleProductArgs = {
   input: UpdateVisibleProductInput;
+};
+
+
+/** The root mutation */
+export type RootMutationverifyCustomerPasswordArgs = {
+  input: VerifyCustomerPasswordInput;
 };
 
 
@@ -25523,6 +25531,25 @@ export type VariationAttributeConnectionPageInfo = {
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
+/** Input for the verifyCustomerPassword mutation. */
+export type VerifyCustomerPasswordInput = {
+  /** This is an ID that can be passed to a mutation by the client to track the progress of mutations and catch possible duplicate mutation submissions. */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** Current password to verify */
+  password?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** The payload for the verifyCustomerPassword mutation. */
+export type VerifyCustomerPasswordPayload = {
+  __typename?: 'VerifyCustomerPasswordPayload';
+  /** If a &#039;clientMutationId&#039; input is provided to the mutation, it will be returned as output on the mutation. This ID can be used by the client to track the progress of mutations and catch possible duplicate mutation submissions. */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** Response message */
+  message?: Maybe<Scalars['String']['output']>;
+  /** Whether the password was verified successfully */
+  success?: Maybe<Scalars['Boolean']['output']>;
+};
+
 /** The visibleProduct type */
 export type VisibleProduct = DatabaseIdentifier & Node & TermNode & UniformResourceIdentifiable & {
   __typename?: 'VisibleProduct';
@@ -26100,12 +26127,12 @@ export type GetCustomerOrdersQuery = { __typename?: 'RootQuery', customer?: { __
 export type GetCustomerDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCustomerDetailsQuery = { __typename?: 'RootQuery', customer?: { __typename?: 'Customer', firstName?: string | null, lastName?: string | null, email?: string | null, shipping?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null } | null } | null };
+export type GetCustomerDetailsQuery = { __typename?: 'RootQuery', customer?: { __typename?: 'Customer', id: string, firstName?: string | null, lastName?: string | null, email?: string | null, shipping?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null } | null, billing?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null, phone?: string | null } | null } | null };
 
 export type GetCustomerAddressesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCustomerAddressesQuery = { __typename?: 'RootQuery', customer?: { __typename?: 'Customer', billing?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null } | null, shipping?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null } | null } | null };
+export type GetCustomerAddressesQuery = { __typename?: 'RootQuery', customer?: { __typename?: 'Customer', billing?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null } | null, shipping?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null, phone?: string | null } | null } | null };
 
 export type SearchProductsQueryVariables = Exact<{
   query: Scalars['String']['input'];
@@ -26113,6 +26140,27 @@ export type SearchProductsQueryVariables = Exact<{
 
 
 export type SearchProductsQuery = { __typename?: 'RootQuery', products?: { __typename?: 'RootQueryToProductConnection', nodes: Array<{ __typename?: 'ExternalProduct', price?: string | null, regularPrice?: string | null, salePrice?: string | null, id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, salePrice?: string | null, id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, salePrice?: string | null, id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null }> } | null };
+
+export type UpdateCustomerMutationVariables = Exact<{
+  input: UpdateCustomerInput;
+}>;
+
+
+export type UpdateCustomerMutation = { __typename?: 'RootMutation', updateCustomer?: { __typename?: 'UpdateCustomerPayload', customer?: { __typename?: 'Customer', id: string, firstName?: string | null, lastName?: string | null, email?: string | null, shipping?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null } | null, billing?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, email?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null, phone?: string | null } | null } | null } | null };
+
+export type VerifyPasswordMutationVariables = Exact<{
+  password: Scalars['String']['input'];
+}>;
+
+
+export type VerifyPasswordMutation = { __typename?: 'RootMutation', verifyCustomerPassword?: { __typename?: 'VerifyCustomerPasswordPayload', success?: boolean | null, message?: string | null } | null };
+
+export type UpdateCustomerPasswordMutationVariables = Exact<{
+  input: UpdateCustomerInput;
+}>;
+
+
+export type UpdateCustomerPasswordMutation = { __typename?: 'RootMutation', updateCustomer?: { __typename?: 'UpdateCustomerPayload', customer?: { __typename?: 'Customer', id: string, firstName?: string | null, lastName?: string | null, email?: string | null } | null } | null };
 
 export const MenuItemContentFragmentDoc = gql`
     fragment MenuItemContent on MenuItem {
@@ -26743,6 +26791,7 @@ export const GetCustomerOrdersDocument = gql`
 export const GetCustomerDetailsDocument = gql`
     query GetCustomerDetails {
   customer {
+    id
     firstName
     lastName
     email
@@ -26755,6 +26804,17 @@ export const GetCustomerDetailsDocument = gql`
       state
       postcode
       country
+    }
+    billing {
+      firstName
+      lastName
+      address1
+      address2
+      city
+      state
+      postcode
+      country
+      phone
     }
   }
 }
@@ -26781,6 +26841,7 @@ export const GetCustomerAddressesDocument = gql`
       state
       postcode
       country
+      phone
     }
   }
 }
@@ -26813,6 +26874,60 @@ export const SearchProductsDocument = gql`
         regularPrice
         salePrice
       }
+    }
+  }
+}
+    `;
+export const UpdateCustomerDocument = gql`
+    mutation UpdateCustomer($input: UpdateCustomerInput!) {
+  updateCustomer(input: $input) {
+    customer {
+      id
+      firstName
+      lastName
+      email
+      shipping {
+        firstName
+        lastName
+        address1
+        address2
+        city
+        state
+        postcode
+        country
+      }
+      billing {
+        firstName
+        lastName
+        email
+        address1
+        address2
+        city
+        state
+        postcode
+        country
+        phone
+      }
+    }
+  }
+}
+    `;
+export const VerifyPasswordDocument = gql`
+    mutation VerifyPassword($password: String!) {
+  verifyCustomerPassword(input: {password: $password}) {
+    success
+    message
+  }
+}
+    `;
+export const UpdateCustomerPasswordDocument = gql`
+    mutation UpdateCustomerPassword($input: UpdateCustomerInput!) {
+  updateCustomer(input: $input) {
+    customer {
+      id
+      firstName
+      lastName
+      email
     }
   }
 }
@@ -26887,6 +27002,15 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     SearchProducts(variables: SearchProductsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<SearchProductsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<SearchProductsQuery>(SearchProductsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'SearchProducts', 'query', variables);
+    },
+    UpdateCustomer(variables: UpdateCustomerMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateCustomerMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateCustomerMutation>(UpdateCustomerDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UpdateCustomer', 'mutation', variables);
+    },
+    VerifyPassword(variables: VerifyPasswordMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<VerifyPasswordMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<VerifyPasswordMutation>(VerifyPasswordDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'VerifyPassword', 'mutation', variables);
+    },
+    UpdateCustomerPassword(variables: UpdateCustomerPasswordMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateCustomerPasswordMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateCustomerPasswordMutation>(UpdateCustomerPasswordDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UpdateCustomerPassword', 'mutation', variables);
     }
   };
 }

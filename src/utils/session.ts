@@ -1,10 +1,21 @@
 import { GraphQLError } from 'graphql/error'
 
-import { Customer, Cart } from '@/graphql'
+import {
+  Customer,
+  Cart,
+  getClient,
+  UpdateCustomerDocument,
+  GetCustomerDetailsQuery,
+  GetCustomerDetailsDocument,
+  UpdateCustomerMutation,
+  VerifyPasswordMutation,
+  VerifyPasswordDocument,
+} from '@/graphql'
 import { isSSR } from '@/utils/ssr'
 import { getClientSessionId } from '@/utils/client'
 import { MINUTE_IN_SECONDS, time } from '@/utils/nonce'
 import { NextRequest } from 'next/server'
+import { ClientError } from 'graphql-request'
 
 export const isDev = () => !!process.env.WEBPACK_DEV_SERVER
 
@@ -208,6 +219,64 @@ export async function register(
   setAutoFetcher()
 
   return true
+}
+
+/**
+ * Change password for logged in customer.
+ */
+export const changePassword = async (
+  currentPassword: string,
+  newPassword: string
+): Promise<true | string> => {
+  try {
+    const authToken = sessionStorage.getItem(process.env.AUTH_TOKEN_SS_KEY as string)
+    if (!authToken) {
+      return 'No authentication token found'
+    }
+
+    const client = getClient()
+    client.setHeader('Authorization', `Bearer ${authToken}`)
+
+    // Verify current password
+    const verifyResponse = await client.request<VerifyPasswordMutation>(VerifyPasswordDocument, {
+      password: currentPassword,
+    })
+
+    // Check for errors in the response
+    if (!verifyResponse.verifyCustomerPassword?.success) {
+      // Return the error message from the GraphQL response
+      return verifyResponse.verifyCustomerPassword?.message || 'Current password is incorrect'
+    }
+
+    // Get customer ID
+    const { customer } = await client.request<GetCustomerDetailsQuery>(GetCustomerDetailsDocument)
+
+    if (!customer?.id) {
+      return 'Customer not found'
+    }
+
+    // Update to new password
+    const response = await client.request<UpdateCustomerMutation>(UpdateCustomerDocument, {
+      input: {
+        id: customer.id,
+        password: newPassword,
+      },
+    })
+
+    if (!response.updateCustomer?.customer) {
+      return 'Failed to update password'
+    }
+
+    return true
+  } catch (error) {
+    // This catches GraphQL errors
+    if (error instanceof ClientError) {
+      const graphqlError = error.response?.errors?.[0]
+      return graphqlError?.message || 'Failed to change password'
+    }
+
+    return 'An unknown error occurred'
+  }
 }
 
 export async function getAuthToken() {

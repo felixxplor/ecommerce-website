@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Product } from '@/graphql'
-import { ProductListing } from '@/client/product-detail'
+import { ProductGrid } from '@/client/product-grid'
 
 export function SearchResults({ query }: { query: string }) {
   const [products, setProducts] = useState<Product[]>([])
@@ -60,5 +60,5 @@ export function SearchResults({ query }: { query: string }) {
     return <div className="text-center text-muted-foreground">No products found for "{query}"</div>
   }
 
-  return <ProductListing products={products} />
+  return <ProductGrid products={products} />
 }

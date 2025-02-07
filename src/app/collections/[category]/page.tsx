@@ -1,9 +1,10 @@
 import { ShopProvider } from '@/client/shop-provider'
 import { fetchProducts, fetchColors } from '@/graphql'
-import { Shop } from '../../server/product-list'
+import { Shop } from '../../../server/product-list'
 import MaxWidthWrapper from '@/components/max-width-wrapper'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import Navbar from '@/components/navbar'
 
 export interface CategoryPageProps {
   params: {
@@ -41,8 +42,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     )
 
   return (
-    <ShopProvider allProducts={products}>
-      <Shop products={products} colors={colors} />
-    </ShopProvider>
+    <>
+      <ShopProvider allProducts={products}>
+        <Shop products={products} colors={colors} />
+      </ShopProvider>
+    </>
   )
 }

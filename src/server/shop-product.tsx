@@ -33,7 +33,6 @@ export function ShopProduct(props: ShopProductProps) {
           </div>
           <div className="col-span-7 basis-full md:basis-1/2 pt-4 px-4 flex flex-col">
             <h1 className="font-serif text-5xl font-medium mb-2">{product.name}</h1>
-            <div className="text-2xl py-4">${rawPrice}</div>
             <p className="text-base mb-4">{product.shortDescription}</p>
             <CartOptions product={product} />
           </div>

@@ -1,7 +1,14 @@
 // app/api/addresses/route.ts
 import { NextResponse } from 'next/server'
-import { getClient, GetCustomerDetailsDocument, GetCustomerDetailsQuery } from '@/graphql'
-import { print } from 'graphql'
+import {
+  getClient,
+  GetCustomerDetailsDocument,
+  GetCustomerDetailsQuery,
+  UpdateCustomerDocument,
+  UpdateCustomerMutation,
+} from '@/graphql'
+import { GraphQLError, print } from 'graphql'
+import { GraphQLClient } from 'graphql-request'
 
 interface AddressesResponse {
   customer: {
@@ -25,6 +32,58 @@ interface AddressesResponse {
       postcode: string
       country: string
     }
+  }
+}
+
+const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT as string
+
+export async function PUT(request: Request) {
+  try {
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const authToken = authHeader.split(' ')[1]
+    const body = await request.json()
+    const { shipping } = body
+
+    if (!shipping) {
+      return NextResponse.json({ error: 'Shipping information is required' }, { status: 400 })
+    }
+
+    const client = new GraphQLClient(GRAPHQL_ENDPOINT, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    })
+
+    const response = await client.request<UpdateCustomerMutation>(UpdateCustomerDocument, {
+      input: {
+        shipping: {
+          firstName: shipping.firstName,
+          lastName: shipping.lastName,
+          address1: shipping.address1,
+          address2: shipping.address2 || '',
+          city: shipping.city,
+          state: shipping.state,
+          postcode: shipping.postcode,
+          country: shipping.country,
+        },
+      },
+    })
+
+    if (!response.updateCustomer?.customer) {
+      return NextResponse.json({ error: 'Failed to update shipping information' }, { status: 500 })
+    }
+
+    return NextResponse.json({
+      customer: response.updateCustomer.customer,
+    })
+  } catch (error) {
+    const graphqlError = error as GraphQLError
+    console.error('Error updating shipping:', graphqlError)
+    return NextResponse.json({ error: 'Failed to update shipping address' }, { status: 500 })
   }
 }
 

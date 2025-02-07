@@ -1,37 +1,73 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 import { cn } from '@/utils/ui'
-import { Product, SimpleProduct } from '@/graphql'
+import { Product, ProductTypesEnum, SimpleProduct } from '@/graphql'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { useShopContext } from './shop-provider'
+import { ProductWithPrice, useShopContext } from './shop-provider'
 import { Image } from '@/components/ui/image'
-import { useIsMobile } from '@/app/hooks/mobile'
 import MaxWidthWrapper from '@/components/max-width-wrapper'
 import Pagination from '@/components/pagination'
+import { useIsMobile } from '@/hooks/mobile'
 
-export interface ProductListingProps {
+export interface ProductGridProps {
   products: Product[]
 }
 
 const pageSize = 12
 
-export function ProductListing({ products }: ProductListingProps) {
+export function ProductGrid({ products }: ProductGridProps) {
   const { push } = useRouter()
   const isMobile = useIsMobile()
   const maxPages = isMobile ? 5 : 10
   const { products: filteredProducts, buildUrl, page } = useShopContext()
   const totalProducts = (filteredProducts || products).length
   const pageCount = Math.ceil((filteredProducts || products).length / pageSize)
-  const hasNext = page < pageCount
-  const hasPrev = page > 1
+  const searchParams = new URLSearchParams(window.location.search)
+  const sortOrder = searchParams.get('sort') || ''
 
-  const displayProducts =
-    filteredProducts?.slice((page - 1) * pageSize, page * pageSize) ||
-    products.slice((page - 1) * pageSize, page * pageSize)
+  const sortProducts = (productsToSort: Product[]) => {
+    return [...productsToSort].sort((a, b) => {
+      if (!sortOrder || sortOrder === '') {
+        // Sort by publish date for "latest"
+        const dateA = new Date(a.date || 0).getTime()
+        const dateB = new Date(b.date || 0).getTime()
+        return dateB - dateA
+      }
+
+      // Price sorting logic
+      const getPriceValue = (product: Product) => {
+        const stringPrice = (product as ProductWithPrice).rawPrice
+        if (!stringPrice) return 0
+
+        if (product.type === ProductTypesEnum.VARIABLE) {
+          const prices = stringPrice.split(',').map(Number)
+          return prices.sort()[0]
+        }
+        return Number(stringPrice)
+      }
+
+      const priceA = getPriceValue(a)
+      const priceB = getPriceValue(b)
+
+      return sortOrder === 'price_desc' ? priceB - priceA : priceA - priceB
+    })
+  }
+
+  const handleSort = (value: string) => {
+    const url = buildUrl({ sort: value, page: 1 })
+    push(url)
+  }
+
+  const displayProducts = useMemo(() => {
+    let sorted = sortOrder
+      ? sortProducts(filteredProducts || products)
+      : filteredProducts || products
+    return sorted.slice((page - 1) * pageSize, page * pageSize)
+  }, [filteredProducts, products, sortOrder, page])
 
   const startIndex = (page - 1) * pageSize + 1
   const endIndex = Math.min(page * pageSize, totalProducts)
@@ -49,10 +85,15 @@ export function ProductListing({ products }: ProductListingProps) {
         <div className="mb-4 text-sm text-gray-600">
           Showing {startIndex}–{endIndex} of {totalProducts} results
         </div>
-        <select className="border rounded-md p-2 self-end">
-          <option>Sort by latest</option>
-          <option>Sort by price: low to high</option>
-          <option>Sort by price: high to low</option>
+        <select
+          className="border rounded-md p-2 self-end"
+          value={sortOrder}
+          onChange={(e) => handleSort(e.target.value)}
+        >
+          <option value="">Default sorting</option>
+          <option value="latest">Sort by latest</option>
+          <option value="price_asc">Sort by price: low to high</option>
+          <option value="price_desc">Sort by price: high to low</option>
         </select>
       </div>
 

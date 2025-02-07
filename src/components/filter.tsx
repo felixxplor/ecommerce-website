@@ -66,7 +66,6 @@ export function ShopFilters({ categories, colors }: ShopFiltersProps) {
     <div className="w-64 pr-8">
       {/* Selected Categories Section */}
       <div className="mb-6">
-        <h3 className="text-sm font-medium mb-3">Selected Categories</h3>
         <div className="flex gap-2 flex-wrap">
           {selectedCategories.map((slug) => {
             const category = categories?.find((c) => c.slug === slug)

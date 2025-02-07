@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import * as z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter, useSearchParams } from 'next/navigation' // Add useSearchParams
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useSession } from './session-provider'
 import {
   Form,
@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import MaxWidthWrapper from '@/components/max-width-wrapper'
 import { hasCredentials } from '@/utils/session'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export const LoginSchema = z.object({
   username: z.string().min(4, {
@@ -29,12 +30,33 @@ export const LoginSchema = z.object({
   }),
 })
 
+// Add this to your Login page component
 export function Login() {
   const { login, isAuthenticated, fetching } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
   const returnUrl = searchParams.get('returnUrl') || '/'
   const [isLoading, setIsLoading] = useState(true)
+  const [loginError, setLoginError] = useState('')
+
+  useEffect(() => {
+    // When the login page loads, store the previous page URL
+    if (typeof window !== 'undefined') {
+      const previousPage = sessionStorage.getItem('previousPage') || '/'
+      if (!sessionStorage.getItem('previousPage') && document.referrer) {
+        sessionStorage.setItem('previousPage', document.referrer)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    // Only redirect if actually authenticated
+    if (hasCredentials() && isAuthenticated) {
+      router.replace(returnUrl)
+    } else {
+      setIsLoading(false)
+    }
+  }, [isAuthenticated, returnUrl, router])
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -44,28 +66,24 @@ export function Login() {
     },
   })
 
-  useEffect(() => {
-    // Check authentication status immediately
-    if (hasCredentials() || isAuthenticated) {
-      router.replace(returnUrl) // Replace '/' with returnUrl
-    } else {
-      setIsLoading(false)
-    }
-  }, [isAuthenticated, returnUrl])
-
   const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
+    setLoginError('')
     try {
-      await login(data.username, data.password)
-      // After successful login, redirect to returnUrl
-      router.replace(returnUrl)
+      const success = await login(data.username, data.password)
+      if (success) {
+        router.replace(returnUrl)
+      } else {
+        setLoginError('Invalid username or password')
+        form.reset({ username: data.username, password: '' })
+      }
     } catch (error) {
-      // Handle login error if needed
+      setLoginError('An error occurred during login. Please try again.')
       console.error('Login failed:', error)
     }
   }
 
   // Show loading state
-  if (isLoading || isAuthenticated) {
+  if (isLoading || (isAuthenticated && hasCredentials())) {
     return (
       <div className="flex items-center justify-center h-screen">
         <LoadingSpinner />
@@ -80,6 +98,11 @@ export function Login() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 max-w-screen-lg mx-auto px-4"
         >
+          {loginError && (
+            <Alert variant="destructive">
+              <AlertDescription>{loginError}</AlertDescription>
+            </Alert>
+          )}
           <FormField
             control={form.control}
             name="username"

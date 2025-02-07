@@ -42,50 +42,57 @@ const useCartMutations = (
 
     if (!productId) {
       throw new Error('No item provided.')
-      // TODO: Send error to Sentry.IO.
     }
 
-    switch (mutation) {
-      case 'remove': {
-        if (!quantityFound) {
-          throw new Error('Provided item not in cart')
-        }
+    try {
+      switch (mutation) {
+        case 'remove': {
+          if (!quantityFound) {
+            throw new Error('Provided item not in cart')
+          }
 
-        if (!itemKey) {
-          throw new Error('Failed to find item in cart.')
-        }
+          if (!itemKey) {
+            throw new Error('Failed to find item in cart.')
+          }
 
-        updateCart({
-          mutation: 'remove',
-          keys: [itemKey],
-          all,
-        })
-        break
+          await updateCart({
+            mutation: 'remove',
+            keys: [itemKey],
+            all,
+          })
+          break
+        }
+        case 'update': {
+          if (!quantityFound) {
+            throw new Error('Failed to find item in cart.')
+          }
+
+          if (!itemKey) {
+            throw new Error('Failed to find item in cart.')
+          }
+
+          await updateCart({
+            mutation: 'update',
+            items: [{ key: itemKey, quantity }],
+          })
+          break
+        }
+        case 'add': {
+          // Explicitly handle add case instead of using default
+          await updateCart({
+            mutation: 'add',
+            quantity, // Pass the quantity directly here
+            productId,
+            variationId,
+            variation,
+            extraData,
+          })
+          break
+        }
       }
-      case 'update':
-        if (!quantityFound) {
-          throw new Error('Failed to find item in cart.')
-        }
-
-        if (!itemKey) {
-          throw new Error('Failed to find item in cart.')
-        }
-
-        updateCart({
-          mutation: 'update',
-          items: [{ key: itemKey, quantity }],
-        })
-        break
-      default:
-        updateCart({
-          mutation: 'add',
-          quantity,
-          productId,
-          variationId,
-          variation,
-          extraData,
-        })
-        break
+    } catch (error) {
+      console.error('Cart mutation error:', error)
+      throw error
     }
   }
 

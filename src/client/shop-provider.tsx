@@ -29,6 +29,7 @@ type URLParts = {
   colors?: string[]
   price?: [number, number | null]
   page?: number
+  sort?: string
 }
 export interface ShopContext {
   currentUrl: string
@@ -43,6 +44,7 @@ export interface ShopContext {
   globalMax: number
   products: Product[] | null
   allProducts: Product[] | null
+  sort: string
 }
 
 export type ShopAction = { type: 'UPDATE_STATE'; payload: Partial<ShopContext> }
@@ -60,6 +62,7 @@ const initialState: ShopContext = {
   globalMax: 100,
   products: null,
   allProducts: null,
+  sort: '',
 }
 
 const shopContext = createContext<ShopContext>(initialState)
@@ -168,6 +171,7 @@ function filterProducts(products: Product[], state: ShopContext) {
     products: filteredProducts,
     globalMin,
     globalMax,
+    sort: state.sort,
   }
 }
 
@@ -197,6 +201,7 @@ export function ShopProvider({ allProducts, children }: PropsWithChildren<ShopPr
           .map((p) => Number(p) || 0)
           .reverse() as [number, number | null]) || [0, null],
         page: Number(searchParams.get('page')) || 1,
+        sort: searchParams.get('sort') || '', // Add this line
       },
     })
   }, [currentParams])
@@ -213,11 +218,17 @@ export function ShopProvider({ allProducts, children }: PropsWithChildren<ShopPr
           .split('-')
           .map((p) => Number(p) || 0) as [number] | [number, number],
         page: Number(searchParams.get('page')),
+        sort: searchParams.get('sort'),
         ...params,
       }
 
       // Create base URL
       const url = new URL(`${process.env.NEXT_PUBLIC_URL}/collections`)
+
+      // Add sort parameter
+      if (urlParts.sort) {
+        url.searchParams.set('sort', urlParts.sort)
+      }
 
       // Add search parameters
       if (urlParts.search) {
@@ -268,6 +279,7 @@ export function ShopProvider({ allProducts, children }: PropsWithChildren<ShopPr
     currentUrl: `${pathname}${searchParams.toString()}`,
     buildUrl,
     ...filterProducts(allProducts, state),
+    sort: state.sort,
   }
 
   return <Provider value={store}>{children}</Provider>

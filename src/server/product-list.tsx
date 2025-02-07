@@ -1,6 +1,6 @@
 import { Product, ProductCategory, PaColor } from '@/graphql'
 import { ShopSidebar } from './sidebar'
-import { ProductListing } from '@/client/product-detail'
+import { ProductGrid } from '@/client/product-grid'
 import { PaColorPicker } from '@/client/pa-color-picker'
 import { ShopCategories } from '@/client/categories'
 import MaxWidthWrapper from '@/components/max-width-wrapper'
@@ -36,7 +36,7 @@ export function Shop(props: ShopProps) {
         <div className="flex gap-8 py-8 w-full">
           <ShopFilters categories={categories} products={products} colors={colors} />
           <div className="flex-1">
-            <ProductListing products={products} />
+            <ProductGrid products={products} />
           </div>
         </div>
       </MaxWidthWrapper>

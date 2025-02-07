@@ -606,6 +606,7 @@ query GetCustomerOrders {
 
 query GetCustomerDetails {
   customer {
+    id
     firstName
     lastName
     email
@@ -618,6 +619,17 @@ query GetCustomerDetails {
       state
       postcode
       country
+    }
+    billing {
+      firstName
+      lastName
+      address1
+      address2
+      city
+      state
+      postcode
+      country
+      phone
     }
   }
 }
@@ -643,6 +655,7 @@ query GetCustomerAddresses {
       state
       postcode
       country
+      phone
     }
   }
 }
@@ -674,6 +687,57 @@ query SearchProducts($query: String!) {
         regularPrice
         salePrice
       }
+    }
+  }
+}
+
+mutation UpdateCustomer($input: UpdateCustomerInput!) {
+  updateCustomer(input: $input) {
+    customer {
+      id
+      firstName
+      lastName
+      email
+      shipping {
+        firstName
+        lastName
+        address1
+        address2
+        city
+        state
+        postcode
+        country
+      }
+      billing {
+        firstName
+        lastName
+        email
+        address1
+        address2
+        city
+        state
+        postcode
+        country
+        phone
+      }
+    }
+  }
+}
+
+mutation VerifyPassword($password: String!) {
+  verifyCustomerPassword(input: { password: $password }) {
+    success
+    message
+  }
+}
+
+mutation UpdateCustomerPassword($input: UpdateCustomerInput!) {
+  updateCustomer(input: $input) {
+    customer {
+      id
+      firstName
+      lastName
+      email
     }
   }
 }

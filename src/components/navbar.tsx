@@ -13,7 +13,12 @@ import {
 import { Menu } from './ui/menu'
 import { SearchBar } from '@/client/searchbar'
 import { ShopProvider } from '@/client/shop-provider'
-import { fetchProducts } from '@/graphql'
+import {
+  fetchCategories,
+  fetchProducts,
+  OrderEnum,
+  TermObjectsConnectionOrderbyEnum,
+} from '@/graphql'
 import CartDrawer from './cart-drawer'
 import { User } from 'lucide-react'
 import UserLink from './user-icon'
@@ -28,7 +33,20 @@ export interface NavBarProps {
   menu: NavItem[]
 }
 
-const Navbar = async ({ menu }: NavBarProps) => {
+const Navbar = async () => {
+  const categories =
+    (await fetchCategories(5, 1, {
+      orderby: TermObjectsConnectionOrderbyEnum.COUNT,
+      order: OrderEnum.DESC,
+    })) || []
+
+  const menu: NavItem[] = [
+    ...categories.map((category) => ({
+      label: category.name as string,
+      href: `/${category.slug}`,
+    })),
+  ]
+
   const products = await fetchProducts(20, 0)
   if (!products) return <h1>Page not found</h1>
   // const user = true

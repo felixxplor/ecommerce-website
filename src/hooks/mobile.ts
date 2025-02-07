@@ -5,7 +5,7 @@ import useWindowResize from 'beautiful-react-hooks/useWindowResize'
 
 import { isLessThanBreakpoint, isMoreThanBreakpoint } from '@/utils/mobile'
 import type { ScreensConfig } from 'tailwindcss/types/config'
-import config from '../../../tailwind.config'
+import config from '../../tailwind.config'
 
 type AxisScreensConfig = {
   sm: string
