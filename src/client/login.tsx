@@ -93,6 +93,7 @@ export function Login() {
 
   return (
     <MaxWidthWrapper className="py-14">
+      <h1 className="text-center text-4xl font-medium mb-3">Login</h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

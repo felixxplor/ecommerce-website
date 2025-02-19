@@ -110,11 +110,9 @@ function CartItem({ item }: CartItemProps) {
 }
 
 function CartSummary({ cart }: CartSummaryProps) {
-  const { checkoutUrl } = useSession()
-
   const goToCheckoutPage = () => {
     deleteClientSessionId()
-    window.location.href = checkoutUrl
+    window.location.href = 'http://localhost:3000/checkout'
   }
 
   return (

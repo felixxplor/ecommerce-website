@@ -1188,6 +1188,8 @@ export type Comment = DatabaseIdentifier & Node & {
   parentId?: Maybe<Scalars['ID']['output']>;
   /** Connection between the Comment type and the Comment type */
   replies?: Maybe<CommentToCommentConnection>;
+  /** Photo attached to the review */
+  reviewPhoto?: Maybe<MediaItem>;
   /** The approval status of the comment. This field is equivalent to WP_Comment-&gt;comment_approved and the value matching the &quot;comment_approved&quot; column in SQL. */
   status?: Maybe<CommentStatusEnum>;
   /** Type of comment. This field is equivalent to WP_Comment-&gt;comment_type and the value matching the &quot;comment_type&quot; column in SQL. */
@@ -26122,7 +26124,7 @@ export type EmptyCartMutation = { __typename?: 'RootMutation', emptyCart?: { __t
 export type GetCustomerOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCustomerOrdersQuery = { __typename?: 'RootQuery', customer?: { __typename?: 'Customer', orders?: { __typename?: 'CustomerToOrderConnection', nodes: Array<{ __typename?: 'Order', id: string, databaseId?: number | null, date?: string | null, status?: OrderStatusEnum | null, total?: string | null, lineItems?: { __typename?: 'OrderToLineItemConnection', nodes: Array<{ __typename?: 'LineItem', total?: string | null, quantity?: number | null, product?: { __typename?: 'LineItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', name?: string | null } | { __typename?: 'GroupProduct', name?: string | null } | { __typename?: 'SimpleProduct', name?: string | null } | { __typename?: 'UnsupportedProduct', name?: string | null } | { __typename?: 'VariableProduct', name?: string | null } } | null }> } | null, shipping?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null } | null }> } | null } | null };
+export type GetCustomerOrdersQuery = { __typename?: 'RootQuery', customer?: { __typename?: 'Customer', orders?: { __typename?: 'CustomerToOrderConnection', nodes: Array<{ __typename?: 'Order', id: string, databaseId?: number | null, date?: string | null, status?: OrderStatusEnum | null, total?: string | null, metaData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null, lineItems?: { __typename?: 'OrderToLineItemConnection', nodes: Array<{ __typename?: 'LineItem', total?: string | null, quantity?: number | null, product?: { __typename?: 'LineItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', name?: string | null } | { __typename?: 'GroupProduct', name?: string | null } | { __typename?: 'SimpleProduct', name?: string | null } | { __typename?: 'UnsupportedProduct', name?: string | null } | { __typename?: 'VariableProduct', name?: string | null } } | null }> } | null, shipping?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null } | null }> } | null } | null };
 
 export type GetCustomerDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -26161,6 +26163,36 @@ export type UpdateCustomerPasswordMutationVariables = Exact<{
 
 
 export type UpdateCustomerPasswordMutation = { __typename?: 'RootMutation', updateCustomer?: { __typename?: 'UpdateCustomerPayload', customer?: { __typename?: 'Customer', id: string, firstName?: string | null, lastName?: string | null, email?: string | null } | null } | null };
+
+export type GetOrderByIdQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetOrderByIdQuery = { __typename?: 'RootQuery', order?: { __typename?: 'Order', id: string, databaseId?: number | null, date?: string | null, status?: OrderStatusEnum | null, total?: string | null, subtotal?: string | null, shippingTotal?: string | null, lineItems?: { __typename?: 'OrderToLineItemConnection', nodes: Array<{ __typename?: 'LineItem', total?: string | null, quantity?: number | null, subtotal?: string | null, product?: { __typename?: 'LineItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null } | null } | { __typename?: 'GroupProduct', name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null } | null } | { __typename?: 'SimpleProduct', name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null } | null } | { __typename?: 'UnsupportedProduct', name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null } | null } | { __typename?: 'VariableProduct', name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null } | null } } | null }> } | null, shipping?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null } | null, billing?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null, email?: string | null, phone?: string | null } | null, metaData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null } | null };
+
+export type SendPasswordResetEmailMutationVariables = Exact<{
+  input: SendPasswordResetEmailInput;
+}>;
+
+
+export type SendPasswordResetEmailMutation = { __typename?: 'RootMutation', sendPasswordResetEmail?: { __typename?: 'SendPasswordResetEmailPayload', success?: boolean | null, clientMutationId?: string | null } | null };
+
+export type CommentFragmentFragment = { __typename?: 'Comment', id: string, content?: string | null, date?: string | null, author?: { __typename?: 'CommentToCommenterConnectionEdge', node: { __typename?: 'CommentAuthor', name?: string | null } | { __typename?: 'User', name?: string | null } } | null };
+
+export type WriteProductReviewMutationVariables = Exact<{
+  input: WriteReviewInput;
+}>;
+
+
+export type WriteProductReviewMutation = { __typename?: 'RootMutation', writeReview?: { __typename?: 'WriteReviewPayload', clientMutationId?: string | null, rating?: number | null } | null };
+
+export type GetProductReviewsQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetProductReviewsQuery = { __typename?: 'RootQuery', product?: { __typename?: 'ExternalProduct', averageRating?: number | null, reviewCount?: number | null, reviews?: { __typename?: 'ProductToCommentConnection', edges: Array<{ __typename?: 'ProductToCommentConnectionEdge', rating?: number | null, node: { __typename?: 'Comment', id: string, content?: string | null, date?: string | null, author?: { __typename?: 'CommentToCommenterConnectionEdge', node: { __typename?: 'CommentAuthor', name?: string | null } | { __typename?: 'User', name?: string | null } } | null, reviewPhoto?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, mediaDetails?: { __typename?: 'MediaDetails', sizes?: Array<{ __typename?: 'MediaSize', sourceUrl?: string | null, width?: string | null, height?: string | null } | null> | null } | null } | null } }>, pageInfo: { __typename?: 'ProductToCommentConnectionPageInfo', hasNextPage: boolean, endCursor?: string | null } } | null } | { __typename?: 'GroupProduct', averageRating?: number | null, reviewCount?: number | null, reviews?: { __typename?: 'ProductToCommentConnection', edges: Array<{ __typename?: 'ProductToCommentConnectionEdge', rating?: number | null, node: { __typename?: 'Comment', id: string, content?: string | null, date?: string | null, author?: { __typename?: 'CommentToCommenterConnectionEdge', node: { __typename?: 'CommentAuthor', name?: string | null } | { __typename?: 'User', name?: string | null } } | null, reviewPhoto?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, mediaDetails?: { __typename?: 'MediaDetails', sizes?: Array<{ __typename?: 'MediaSize', sourceUrl?: string | null, width?: string | null, height?: string | null } | null> | null } | null } | null } }>, pageInfo: { __typename?: 'ProductToCommentConnectionPageInfo', hasNextPage: boolean, endCursor?: string | null } } | null } | { __typename?: 'SimpleProduct', averageRating?: number | null, reviewCount?: number | null, reviews?: { __typename?: 'ProductToCommentConnection', edges: Array<{ __typename?: 'ProductToCommentConnectionEdge', rating?: number | null, node: { __typename?: 'Comment', id: string, content?: string | null, date?: string | null, author?: { __typename?: 'CommentToCommenterConnectionEdge', node: { __typename?: 'CommentAuthor', name?: string | null } | { __typename?: 'User', name?: string | null } } | null, reviewPhoto?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, mediaDetails?: { __typename?: 'MediaDetails', sizes?: Array<{ __typename?: 'MediaSize', sourceUrl?: string | null, width?: string | null, height?: string | null } | null> | null } | null } | null } }>, pageInfo: { __typename?: 'ProductToCommentConnectionPageInfo', hasNextPage: boolean, endCursor?: string | null } } | null } | { __typename?: 'UnsupportedProduct', averageRating?: number | null, reviewCount?: number | null, reviews?: { __typename?: 'ProductToCommentConnection', edges: Array<{ __typename?: 'ProductToCommentConnectionEdge', rating?: number | null, node: { __typename?: 'Comment', id: string, content?: string | null, date?: string | null, author?: { __typename?: 'CommentToCommenterConnectionEdge', node: { __typename?: 'CommentAuthor', name?: string | null } | { __typename?: 'User', name?: string | null } } | null, reviewPhoto?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, mediaDetails?: { __typename?: 'MediaDetails', sizes?: Array<{ __typename?: 'MediaSize', sourceUrl?: string | null, width?: string | null, height?: string | null } | null> | null } | null } | null } }>, pageInfo: { __typename?: 'ProductToCommentConnectionPageInfo', hasNextPage: boolean, endCursor?: string | null } } | null } | { __typename?: 'VariableProduct', averageRating?: number | null, reviewCount?: number | null, reviews?: { __typename?: 'ProductToCommentConnection', edges: Array<{ __typename?: 'ProductToCommentConnectionEdge', rating?: number | null, node: { __typename?: 'Comment', id: string, content?: string | null, date?: string | null, author?: { __typename?: 'CommentToCommenterConnectionEdge', node: { __typename?: 'CommentAuthor', name?: string | null } | { __typename?: 'User', name?: string | null } } | null, reviewPhoto?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, mediaDetails?: { __typename?: 'MediaDetails', sizes?: Array<{ __typename?: 'MediaSize', sourceUrl?: string | null, width?: string | null, height?: string | null } | null> | null } | null } | null } }>, pageInfo: { __typename?: 'ProductToCommentConnectionPageInfo', hasNextPage: boolean, endCursor?: string | null } } | null } | null };
 
 export const MenuItemContentFragmentDoc = gql`
     fragment MenuItemContent on MenuItem {
@@ -26519,6 +26551,18 @@ export const CustomerFieldsFragmentDoc = gql`
   }
 }
     `;
+export const CommentFragmentFragmentDoc = gql`
+    fragment CommentFragment on Comment {
+  id
+  content
+  date
+  author {
+    node {
+      name
+    }
+  }
+}
+    `;
 export const GetTopNavDocument = gql`
     query GetTopNav {
   menu(id: "primary", idType: LOCATION) {
@@ -26762,6 +26806,10 @@ export const GetCustomerOrdersDocument = gql`
         date
         status
         total
+        metaData {
+          key
+          value
+        }
         lineItems {
           nodes {
             product {
@@ -26932,6 +26980,114 @@ export const UpdateCustomerPasswordDocument = gql`
   }
 }
     `;
+export const GetOrderByIdDocument = gql`
+    query GetOrderById($id: ID!) {
+  order(id: $id, idType: DATABASE_ID) {
+    id
+    databaseId
+    date
+    status
+    total
+    subtotal
+    shippingTotal
+    lineItems {
+      nodes {
+        product {
+          node {
+            name
+            image {
+              sourceUrl
+            }
+          }
+        }
+        total
+        quantity
+        subtotal
+      }
+    }
+    shipping {
+      firstName
+      lastName
+      address1
+      address2
+      city
+      state
+      postcode
+      country
+    }
+    billing {
+      firstName
+      lastName
+      address1
+      address2
+      city
+      state
+      postcode
+      country
+      email
+      phone
+    }
+    metaData {
+      key
+      value
+    }
+  }
+}
+    `;
+export const SendPasswordResetEmailDocument = gql`
+    mutation SendPasswordResetEmail($input: SendPasswordResetEmailInput!) {
+  sendPasswordResetEmail(input: $input) {
+    success
+    clientMutationId
+  }
+}
+    `;
+export const WriteProductReviewDocument = gql`
+    mutation WriteProductReview($input: WriteReviewInput!) {
+  writeReview(input: $input) {
+    clientMutationId
+    rating
+  }
+}
+    `;
+export const GetProductReviewsDocument = gql`
+    query GetProductReviews($id: ID!) {
+  product(id: $id) {
+    reviews {
+      edges {
+        rating
+        node {
+          id
+          content
+          date
+          author {
+            node {
+              name
+            }
+          }
+          reviewPhoto {
+            id
+            sourceUrl
+            mediaDetails {
+              sizes {
+                sourceUrl
+                width
+                height
+              }
+            }
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+    averageRating
+    reviewCount
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -27011,6 +27167,18 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     UpdateCustomerPassword(variables: UpdateCustomerPasswordMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateCustomerPasswordMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateCustomerPasswordMutation>(UpdateCustomerPasswordDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UpdateCustomerPassword', 'mutation', variables);
+    },
+    GetOrderById(variables: GetOrderByIdQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetOrderByIdQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetOrderByIdQuery>(GetOrderByIdDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetOrderById', 'query', variables);
+    },
+    SendPasswordResetEmail(variables: SendPasswordResetEmailMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<SendPasswordResetEmailMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<SendPasswordResetEmailMutation>(SendPasswordResetEmailDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'SendPasswordResetEmail', 'mutation', variables);
+    },
+    WriteProductReview(variables: WriteProductReviewMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<WriteProductReviewMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<WriteProductReviewMutation>(WriteProductReviewDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'WriteProductReview', 'mutation', variables);
+    },
+    GetProductReviews(variables: GetProductReviewsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetProductReviewsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetProductReviewsQuery>(GetProductReviewsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetProductReviews', 'query', variables);
     }
   };
 }

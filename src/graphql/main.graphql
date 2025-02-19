@@ -578,6 +578,10 @@ query GetCustomerOrders {
         date
         status
         total
+        metaData {
+          key
+          value
+        }
         lineItems {
           nodes {
             product {
@@ -739,5 +743,120 @@ mutation UpdateCustomerPassword($input: UpdateCustomerInput!) {
       lastName
       email
     }
+  }
+}
+
+query GetOrderById($id: ID!) {
+  order(id: $id, idType: DATABASE_ID) {
+    id
+    databaseId
+    date
+    status
+    total
+    subtotal
+    shippingTotal
+    lineItems {
+      nodes {
+        product {
+          node {
+            name
+            image {
+              sourceUrl
+            }
+          }
+        }
+        total
+        quantity
+        subtotal
+      }
+    }
+    shipping {
+      firstName
+      lastName
+      address1
+      address2
+      city
+      state
+      postcode
+      country
+    }
+    billing {
+      firstName
+      lastName
+      address1
+      address2
+      city
+      state
+      postcode
+      country
+      email
+      phone
+    }
+    metaData {
+      key
+      value
+    }
+  }
+}
+
+mutation SendPasswordResetEmail($input: SendPasswordResetEmailInput!) {
+  sendPasswordResetEmail(input: $input) {
+    success
+    clientMutationId
+  }
+}
+
+fragment CommentFragment on Comment {
+  id
+  content
+  date
+  author {
+    node {
+      name
+    }
+  }
+}
+
+mutation WriteProductReview($input: WriteReviewInput!) {
+  writeReview(input: $input) {
+    clientMutationId
+    rating
+  }
+}
+
+query GetProductReviews($id: ID!) {
+  product(id: $id) {
+    reviews {
+      edges {
+        rating
+        node {
+          id
+          content
+          date
+          author {
+            node {
+              name
+            }
+          }
+          reviewPhoto {
+            id
+            sourceUrl
+            mediaDetails {
+              sizes {
+                sourceUrl
+                width
+                height
+              }
+            }
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+    averageRating
+    reviewCount
   }
 }

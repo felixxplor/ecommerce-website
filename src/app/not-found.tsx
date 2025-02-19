@@ -7,7 +7,6 @@ import Navbar from '@/components/navbar'
 export default function NotFound() {
   return (
     <MaxWidthWrapper>
-      <Navbar />
       <div className="min-h-[calc(100vh-200px)] flex flex-col items-center justify-center text-center">
         <div className="space-y-6">
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">404</h1>

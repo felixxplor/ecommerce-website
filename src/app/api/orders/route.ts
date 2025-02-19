@@ -6,20 +6,14 @@ import { print } from 'graphql'
 
 export async function GET(request: Request) {
   try {
-    // Get the auth token from the request header
     const authToken = request.headers.get('Authorization')?.replace('Bearer ', '')
-
-    // Check if user is authenticated
     if (!authToken) {
       return NextResponse.json({ errors: { message: 'Unauthorized' } }, { status: 401 })
     }
 
     const client = getClient()
-
-    // Set the Authorization header with Bearer token
     client.setHeader('Authorization', `Bearer ${authToken}`)
 
-    // Get WooCommerce session if available
     const wooSession = request.headers.get('woocommerce-session')
     if (wooSession) {
       client.setHeader('woocommerce-session', wooSession)
@@ -34,15 +28,24 @@ export async function GET(request: Request) {
       )
     }
 
-    return NextResponse.json({ orders: data.customer.orders.nodes })
+    // Process orders to include tracking information
+    const processedOrders = data.customer.orders.nodes.map((order) => {
+      const trackingMeta = order.metaData?.find(
+        (meta) => meta?.key === '_wc_shipment_tracking_items'
+      )?.value
+
+      return {
+        ...order,
+        tracking_items: trackingMeta ? JSON.parse(trackingMeta) : null,
+      }
+    })
+
+    return NextResponse.json({ orders: processedOrders })
   } catch (err) {
     console.error('Error fetching orders:', err)
-
-    // Check if error is due to authentication
     if (err instanceof Error && err.message.includes('auth')) {
       return NextResponse.json({ errors: { message: 'Authentication failed' } }, { status: 401 })
     }
-
     return NextResponse.json({ errors: { message: 'Failed to fetch orders' } }, { status: 500 })
   }
 }

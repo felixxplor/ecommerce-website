@@ -3,7 +3,7 @@ import { Product, SimpleProduct, VariationAttribute } from '@/graphql'
 import { CartOptions } from './cart-options'
 import MaxWidthWrapper from '@/components/max-width-wrapper'
 import { ProductWithPrice } from '@/client/shop-provider'
-import { Star } from 'lucide-react'
+import { ReviewsSection } from '@/components/review-section'
 
 export interface ShopProductProps {
   product: Product
@@ -100,92 +100,7 @@ export function ShopProduct(props: ShopProductProps) {
           </div>
 
           {/* Reviews Section */}
-          <div id="reviews" className="scroll-mt-20">
-            <h2 className="text-2xl font-serif font-medium mb-6">Customer Reviews</h2>
-            <div className="space-y-6">
-              {/* Reviews Summary */}
-              <div className="bg-white rounded-lg p-8 shadow-sm">
-                <div className="flex items-center gap-8">
-                  <div className="text-center">
-                    <div className="text-4xl font-medium mb-2">4.8</div>
-                    <div className="flex text-yellow-400 justify-center mb-1">
-                      {Array(5)
-                        .fill(null)
-                        .map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-current" />
-                        ))}
-                    </div>
-                    <div className="text-sm text-gray-600">Based on 24 reviews</div>
-                  </div>
-                  <div className="flex-1">
-                    {[5, 4, 3, 2, 1].map((rating) => (
-                      <div key={rating} className="flex items-center gap-2 mb-1">
-                        <div className="text-sm text-gray-600 w-3">{rating}</div>
-                        <Star className="w-4 h-4 text-yellow-400" />
-                        <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-yellow-400 rounded-full"
-                            style={{
-                              width:
-                                rating === 5
-                                  ? '70%'
-                                  : rating === 4
-                                  ? '20%'
-                                  : rating === 3
-                                  ? '5%'
-                                  : rating === 2
-                                  ? '3%'
-                                  : '2%',
-                            }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Individual Reviews */}
-              <div className="space-y-4">
-                {[
-                  {
-                    name: 'Sarah M.',
-                    rating: 5,
-                    date: '2 months ago',
-                    review:
-                      'Absolutely love this product! The quality is exceptional and it looks even better in person. Would definitely recommend to anyone looking to upgrade their space.',
-                  },
-                  {
-                    name: 'James R.',
-                    rating: 4,
-                    date: '1 month ago',
-                    review:
-                      'Great product overall. The design is modern and sleek, exactly what I was looking for. Shipping was quick and the packaging was secure.',
-                  },
-                ].map((review, index) => (
-                  <div key={index} className="bg-white rounded-lg p-8 shadow-sm">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <div className="font-medium mb-1">{review.name}</div>
-                        <div className="flex text-yellow-400 mb-2">
-                          {Array(5)
-                            .fill(null)
-                            .map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-4 h-4 ${i < review.rating ? 'fill-current' : ''}`}
-                              />
-                            ))}
-                        </div>
-                      </div>
-                      <div className="text-sm text-gray-600">{review.date}</div>
-                    </div>
-                    <p className="text-gray-700">{review.review}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <ReviewsSection product={product} />
         </div>
       </MaxWidthWrapper>
     </div>
