@@ -168,7 +168,7 @@ export default function Cart() {
         <div className="flex flex-col items-center justify-center h-[50vh]">
           <h2 className="text-2xl font-semibold mb-4">Your cart is empty</h2>
           <Button asChild>
-            <a href="/">Continue Shopping</a>
+            <a href="/collections">Continue Shopping</a>
           </Button>
         </div>
       </MaxWidthWrapper>

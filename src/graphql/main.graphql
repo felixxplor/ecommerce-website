@@ -82,6 +82,7 @@ fragment ProductContentSmall on Product {
   slug
   name
   type
+  purchaseCount
   shortDescription(format: RAW)
   image {
     id
@@ -369,6 +370,20 @@ query GetProducts($first: Int, $after: String, $where: RootQueryToProductConnect
 query GetProduct($id: ID!, $idType: ProductIdTypeEnum) {
   product(id: $id, idType: $idType) {
     ...ProductContentFull
+    productCategories {
+      nodes {
+        id
+        name
+        slug
+        databaseId
+        count
+        description
+        image {
+          sourceUrl
+          altText
+        }
+      }
+    }
   }
 }
 
@@ -858,5 +873,28 @@ query GetProductReviews($id: ID!) {
     }
     averageRating
     reviewCount
+  }
+}
+
+query GetRelatedProductsByCategory($categoryId: Int!, $excludeId: Int!, $first: Int!) {
+  products(first: $first, where: { categoryId: $categoryId, exclude: [$excludeId] }) {
+    nodes {
+      id
+      databaseId
+      name
+      slug
+      type
+      ... on SimpleProduct {
+        price
+        regularPrice
+        salePrice
+        stockStatus
+        stockQuantity
+      }
+      image {
+        sourceUrl
+        altText
+      }
+    }
   }
 }

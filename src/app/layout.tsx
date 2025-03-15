@@ -6,7 +6,7 @@ import { constructMetadata } from '@/lib/utils'
 import Footer from '@/components/footer'
 
 import { SessionProvider } from '@/client/session-provider'
-import Navbar from '@/components/navbar'
+import NavbarWrapper from '@/components/navbar-wrapper'
 
 const recursive = Quicksand({ subsets: ['latin'] })
 
@@ -20,7 +20,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <body className={`${recursive.className}`}>
         <SessionProvider>
-          <Navbar />
+          <NavbarWrapper />
           <main className="flex grainy-light flex-col mx-5">
             <div className="flex-1 flex flex-col h-full">{children}</div>
           </main>

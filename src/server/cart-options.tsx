@@ -1,9 +1,9 @@
 import { PropsWithChildren } from 'react'
-
 import { Product, ProductTypesEnum, SimpleProduct } from '@/graphql'
 import { cn } from '@/utils/ui'
 import { SimpleCartOptions } from '@/client/simple-cart-options'
 import { VariableCartOptions } from '@/client/variable-cart-options'
+import { AlertTriangle } from 'lucide-react'
 
 function Container({ className, children }: PropsWithChildren<{ className?: string }>) {
   return (
@@ -33,7 +33,25 @@ export interface CartOptionsProps {
 
 export function CartOptions(props: CartOptionsProps) {
   const { product, className } = props
-  const { type } = product as unknown as SimpleProduct
+  const { type, stockStatus, stockQuantity } = product as SimpleProduct
+
+  // Check if product is out of stock
+  const isOutOfStock =
+    stockStatus === 'OUT_OF_STOCK' || (stockQuantity !== null && (stockQuantity as number) <= 0)
+
+  // If out of stock, show a message instead of the cart options
+  if (isOutOfStock) {
+    return (
+      <Container className={className}>
+        <div className="inline-block">
+          <div className="inline-flex items-center gap-2 text-red-700 px-4 py-2 rounded-md whitespace-nowrap">
+            <AlertTriangle className="h-5 w-5" />
+            <span className="font-medium">Out of Stock</span>
+          </div>
+        </div>
+      </Container>
+    )
+  }
 
   let Component: (props: CartOptionsProps) => JSX.Element | null = () => null
   if (type === ProductTypesEnum.SIMPLE) {

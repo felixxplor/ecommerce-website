@@ -135,29 +135,31 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
   }
 
   return (
-    <MaxWidthWrapper className="py-14">
-      <div className="mb-6 flex justify-between items-center">
+    <MaxWidthWrapper className="py-8 md:py-14 px-4 md:px-0">
+      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <Link href="/account" className="text-sm text-gray-600 hover:text-primary mb-2 block">
             ← Back to Account
           </Link>
-          <h1 className="text-3xl font-bold">Order #{order.databaseId}</h1>
-          <p className="text-gray-600">Placed on {format(new Date(order.date), 'MMMM d, yyyy')}</p>
+          <h1 className="text-2xl md:text-3xl font-bold">Order #{order.databaseId}</h1>
+          <p className="text-sm md:text-base text-gray-600">
+            Placed on {format(new Date(order.date), 'MMMM d, yyyy')}
+          </p>
         </div>
-        <Badge className={`${getStatusColor(order.status)}`}>{order.status}</Badge>
+        <Badge className={`${getStatusColor(order.status)} mt-2 sm:mt-0`}>{order.status}</Badge>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Order Details */}
         <div className="md:col-span-2 space-y-6">
           {/* Items */}
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-xl font-semibold mb-4">Order Items</h2>
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm">
+            <h2 className="text-lg md:text-xl font-semibold mb-4">Order Items</h2>
             <div className="space-y-4">
               {order.lineItems.nodes.map((item, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between py-4 border-b last:border-0"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b last:border-0 gap-4"
                 >
                   <div className="flex items-center gap-4">
                     {item.product.node.image && (
@@ -168,13 +170,13 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                       />
                     )}
                     <div>
-                      <h3 className="font-medium">{item.product.node.name}</h3>
-                      <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                      <h3 className="font-medium text-sm md:text-base">{item.product.node.name}</h3>
+                      <p className="text-xs md:text-sm text-gray-600">Quantity: {item.quantity}</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-medium">{item.total}</p>
-                    <p className="text-sm text-gray-600">Unit price: {item.subtotal}</p>
+                  <div className="text-left sm:text-right mt-2 sm:mt-0">
+                    <p className="font-medium text-sm md:text-base">{item.total}</p>
+                    <p className="text-xs md:text-sm text-gray-600">Unit price: {item.subtotal}</p>
                   </div>
                 </div>
               ))}
@@ -183,17 +185,17 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
 
           {/* Tracking Information */}
           {order?.tracking_items && order.tracking_items.length > 0 && (
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-xl font-semibold mb-4">Tracking Information</h2>
+            <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm">
+              <h2 className="text-lg md:text-xl font-semibold mb-4">Tracking Information</h2>
               <div className="space-y-2">
                 {order.tracking_items[0]?.tracking_number && (
-                  <p>
+                  <p className="text-sm md:text-base">
                     <span className="font-medium">Tracking Number:</span>{' '}
                     {order.tracking_items[0].tracking_number}
                   </p>
                 )}
                 {order.tracking_items[0]?.tracking_provider && (
-                  <p>
+                  <p className="text-sm md:text-base">
                     <span className="font-medium">Carrier:</span>{' '}
                     {order.tracking_items[0].tracking_provider}
                   </p>
@@ -201,6 +203,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                 {order.tracking_items[0]?.tracking_link && (
                   <Button
                     variant="outline"
+                    className="w-full sm:w-auto mt-2"
                     onClick={() =>
                       window.open(order.tracking_items?.[0]?.tracking_link ?? '#', '_blank')
                     }
@@ -216,18 +219,18 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
         {/* Order Summary */}
         <div className="space-y-6">
           {/* Payment Summary */}
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm">
+            <h2 className="text-lg md:text-xl font-semibold mb-4">Order Summary</h2>
             <div className="space-y-2">
-              <div className="flex justify-between">
+              <div className="flex justify-between text-sm md:text-base">
                 <span>Subtotal</span>
                 <span>{order.subtotal}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between text-sm md:text-base">
                 <span>Shipping</span>
                 <span>{order.shippingTotal}</span>
               </div>
-              <div className="flex justify-between font-bold pt-2 border-t">
+              <div className="flex justify-between font-bold pt-2 border-t text-sm md:text-base">
                 <span>Total</span>
                 <span>{order.total}</span>
               </div>
@@ -235,9 +238,9 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
           </div>
 
           {/* Shipping Address */}
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-xl font-semibold mb-4">Shipping Address</h2>
-            <p className="text-gray-600">
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm">
+            <h2 className="text-lg md:text-xl font-semibold mb-4">Shipping Address</h2>
+            <p className="text-xs md:text-sm text-gray-600">
               {order.shipping.firstName} {order.shipping.lastName}
               <br />
               {order.shipping.address1}
@@ -255,9 +258,9 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
           </div>
 
           {/* Billing Address */}
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-xl font-semibold mb-4">Billing Address</h2>
-            <p className="text-gray-600">
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm">
+            <h2 className="text-lg md:text-xl font-semibold mb-4">Billing Address</h2>
+            <p className="text-xs md:text-sm text-gray-600">
               {order.billing.firstName} {order.billing.lastName}
               <br />
               {order.billing.address1}

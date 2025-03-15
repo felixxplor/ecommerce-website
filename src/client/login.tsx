@@ -20,6 +20,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import MaxWidthWrapper from '@/components/max-width-wrapper'
 import { hasCredentials } from '@/utils/session'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import Link from 'next/link'
 
 export const LoginSchema = z.object({
   username: z.string().min(4, {
@@ -40,23 +41,40 @@ export function Login() {
   const [loginError, setLoginError] = useState('')
 
   useEffect(() => {
-    // When the login page loads, store the previous page URL
+    // Filter out unwanted returnUrl values
     if (typeof window !== 'undefined') {
-      const previousPage = sessionStorage.getItem('previousPage') || '/'
-      if (!sessionStorage.getItem('previousPage') && document.referrer) {
-        sessionStorage.setItem('previousPage', document.referrer)
+      const returnUrlParam = searchParams.get('returnUrl')
+
+      if (
+        returnUrlParam &&
+        (returnUrlParam.includes('/login/reset-password') || returnUrlParam.includes('/register'))
+      ) {
+        // Instead of modifying the URL, just use a safe returnUrl
+        const safeReturnUrl = '/'
+        // Set the safe URL without triggering another navigation
+        router.replace(`/login`, { scroll: false })
       }
     }
-  }, [])
+  }, []) // Empty dependency array to run only once
 
   useEffect(() => {
     // Only redirect if actually authenticated
     if (hasCredentials() && isAuthenticated) {
-      router.replace(returnUrl)
+      // Don't redirect to reset-password or register
+      const currentReturnUrl = searchParams.get('returnUrl') || '/'
+      if (
+        currentReturnUrl.includes('/login/reset-password') ||
+        currentReturnUrl.includes('/register')
+      ) {
+        router.replace('/')
+      } else {
+        router.replace(currentReturnUrl)
+      }
     } else {
+      // Always make sure to set loading to false
       setIsLoading(false)
     }
-  }, [isAuthenticated, returnUrl, router])
+  }, [isAuthenticated, searchParams, router])
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -111,10 +129,7 @@ export function Login() {
               <FormItem>
                 <FormLabel>Username *</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Enter your username or e-mail associate with your account."
-                    {...field}
-                  />
+                  <Input placeholder="Enter e-mail address." {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -130,13 +145,36 @@ export function Login() {
                   <Input type="password" placeholder="Enter your password." {...field} />
                 </FormControl>
                 <FormMessage />
+                <div className="mt-2">
+                  <Link
+                    href="/login/reset-password"
+                    className="text-sm text-primary underline hover:text-primary/80"
+                  >
+                    Forgot your password?
+                  </Link>
+                </div>
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={fetching} className="flex gap-x-2 items-center">
-            Login
-            {fetching && <LoadingSpinner noText />}
-          </Button>
+          <div className="flex flex-col items-center mt-8">
+            <Button
+              type="submit"
+              disabled={fetching}
+              className="flex gap-x-2 items-center w-full md:w-1/5 py-6 text-lg"
+            >
+              Sign In
+              {fetching && <LoadingSpinner noText />}
+            </Button>
+
+            <div className="mt-4">
+              <Link
+                href="/register"
+                className="text-md text-primary underline hover:text-primary/80"
+              >
+                Create an account
+              </Link>
+            </div>
+          </div>
         </form>
       </Form>
     </MaxWidthWrapper>

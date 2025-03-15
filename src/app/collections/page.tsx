@@ -2,6 +2,7 @@ import { ShopProvider } from '@/client/shop-provider'
 import { fetchProducts, fetchCategories, fetchColors } from '@/graphql'
 import { Shop } from '../../server/product-list'
 import Navbar from '@/components/navbar'
+import MainPolicies from '@/components/main-policies'
 
 export default async function ShopPage() {
   const products = await fetchProducts(20, 0)
@@ -15,6 +16,7 @@ export default async function ShopPage() {
       <ShopProvider allProducts={products}>
         <Shop products={products} categories={categories} colors={colors} />
       </ShopProvider>
+      <MainPolicies />
     </>
   )
 }

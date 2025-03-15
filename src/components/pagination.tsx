@@ -1,5 +1,6 @@
 import { useShopContext } from '@/client/shop-provider'
 import { cn } from '@/utils/ui'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 
 interface Props {
@@ -72,22 +73,45 @@ export default function Pagination({ pageCount }: Props) {
   }
 
   return (
-    <div className="mt-8 flex items-center justify-center gap-3">
+    <div className="mt-8 flex items-center justify-center gap-1 sm:gap-2">
+      {/* Previous button with better styling */}
       {page === 1 ? (
-        <span className="opacity-50 cursor-not-allowed">←</span>
+        <button
+          disabled
+          className="flex items-center justify-center w-8 h-8 rounded-md text-gray-400 cursor-not-allowed"
+        >
+          <ChevronLeft size={16} />
+          <span className="sr-only">Previous</span>
+        </button>
       ) : (
-        <Link href={buildUrl({ page: page - 1 })} className="text-gray-500 hover:text-black">
-          ←
+        <Link
+          href={buildUrl({ page: page - 1 })}
+          className="flex items-center justify-center w-8 h-8 rounded-md text-gray-700 hover:bg-gray-100"
+        >
+          <ChevronLeft size={16} />
+          <span className="sr-only">Previous</span>
         </Link>
       )}
 
-      {renderPagination()}
+      {/* Page numbers */}
+      <div className="flex items-center gap-1 sm:gap-2">{renderPagination()}</div>
 
+      {/* Next button with better styling */}
       {page === pageCount ? (
-        <span className="opacity-50 cursor-not-allowed">→</span>
+        <button
+          disabled
+          className="flex items-center justify-center w-8 h-8 rounded-md text-gray-400 cursor-not-allowed"
+        >
+          <ChevronRight size={16} />
+          <span className="sr-only">Next</span>
+        </button>
       ) : (
-        <Link href={buildUrl({ page: page + 1 })} className="text-gray-500 hover:text-black">
-          →
+        <Link
+          href={buildUrl({ page: page + 1 })}
+          className="flex items-center justify-center w-8 h-8 rounded-md text-gray-700 hover:bg-gray-100"
+        >
+          <ChevronRight size={16} />
+          <span className="sr-only">Next</span>
         </Link>
       )}
     </div>

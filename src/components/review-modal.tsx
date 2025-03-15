@@ -25,6 +25,7 @@ interface ReviewModalProps {
   productId: string
   productName?: string | null
   onSubmit: (review: ReviewSubmitData) => Promise<void>
+  className?: string
 }
 
 const MAX_IMAGES = 4

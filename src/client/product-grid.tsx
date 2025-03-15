@@ -3,6 +3,7 @@
 import { useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 
 import { cn } from '@/utils/ui'
 import { Product, ProductTypesEnum, SimpleProduct } from '@/graphql'
@@ -12,12 +13,52 @@ import { Image } from '@/components/ui/image'
 import MaxWidthWrapper from '@/components/max-width-wrapper'
 import Pagination from '@/components/pagination'
 import { useIsMobile } from '@/hooks/mobile'
+import { Montserrat } from 'next/font/google'
 
 export interface ProductGridProps {
   products: Product[]
 }
 
+// Define types for MetaData
+type Maybe<T> = T | null | undefined
+
+interface MetaData {
+  key?: Maybe<string>
+  value?: Maybe<string>
+}
+
+// Update the Product interface to include purchaseCount
+interface ProductWithPurchases extends Product {
+  purchaseCount?: number
+}
+
 const pageSize = 12
+
+// Helper function to get purchase count
+const getProductPurchases = (product: Product): number => {
+  // If the product has the purchaseCount field directly (from GraphQL)
+  if (
+    'purchaseCount' in product &&
+    typeof (product as ProductWithPurchases).purchaseCount === 'number'
+  ) {
+    return (product as ProductWithPurchases).purchaseCount || 0
+  }
+
+  // Fallback to check in metaData if direct field is not available
+  if (Array.isArray(product.metaData)) {
+    const purchasesMeta = product.metaData.find((meta) => meta?.key === '_purchase_count')
+    if (purchasesMeta && purchasesMeta.value) {
+      return parseInt(purchasesMeta.value, 10)
+    }
+  }
+  return 0
+}
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+})
 
 export function ProductGrid({ products }: ProductGridProps) {
   const { push } = useRouter()
@@ -26,34 +67,52 @@ export function ProductGrid({ products }: ProductGridProps) {
   const { products: filteredProducts, buildUrl, page } = useShopContext()
   const totalProducts = (filteredProducts || products).length
   const pageCount = Math.ceil((filteredProducts || products).length / pageSize)
-  const searchParams = new URLSearchParams(window.location.search)
+
+  // Use Next.js searchParams hook instead of window.location
+  const searchParams = useSearchParams()
   const sortOrder = searchParams.get('sort') || ''
 
   const sortProducts = (productsToSort: Product[]) => {
     return [...productsToSort].sort((a, b) => {
-      if (!sortOrder || sortOrder === '') {
-        // Sort by publish date for "latest"
-        const dateA = new Date(a.date || 0).getTime()
-        const dateB = new Date(b.date || 0).getTime()
-        return dateB - dateA
+      // Handle different sort options with explicit cases
+      switch (sortOrder) {
+        case 'popular':
+          // Sort by purchase count instead of total_sales
+          const aPurchases = getProductPurchases(a)
+          const bPurchases = getProductPurchases(b)
+          return bPurchases - aPurchases // Higher purchase count first
+
+        case 'latest':
+          // Sort by publish date
+          const dateA = new Date(a.date || 0).getTime()
+          const dateB = new Date(b.date || 0).getTime()
+          return dateB - dateA // Newest first
+
+        case 'price_asc':
+        case 'price_desc':
+          // Price sorting logic
+          const getPriceValue = (product: Product) => {
+            const stringPrice = (product as ProductWithPrice).rawPrice
+            if (!stringPrice) return 0
+
+            if (product.type === ProductTypesEnum.VARIABLE) {
+              const prices = stringPrice.split(',').map(Number)
+              return prices.sort()[0]
+            }
+            return Number(stringPrice)
+          }
+
+          const priceA = getPriceValue(a)
+          const priceB = getPriceValue(b)
+
+          return sortOrder === 'price_desc' ? priceB - priceA : priceA - priceB
+
+        default:
+          // Default sorting by date (for empty or unrecognized sort values)
+          const defaultDateA = new Date(a.date || 0).getTime()
+          const defaultDateB = new Date(b.date || 0).getTime()
+          return defaultDateB - defaultDateA
       }
-
-      // Price sorting logic
-      const getPriceValue = (product: Product) => {
-        const stringPrice = (product as ProductWithPrice).rawPrice
-        if (!stringPrice) return 0
-
-        if (product.type === ProductTypesEnum.VARIABLE) {
-          const prices = stringPrice.split(',').map(Number)
-          return prices.sort()[0]
-        }
-        return Number(stringPrice)
-      }
-
-      const priceA = getPriceValue(a)
-      const priceB = getPriceValue(b)
-
-      return sortOrder === 'price_desc' ? priceB - priceA : priceA - priceB
     })
   }
 
@@ -63,9 +122,7 @@ export function ProductGrid({ products }: ProductGridProps) {
   }
 
   const displayProducts = useMemo(() => {
-    let sorted = sortOrder
-      ? sortProducts(filteredProducts || products)
-      : filteredProducts || products
+    let sorted = sortProducts(filteredProducts || products)
     return sorted.slice((page - 1) * pageSize, page * pageSize)
   }, [filteredProducts, products, sortOrder, page])
 
@@ -77,59 +134,81 @@ export function ProductGrid({ products }: ProductGridProps) {
       const url = buildUrl({ page: pageCount })
       push(url, { shallow: true } as any)
     }
-  }, [pageCount])
+  }, [pageCount, page, buildUrl, push])
 
   return (
+    // Responsive ProductGrid component
     <>
-      <div className="flex items-center justify-between mb-6 w-full">
-        <div className="mb-4 text-sm text-gray-600">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 w-full">
+        <div className="mb-2 sm:mb-0 text-sm text-gray-600">
           Showing {startIndex}–{endIndex} of {totalProducts} results
         </div>
         <select
-          className="border rounded-md p-2 self-end"
+          className="border rounded-md p-2 self-end w-full sm:w-auto"
           value={sortOrder}
           onChange={(e) => handleSort(e.target.value)}
         >
           <option value="">Default sorting</option>
+          <option value="popular">Sort by popularity</option>
           <option value="latest">Sort by latest</option>
           <option value="price_asc">Sort by price: low to high</option>
           <option value="price_desc">Sort by price: high to low</option>
         </select>
       </div>
 
-      <div className="grid grid-cols-3 md:grid-cols-4 gap-6">
+      {/* Product grid with cards that have thin border and shadow - without add to cart button */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
         {displayProducts.map((product) => {
           const sourceUrl = product.image?.sourceUrl
           const altText = product.image?.altText || ''
           return (
             <Link href={`/products/${product.slug}`} key={product.id} className="group">
-              <div className="relative aspect-square mb-4 overflow-hidden rounded-lg bg-gray-100">
-                {sourceUrl && (
-                  <Image
-                    src={sourceUrl}
-                    alt={altText}
-                    ratio={1 / 1}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                )}
-                <button
-                  className="absolute bottom-4 right-4 bg-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                  aria-label="Add to cart"
-                >
-                  Add to cart
-                </button>
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-sm font-medium">{product.name}</h3>
-                <p className="text-sm text-gray-500">{(product as SimpleProduct).price}</p>
+              {/* Card container with border and shadow */}
+              <div className="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col h-full">
+                {/* Image container */}
+                <div className="relative aspect-square overflow-hidden bg-gray-100">
+                  {sourceUrl && (
+                    <Image
+                      src={sourceUrl}
+                      alt={altText}
+                      ratio={1 / 1}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  )}
+                </div>
+
+                {/* Product info section */}
+                <div className="p-3 flex flex-col justify-between flex-grow">
+                  {/* Store name/brand badge */}
+                  <div>
+                    <h3 className="text-sm font-medium line-clamp-2 min-h-[2.5rem] mb-1">
+                      {product.name}
+                    </h3>
+                  </div>
+
+                  {/* Price section */}
+                  <div>
+                    {/* Large price display */}
+                    <div className="flex items-baseline mb-1">
+                      <span
+                        className={`text-xl font-semibold text-gray-900 ${montserrat.className}`}
+                      >
+                        ${(product as SimpleProduct).price?.replace(/[^0-9.]/g, '')}
+                      </span>
+                    </div>
+
+                    {/* Free delivery text */}
+                    <p className="text-sm font-medium text-gray-800 uppercase">FREE DELIVERY</p>
+                  </div>
+                </div>
               </div>
             </Link>
           )
         })}
       </div>
 
-      <div className="flex justify-center items-center gap-3 mt-8">
+      <div className="flex justify-center items-center gap-3 mt-6 sm:mt-8">
         <Pagination pageCount={pageCount} />
       </div>
     </>

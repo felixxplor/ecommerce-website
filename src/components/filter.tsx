@@ -63,9 +63,11 @@ export function ShopFilters({ categories, colors }: ShopFiltersProps) {
   )
 
   return (
-    <div className="w-64 pr-8">
+    // Responsive ShopFilters component
+    <div className="w-full lg:w-64 lg:pr-8">
       {/* Selected Categories Section */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
+        <h3 className="text-sm font-medium mb-2 hidden lg:block">Selected Categories</h3>
         <div className="flex gap-2 flex-wrap">
           {selectedCategories.map((slug) => {
             const category = categories?.find((c) => c.slug === slug)
@@ -93,11 +95,11 @@ export function ShopFilters({ categories, colors }: ShopFiltersProps) {
         </div>
       </div>
 
-      <Accordion type="single" collapsible className="space-y-4">
+      <Accordion type="single" collapsible className="space-y-3 sm:space-y-4">
         <AccordionItem value="categories">
-          <AccordionTrigger>Categories</AccordionTrigger>
+          <AccordionTrigger className="py-2 sm:py-3">Categories</AccordionTrigger>
           <AccordionContent>
-            <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-corner-rounded scrollbar-thumb-ring">
+            <div className="space-y-2 max-h-48 sm:max-h-64 overflow-y-auto scrollbar-thin scrollbar-corner-rounded scrollbar-thumb-ring">
               {categories?.map((category) => {
                 if (selectedCategories.includes(category.slug as string)) {
                   return null
@@ -112,7 +114,7 @@ export function ShopFilters({ categories, colors }: ShopFiltersProps) {
                       href={href}
                       prefetch={false}
                       shallow
-                      className="text-sm hover:text-primary transition-colors"
+                      className="text-sm hover:text-primary transition-colors w-full py-1"
                     >
                       {category.name}
                     </NavLink>
@@ -124,52 +126,71 @@ export function ShopFilters({ categories, colors }: ShopFiltersProps) {
         </AccordionItem>
 
         <AccordionItem value="colors">
-          <AccordionTrigger>Colors</AccordionTrigger>
+          <AccordionTrigger className="py-2 sm:py-3">Colors</AccordionTrigger>
           <AccordionContent>
             <PaColorPicker colors={colors} />
           </AccordionContent>
         </AccordionItem>
 
         <AccordionItem value="price">
-          <AccordionTrigger>Price Range</AccordionTrigger>
+          <AccordionTrigger className="py-2 sm:py-3">Price Range</AccordionTrigger>
           <AccordionContent>
-            <div className="space-y-4">
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="flex-1">
+            <div className="space-y-3 sm:space-y-4">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
+                {/* Completely vertical layout for price inputs */}
+                <div className="flex flex-col space-y-4">
+                  {/* Minimum price input with fixed error space */}
+                  <div className="flex flex-col">
+                    <label className="text-xs text-gray-500 mb-1">Min Price</label>
                     <InputNumber
                       placeholder="$ FROM"
-                      className="w-full"
+                      className="w-full text-sm"
                       {...form.register('price_min')}
                     />
-                    {form.formState.errors.price_min && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {form.formState.errors.price_min.message}
-                      </p>
-                    )}
+                    <div className="min-h-[20px] mt-1">
+                      {form.formState.errors.price_min && (
+                        <p className="text-xs text-red-500">
+                          {form.formState.errors.price_min.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
 
-                  <span className="text-gray-500">-</span>
-
-                  <div className="flex-1">
+                  {/* Maximum price input with fixed error space */}
+                  <div className="flex flex-col">
+                    <label className="text-xs text-gray-500 mb-1">Max Price</label>
                     <InputNumber
                       placeholder="$ TO"
-                      className="w-full"
+                      className="w-full text-sm"
                       {...form.register('price_max')}
                     />
-                    {form.formState.errors.price_max && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {form.formState.errors.price_max.message}
-                      </p>
-                    )}
+                    <div className="min-h-[20px] mt-1">
+                      {form.formState.errors.price_max && (
+                        <p className="text-xs text-red-500">
+                          {form.formState.errors.price_max.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex gap-2">
-                  <Button type="submit" className="flex-1 text-sm">
+                {/* Buttons with clear spacing */}
+                <div className="flex gap-2 mt-4">
+                  <Button type="submit" className="flex-1 text-xs sm:text-sm py-1 h-auto sm:h-9">
                     Apply
                   </Button>
-                  <Button type="button" variant="outline" className="text-sm">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="text-xs sm:text-sm py-1 h-auto sm:h-9"
+                    onClick={() => {
+                      form.reset({
+                        price_min: '',
+                        price_max: '',
+                      })
+                      // Add your clear filter logic here
+                    }}
+                  >
                     Clear
                   </Button>
                 </div>

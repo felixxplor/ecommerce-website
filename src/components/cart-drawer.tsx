@@ -186,18 +186,21 @@ export default function CartDrawer() {
           )}
         </div>
       </DrawerTrigger>
-      <DrawerContent className="h-screen top-0 right-0 left-auto mt-0 w-[500px] rounded-none z-[999]">
-        <DrawerHeader className="border-b px-6 py-4">
-          <DrawerTitle className="text-lg font-medium">Shopping Cart ({totalItems})</DrawerTitle>
-          <DrawerClose className="absolute right-6 top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100">
-            <X className="h-4 w-4" />
+      <DrawerContent className="h-screen top-0 right-0 left-auto mt-0 w-full xs:w-[350px] sm:w-[400px] md:w-[450px] lg:w-[500px] rounded-none z-[999]">
+        <DrawerHeader className="border-b px-4 sm:px-6 py-3 sm:py-4">
+          <DrawerTitle className="text-base sm:text-lg font-medium">
+            Shopping Cart ({totalItems})
+          </DrawerTitle>
+          <DrawerClose className="absolute right-4 sm:right-6 top-3 sm:top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 p-1 flex items-center underline">
+            <span className="mr-1 text-sm font-medium">Close</span>
+            <X className="h-5 w-5 sm:h-6 sm:w-6" />
           </DrawerClose>
         </DrawerHeader>
 
-        <div className="flex h-[calc(100vh-74px)] flex-col">
+        <div className="flex h-[calc(100vh-66px)] sm:h-[calc(100vh-74px)] flex-col">
           {cart?.contents?.nodes && cart.contents.nodes.length > 0 ? (
             <>
-              <ScrollArea className="flex-1 px-6">
+              <ScrollArea className="flex-1 px-4 sm:px-6">
                 <div className="divide-y">
                   {cart.contents.nodes.map((item) => (
                     <CartItem key={item.key} item={item} />
@@ -207,13 +210,13 @@ export default function CartDrawer() {
               <CartSummary cart={cart} />
             </>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-              <ShoppingBag className="h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium mb-2">Your cart is empty</h3>
-              <p className="text-sm text-gray-500 mb-4">
+            <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 text-center">
+              <ShoppingBag className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mb-3 sm:mb-4" />
+              <h3 className="text-base sm:text-lg font-medium mb-2">Your cart is empty</h3>
+              <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
                 Looks like you haven't added any items to your cart yet.
               </p>
-              <DrawerClose className="text-sm text-gray-500 hover:text-gray-800">
+              <DrawerClose className="text-xs sm:text-sm text-gray-500 hover:text-gray-800">
                 Continue Shopping
               </DrawerClose>
             </div>

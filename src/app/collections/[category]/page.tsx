@@ -18,6 +18,12 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const products = await fetchProducts(1, 0, { category: category })
   const colors = (await fetchColors(1)) || []
 
+  // Get the formatted category name from the slug
+  const categoryName = category
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+
   if (!products || products.length === 0)
     return (
       <MaxWidthWrapper>
@@ -44,7 +50,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   return (
     <>
       <ShopProvider allProducts={products}>
-        <Shop products={products} colors={colors} />
+        <Shop products={products} colors={colors} categoryName={categoryName} />
       </ShopProvider>
     </>
   )

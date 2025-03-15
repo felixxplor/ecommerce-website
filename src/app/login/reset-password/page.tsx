@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import MaxWidthWrapper from '@/components/max-width-wrapper'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import MainPolicies from '@/components/main-policies'
 
 const PasswordResetSchema = z.object({
   username: z.string().email({
@@ -70,56 +71,59 @@ const PasswordResetForm = () => {
   }
 
   return (
-    <MaxWidthWrapper className="py-14">
-      <h1 className="text-center text-4xl font-medium mb-3">Login</h1>
+    <>
+      <MaxWidthWrapper className="py-14">
+        <h1 className="text-center text-4xl font-medium mb-3">Reset Your Password</h1>
 
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 max-w-screen-lg mx-auto px-4"
-        >
-          {resetError && (
-            <Alert variant="destructive">
-              <AlertDescription>{resetError}</AlertDescription>
-            </Alert>
-          )}
-
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email *</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Enter your email address associated with your account."
-                    type="email"
-                    autoComplete="email"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-                {isSuccess && (
-                  <div className="mt-2 p-3 text-sm text-green-700 border border-green-500 rounded-md bg-green-50">
-                    If an account exists with this email, you will receive password reset
-                    instructions shortly.
-                  </div>
-                )}
-              </FormItem>
-            )}
-          />
-
-          <Button
-            type="submit"
-            disabled={form.formState.isSubmitting}
-            className="flex gap-x-2 items-center"
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-8 max-w-screen-lg mx-auto px-4"
           >
-            Send Reset Link
-            {form.formState.isSubmitting && <LoadingSpinner noText />}
-          </Button>
-        </form>
-      </Form>
-    </MaxWidthWrapper>
+            {resetError && (
+              <Alert variant="destructive">
+                <AlertDescription>{resetError}</AlertDescription>
+              </Alert>
+            )}
+
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email *</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter your email address."
+                      type="email"
+                      autoComplete="email"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                  {isSuccess && (
+                    <div className="mt-2 p-3 text-sm text-green-700 border border-green-500 rounded-md bg-green-50">
+                      If an account exists with this email, you will receive password reset
+                      instructions shortly.
+                    </div>
+                  )}
+                </FormItem>
+              )}
+            />
+
+            <Button
+              type="submit"
+              disabled={form.formState.isSubmitting}
+              className="flex gap-x-2 items-center"
+            >
+              Send Reset Link
+              {form.formState.isSubmitting && <LoadingSpinner noText />}
+            </Button>
+          </form>
+        </Form>
+      </MaxWidthWrapper>
+      <MainPolicies className="" />
+    </>
   )
 }
 

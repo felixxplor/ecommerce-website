@@ -3,7 +3,7 @@
 import { FormEvent, useState, useEffect } from 'react'
 
 import { cn } from '@/utils/ui'
-import { Product, StockStatusEnum } from '@/graphql'
+import { Product, SimpleProduct, StockStatusEnum } from '@/graphql'
 
 import { useToast } from '@/hooks/use-toast'
 import { Input } from '@/components/ui/input'
@@ -13,6 +13,7 @@ import { ProductWithPrice } from './shop-provider'
 import useCartMutations from '@/hooks/use-cart-mutations'
 import InputNumber, { InputNumberProps } from '@/components/input-number'
 import { useDrawerStore } from '@/components/cart-drawer'
+import { AlertTriangle } from 'lucide-react'
 
 interface CartOptionsProps extends InputNumberProps {
   product: Product
@@ -24,10 +25,7 @@ interface CartOptionsProps extends InputNumberProps {
   onFocusOut?: (value: number) => void
 }
 
-export function SimpleCartOptions({
-  cartRef,
-  ...props
-}: CartOptionsProps & { cartRef: React.RefObject<HTMLButtonElement> }) {
+export function SimpleCartOptions({ ...props }: CartOptionsProps) {
   const { product, value, onIncrease, onDecrease, onType, onFocusOut, ...rest } = props
   const { toast } = useToast()
   const [localValue, setLocalValue] = useState<number>(Number(value) || 1)
@@ -37,7 +35,10 @@ export function SimpleCartOptions({
   const { fetching, mutate } = useCartMutations(databaseId)
   const { onOpen } = useDrawerStore()
 
-  const outOfStock = stockStatus === StockStatusEnum.OUT_OF_STOCK
+  // Check if product is out of stock
+  const outOfStock =
+    stockStatus === StockStatusEnum.OUT_OF_STOCK ||
+    (stockQuantity !== null && stockQuantity !== undefined && stockQuantity <= 0)
   const maxQuantity = stockQuantity ? (stockQuantity as number) : undefined
 
   const onAddToCart = async (event: FormEvent) => {
@@ -109,67 +110,170 @@ export function SimpleCartOptions({
     setLocalValue(_value)
   }
 
-  return (
-    <form onSubmit={onAddToCart} className="flex flex-col flex-wrap gap-x-2 gap-y-8 items-center">
-      <div className="flex items-center self-start">
-        <div className="capitalize text-gray-500 mr-10">Quantity</div>
-        <button
-          className="h-8 w-8 flex items-center justify-center rounded-l-sm border border-gray-300 text-gray-600"
-          onClick={decrease}
-          type="button"
-          disabled={fetching || executing}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="h-4 w-4"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
-          </svg>
-        </button>
-        <InputNumber
-          value={localValue}
-          className=""
-          classNameError="hidden"
-          classNameInput="h-8 w-14 border-t border-b border-gray-300 p-1 text-center outline-none"
-          onChange={handleChange}
-          disabled={fetching || executing}
-          {...rest}
-        />
-        <button
-          className="h-8 w-8 flex items-center justify-center rounded-r-sm border border-gray-300 text-gray-600"
-          onClick={increase}
-          type="button"
-          disabled={fetching || executing}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="h-4 w-4"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-        </button>
+  // If product is out of stock, only show the out of stock message
+  if (outOfStock) {
+    return (
+      <div className="inline-block">
+        <div className="inline-flex items-center gap-2 text-red-700 px-4 py-2 rounded-md whitespace-nowrap">
+          <AlertTriangle className="h-5 w-5" />
+          <span className="font-medium">Out of Stock</span>
+        </div>
       </div>
+    )
+  }
 
-      <div className="basis-full md:basis-auto flex gap-x-2 self-start">
+  return (
+    <form onSubmit={onAddToCart} className="w-full">
+      {/* Mobile layout (single row) - Only visible on screens below 976px */}
+      <div className="flex items-center justify-between gap-2 z-[999] lg:hidden">
+        {/* Quantity controls */}
+        <div className="flex items-center">
+          <button
+            className="h-10 w-10 flex items-center justify-center rounded-l-md border border-gray-300 text-gray-600"
+            onClick={decrease}
+            type="button"
+            disabled={fetching || executing}
+            aria-label="Decrease quantity"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="h-4 w-4"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
+            </svg>
+          </button>
+
+          <InputNumber
+            value={localValue}
+            className=""
+            classNameError="hidden"
+            classNameInput="h-10 w-12 border-t border-b border-gray-300 p-1 text-center outline-none"
+            onChange={handleChange}
+            disabled={fetching || executing}
+            {...rest}
+          />
+
+          <button
+            className="h-10 w-10 flex items-center justify-center rounded-r-md border border-gray-300 text-gray-600"
+            onClick={increase}
+            type="button"
+            disabled={fetching || executing}
+            aria-label="Increase quantity"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="h-4 w-4"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Price */}
+        <div>
+          <span className="text-lg font-semibold text-gray-900">
+            ${(product as SimpleProduct).price?.replace(/[^0-9.]/g, '')}
+          </span>
+        </div>
+
+        {/* Add button */}
         <Button
           type="submit"
           className={buttonVariants({
-            size: 'xl',
-            className: 'mx-auto bg-[#242A2E] border border-white !rounded-full mt-auto !font-bold',
+            size: 'sm',
+            className: 'bg-[#242A2E] border border-white rounded-full font-bold',
           })}
-          disabled={fetching || executing || outOfStock}
+          disabled={fetching || executing}
         >
-          {outOfStock ? 'Out of Stock' : 'Add To Basket'}
-          {(fetching || executing) && <LoadingSpinner noText />}
+          Add To Basket
+          {(fetching || executing) && <LoadingSpinner noText className="ml-1" />}
         </Button>
+      </div>
+
+      {/* Desktop layout (original) - Only visible on lg screens and up (976px+) */}
+      <div className="hidden lg:block">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+          <label className="text-sm font-medium text-gray-500 w-20">Quantity</label>
+          <div className="flex items-center">
+            <button
+              className="h-10 w-10 flex items-center justify-center rounded-l-md border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
+              onClick={decrease}
+              type="button"
+              disabled={fetching || executing}
+              aria-label="Decrease quantity"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="h-4 w-4"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
+              </svg>
+            </button>
+
+            <InputNumber
+              value={localValue}
+              className=""
+              classNameError="hidden"
+              classNameInput="h-10 w-16 border-t border-b border-gray-300 p-1 text-center outline-none"
+              onChange={handleChange}
+              disabled={fetching || executing}
+              {...rest}
+            />
+
+            <button
+              className="h-10 w-10 flex items-center justify-center rounded-r-md border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
+              onClick={increase}
+              type="button"
+              disabled={fetching || executing}
+              aria-label="Increase quantity"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="h-4 w-4"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="flex items-baseline mb-4">
+            <span className="text-2xl font-semibold text-gray-900 sm:hidden">
+              ${(product as SimpleProduct).price?.replace(/[^0-9.]/g, '')}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-2 sm:mt-4">
+          <Button
+            type="submit"
+            className={buttonVariants({
+              size: 'lg',
+              className: 'w-full sm:w-auto bg-[#242A2E] border border-white rounded-full font-bold',
+            })}
+            disabled={fetching || executing}
+          >
+            <span className="flex items-center justify-center">
+              Add To Basket
+              {(fetching || executing) && <LoadingSpinner noText className="ml-2" />}
+            </span>
+          </Button>
+        </div>
       </div>
     </form>
   )

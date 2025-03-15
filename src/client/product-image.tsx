@@ -86,7 +86,7 @@ export function ProductImage({ product }: ProductImageProps) {
   return (
     <>
       <div
-        className="relative w-full pt-[100%] overflow-hidden cursor-zoom-in"
+        className="relative w-full pt-[100%] overflow-hidden cursor-zoom-in shadow-sm border border-gray-100 rounded-lg"
         onMouseMove={handleZoom}
         onMouseLeave={handleZoomOut}
       >
@@ -140,6 +140,7 @@ export function ProductImage({ product }: ProductImageProps) {
               src={image.sourceUrl}
               alt={image.altText}
               onClick={() => setActiveImage(image.sourceUrl)}
+              id="tabs"
             />
           ))}
       </div>

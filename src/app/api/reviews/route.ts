@@ -9,9 +9,6 @@ export async function POST(request: Request) {
     const formData = await request.formData()
     const wooSession = request.headers.get('woocommerce-session')
 
-    // Debug log
-    console.log('Received form data keys:', Array.from(formData.keys()))
-
     // Extract basic review data
     const productId = Number(formData.get('productId'))
     const rating = Number(formData.get('rating'))
@@ -20,12 +17,40 @@ export async function POST(request: Request) {
     const authorEmail = formData.get('authorEmail') as string
     const image = formData.get('image0')
 
-    // Validation
-    if (!productId || !rating || !author || !authorEmail) {
+    if (!productId || !rating || !comment || !author || !authorEmail) {
       return NextResponse.json({ errors: { message: 'Missing required fields' } }, { status: 400 })
     }
 
-    // Submit review
+    const clientMutationId = `review-${Date.now()}`
+    let uploadData = null
+
+    // Handle photo upload if present
+    if (image instanceof File) {
+      const imageFormData = new FormData()
+      imageFormData.append('file', image)
+
+      try {
+        const uploadUrl = `${process.env.NEXT_PUBLIC_WORDPRESS_URL}/wp-json/custom/v1/upload-review-photo`
+        const uploadResponse = await fetch(uploadUrl, {
+          method: 'POST',
+          body: imageFormData,
+        })
+
+        const responseData = await uploadResponse.json()
+
+        if (!uploadResponse.ok) {
+          throw new Error(responseData.error || 'Upload failed')
+        }
+
+        uploadData = responseData
+        console.log('Photo upload successful:', uploadData)
+      } catch (error: any) {
+        console.error('Photo upload error:', error)
+        throw new Error(`Image upload failed: ${error.message}`)
+      }
+    }
+
+    // Submit review via GraphQL
     const client = getClient()
     if (wooSession) {
       client.setHeader('woocommerce-session', wooSession)
@@ -37,70 +62,75 @@ export async function POST(request: Request) {
         input: {
           commentOn: productId,
           rating,
-          content: comment.trim(),
+          content: `${comment.trim()}`,
           author,
           authorEmail,
-          clientMutationId: `review-${Date.now()}`,
+          clientMutationId,
         },
       }
     )
 
     if (!reviewResponse.writeReview) {
-      throw new Error('Failed to write review')
+      throw new Error('Failed to create review')
     }
 
-    // Handle image upload
-    const uploadedImages = []
-    if (image instanceof File) {
-      const uploadFormData = new FormData()
-      uploadFormData.append('file', image)
-      uploadFormData.append('review_bot_trap', '')
-
-      const WORDPRESS_URL = process.env.NEXT_PUBLIC_WORDPRESS_URL
-      console.log(
-        'Uploading to WordPress:',
-        `${WORDPRESS_URL}/wp-json/custom/v1/upload-review-photo`
-      )
-
+    // If we have an uploaded photo, link it to the review
+    if (uploadData) {
       try {
-        const uploadResponse = await fetch(
-          `${WORDPRESS_URL}/wp-json/custom/v1/upload-review-photo`,
-          {
-            method: 'POST',
-            body: uploadFormData,
-          }
-        )
+        // Get the actual review ID
+        const getReviewUrl = `${process.env.NEXT_PUBLIC_WORDPRESS_URL}/wp-json/custom/v1/get-review-id?clientMutationId=${clientMutationId}`
+        const reviewIdResponse = await fetch(getReviewUrl)
 
-        console.log('Upload response status:', uploadResponse.status)
-        const responseText = await uploadResponse.text()
-        console.log('Upload response:', responseText)
-
-        if (!uploadResponse.ok) {
-          throw new Error(`Upload failed: ${responseText}`)
+        if (!reviewIdResponse.ok) {
+          const errorData = await reviewIdResponse.json()
+          throw new Error(errorData.error || 'Failed to get review ID')
         }
 
-        const uploadData = JSON.parse(responseText)
-        uploadedImages.push({
-          id: uploadData.id || String(Date.now()),
-          url: uploadData.url || uploadData.source_url,
-          thumbnail: uploadData.thumbnail || uploadData.source_url,
+        const { review_id } = await reviewIdResponse.json()
+
+        // Link the photo to the review
+        const linkUrl = `${process.env.NEXT_PUBLIC_WORDPRESS_URL}/wp-json/custom/v1/link-review-photo`
+        const linkResponse = await fetch(linkUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            review_id,
+            photo_id: uploadData.id,
+          }),
         })
-      } catch (error) {
-        console.error('Error uploading image:', error)
+
+        if (!linkResponse.ok) {
+          const errorData = await linkResponse.json()
+          throw new Error(errorData.error || 'Failed to link photo to review')
+        }
+
+        console.log('Successfully linked photo to review')
+      } catch (error: any) {
+        console.error('Error linking photo to review:', error)
+        // Continue since the review was created successfully
       }
     }
 
-    // Return success response - removed id from the response since it's not in the type
     return NextResponse.json({
       success: true,
       review: {
-        clientMutationId: reviewResponse.writeReview.clientMutationId,
+        clientMutationId,
         rating: reviewResponse.writeReview.rating,
-        images: uploadedImages,
+        images: uploadData
+          ? [
+              {
+                id: uploadData.id,
+                url: uploadData.url,
+                thumbnail: uploadData.thumbnail,
+              },
+            ]
+          : undefined,
       },
     })
-  } catch (err) {
-    console.error('Error submitting review:', err)
+  } catch (err: unknown) {
+    console.error('Full error:', err)
     return NextResponse.json(
       {
         errors: {

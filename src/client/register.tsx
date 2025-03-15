@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import * as z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter, useSearchParams } from 'next/navigation' // Add useSearchParams
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useSession } from './session-provider'
 import { hasCredentials } from '@/utils/session'
 import {
@@ -19,13 +19,11 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import MaxWidthWrapper from '@/components/max-width-wrapper'
+import Link from 'next/link'
 
-// Schema remains the same
+// Updated schema without username
 export const RegisterSchema = z
   .object({
-    username: z.string().min(4, {
-      message: 'Username must be at least 4 characters long',
-    }),
     email: z.string().email({
       message: 'Please enter a valid email address',
     }),
@@ -49,7 +47,6 @@ export function Register() {
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
-      username: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -59,7 +56,7 @@ export function Register() {
   useEffect(() => {
     // Check authentication status immediately
     if (hasCredentials() || isAuthenticated) {
-      router.replace(returnUrl) // Replace '/' with returnUrl
+      router.replace(returnUrl)
     } else {
       setIsLoading(false)
     }
@@ -67,7 +64,8 @@ export function Register() {
 
   const onSubmit = async (data: z.infer<typeof RegisterSchema>) => {
     try {
-      await register(data.username, data.email, data.password)
+      // Use email as username since username field was removed
+      await register(data.email, data.email, data.password)
       // After successful registration, redirect to returnUrl
       router.replace(returnUrl)
     } catch (error) {
@@ -92,19 +90,6 @@ export function Register() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 max-w-screen-lg mx-auto px-4"
         >
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Choose a username for your account" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <FormField
             control={form.control}
             name="email"
@@ -144,10 +129,22 @@ export function Register() {
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={fetching} className="flex gap-x-2 items-center">
-            Register
-            {fetching && <LoadingSpinner noText />}
-          </Button>
+          <div className="flex flex-col items-center mt-8">
+            <Button
+              type="submit"
+              disabled={fetching}
+              className="flex gap-x-2 items-center w-full md:w-1/5 py-6 text-lg"
+            >
+              Register
+              {fetching && <LoadingSpinner noText />}
+            </Button>
+
+            <div className="mt-4">
+              <Link href="/login" className="text-md text-primary underline hover:text-primary/80">
+                Already have an account? Sign in
+              </Link>
+            </div>
+          </div>
         </form>
       </Form>
     </MaxWidthWrapper>

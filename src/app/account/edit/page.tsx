@@ -412,18 +412,33 @@ export default function ProfilePage() {
 
   return (
     <>
-      <MaxWidthWrapper className="py-14">
+      <MaxWidthWrapper className="py-8 md:py-14 px-4 md:px-0">
         <div className="min-h-[600px]">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold">My Profile</h1>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold">My Profile</h1>
             <Link href="/account">
-              <Button variant="outline">Back to Account</Button>
+              <Button variant="outline" className="w-full sm:w-auto">
+                Back to Account
+              </Button>
             </Link>
           </div>
 
-          <div className="flex gap-8">
-            {/* Sidebar Navigation */}
-            <div className="w-64 shrink-0">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-8">
+            {/* Mobile Tab Selector */}
+            <div className="md:hidden w-full mb-4">
+              <select
+                className="w-full p-2 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-primary focus:border-primary"
+                value={activeTab}
+                onChange={(e) => setActiveTab(e.target.value as TabType)}
+              >
+                <option value="personal">Personal Details</option>
+                <option value="shipping">Shipping Address</option>
+                <option value="password">Change Password</option>
+              </select>
+            </div>
+
+            {/* Sidebar Navigation - Hidden on Mobile */}
+            <div className="hidden md:block w-64 shrink-0">
               <div className="bg-white p-4 rounded-lg shadow-sm">
                 <nav className="space-y-1">
                   <button
@@ -467,8 +482,8 @@ export default function ProfilePage() {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1">
-              <div className="bg-white p-6 rounded-lg shadow-sm">{renderContent()}</div>
+            <div className="flex-1 w-full">
+              <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm">{renderContent()}</div>
             </div>
           </div>
         </div>
