@@ -63,7 +63,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ cartUrl, checkoutUrl, accountUrl })
   } catch (err) {
-    console.log(err)
     return NextResponse.json(
       { errors: { message: 'Sorry, something went wrong' } },
       { status: 500 }

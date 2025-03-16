@@ -60,7 +60,7 @@ export const Image = forwardRef<HTMLDivElement, ImageProps>((props, ref) => {
             isLoading ? 'grayscale blur-2xl scale-110' : 'grayscale-0 blur-0 scale-100'
           )}
           fill={fill}
-          onLoadingComplete={() => setLoading(false)}
+          onLoad={() => setLoading(false)}
           priority={priority}
         />
       </AspectRatio>

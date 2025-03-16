@@ -179,8 +179,6 @@ export function ReviewsSection({ product }: { product: Product }) {
       }
     )
 
-    console.log('GraphQL Response:', JSON.stringify(response, null, 2))
-
     if (!response.product?.reviews?.edges) {
       return null
     }
@@ -197,7 +195,6 @@ export function ReviewsSection({ product }: { product: Product }) {
           let image = null
 
           if (photo) {
-            console.log('Processing review photo:', photo) // Debug log
             image = isValidImage(photo)
           }
 
@@ -313,8 +310,6 @@ export function ReviewsSection({ product }: { product: Product }) {
       </div>
     )
   }
-
-  console.log('review', reviews)
 
   const handleImageClick = (image: string, review: Review) => {
     setSelectedImage(image)

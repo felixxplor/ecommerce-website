@@ -7,6 +7,7 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
@@ -186,11 +187,17 @@ export default function CartDrawer() {
           )}
         </div>
       </DrawerTrigger>
-      <DrawerContent className="h-screen top-0 right-0 left-auto mt-0 w-full xs:w-[350px] sm:w-[400px] md:w-[450px] lg:w-[500px] rounded-none z-[999]">
+      <DrawerContent
+        aria-describedby="cart-description"
+        className="h-screen top-0 right-0 left-auto mt-0 w-full xs:w-[350px] sm:w-[400px] md:w-[450px] lg:w-[500px] rounded-none z-[999]"
+      >
         <DrawerHeader className="border-b px-4 sm:px-6 py-3 sm:py-4">
           <DrawerTitle className="text-base sm:text-lg font-medium">
             Shopping Cart ({totalItems})
           </DrawerTitle>
+          <DrawerDescription className="sr-only">
+            View and edit items in your shopping cart
+          </DrawerDescription>
           <DrawerClose className="absolute right-4 sm:right-6 top-3 sm:top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 p-1 flex items-center underline">
             <span className="mr-1 text-sm font-medium">Close</span>
             <X className="h-5 w-5 sm:h-6 sm:w-6" />

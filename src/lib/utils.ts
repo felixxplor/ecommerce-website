@@ -16,8 +16,8 @@ export const formatPrice = (price: number) => {
 }
 
 export function constructMetadata({
-  title = 'CaseCobra - custom high-quality phone cases',
-  description = 'Create custom high-quality phone cases in seconds',
+  title = 'Gizmooz - Unlock the next level in tech and innovation',
+  description = 'Get the latest tech at Gizmooz – innovative gadgets for a modern lifestyle',
   image = '/thumbnail.png',
   icons = '/favicon.ico',
 }: {
@@ -39,9 +39,11 @@ export function constructMetadata({
       title,
       description,
       images: [image],
-      creator: '@joshtriedcoding',
+      creator: '@nhtuuu',
     },
-    icons,
-    metadataBase: new URL('https://casecobra.vercel.app/'),
+    icons: {
+      icon: icons,
+    },
+    metadataBase: new URL('https://www.gizmooz.com/'),
   }
 }

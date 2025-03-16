@@ -13,7 +13,8 @@ export const SecurePaymentInfo = () => {
               alt="Mastercard"
               width={40}
               height={30}
-              className="object-contain"
+              className="object-contain w-auto"
+              style={{ height: 'auto' }}
             />
           </div>
           <div className="flex items-center justify-center h-8 w-14 bg-white rounded border border-gray-200">
@@ -22,7 +23,7 @@ export const SecurePaymentInfo = () => {
               alt="Visa"
               width={40}
               height={30}
-              className="object-contain"
+              className="object-contain w-auto"
             />
           </div>
           <div className="flex items-center justify-center h-8 w-14 bg-white rounded border border-gray-200">
@@ -31,7 +32,7 @@ export const SecurePaymentInfo = () => {
               alt="American Express"
               width={40}
               height={30}
-              className="object-contain"
+              className="object-contain w-auto"
             />
           </div>
           <div className="flex items-center justify-center h-8 w-14 bg-white rounded border border-gray-200">
@@ -40,7 +41,7 @@ export const SecurePaymentInfo = () => {
               alt="PayPal"
               width={40}
               height={30}
-              className="object-contain"
+              className="object-contain w-auto"
             />
           </div>
         </div>

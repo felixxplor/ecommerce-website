@@ -22,7 +22,6 @@ export default function ResponsiveHomePage() {
               alt="Home"
               src="/home-cover.webp"
               fill
-              priority
               className="absolute inset-0 object-cover z-0"
             />
             <div className="relative w-full h-full z-20 text-white text-3xl sm:text-4xl lg:text-5xl text-balance leading-normal">

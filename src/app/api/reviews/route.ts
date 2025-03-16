@@ -43,9 +43,7 @@ export async function POST(request: Request) {
         }
 
         uploadData = responseData
-        console.log('Photo upload successful:', uploadData)
       } catch (error: any) {
-        console.error('Photo upload error:', error)
         throw new Error(`Image upload failed: ${error.message}`)
       }
     }
@@ -105,12 +103,7 @@ export async function POST(request: Request) {
           const errorData = await linkResponse.json()
           throw new Error(errorData.error || 'Failed to link photo to review')
         }
-
-        console.log('Successfully linked photo to review')
-      } catch (error: any) {
-        console.error('Error linking photo to review:', error)
-        // Continue since the review was created successfully
-      }
+      } catch (error: any) {}
     }
 
     return NextResponse.json({

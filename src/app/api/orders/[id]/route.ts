@@ -21,7 +21,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     // Convert string ID to number for WooCommerce
     const orderId = parseInt(params.id, 10)
-    console.log('Fetching order with ID:', orderId)
 
     const data = await client.request<GetOrderByIdQuery>(print(GetOrderByIdDocument), {
       id: orderId,

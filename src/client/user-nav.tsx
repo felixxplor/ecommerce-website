@@ -21,7 +21,6 @@ export function UserNav() {
 
   const goToCartPage = () => {
     deleteClientSessionId()
-    console.log('Go to cart page')
     window.location.href = cartUrl
   }
   const goToCheckoutPage = () => {

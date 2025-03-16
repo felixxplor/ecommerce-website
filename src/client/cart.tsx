@@ -102,7 +102,6 @@ function CartItem({ item }: CartItemProps) {
 
 function CartSummary({ cart }: CartSummaryProps) {
   const { checkoutUrl } = useSession()
-  console.log(checkoutUrl)
 
   const goToCheckoutPage = () => {
     deleteClientSessionId()

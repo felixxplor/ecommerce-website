@@ -51,6 +51,7 @@ const Navbar = ({ menu, categories, products }: NavBarProps) => {
                 width={100}
                 height={25}
                 className="object-cover w-full h-full"
+                priority
               />
             </Link>
 
@@ -164,6 +165,7 @@ const Navbar = ({ menu, categories, products }: NavBarProps) => {
                                 src="/menu-1.png"
                                 fill
                                 className="object-cover"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                               />
                             </div>
                             <div className="mt-2">Our Collections</div>
@@ -172,7 +174,13 @@ const Navbar = ({ menu, categories, products }: NavBarProps) => {
                         <div className="col-span-1">
                           <Link href="/blog" className="block">
                             <div className="w-full h-[200px] relative">
-                              <Image alt="Blog" src="/menu-2.png" fill className="object-cover" />
+                              <Image
+                                alt="Blog"
+                                src="/menu-2.png"
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              />
                             </div>
                             <div className="mt-2">Explore our Blog</div>
                           </Link>

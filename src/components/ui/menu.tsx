@@ -12,6 +12,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { ChevronDown, Menu, X } from 'lucide-react'
+import { DrawerDescription } from './drawer'
 
 export function MobileNavigation() {
   const [isOpen, setIsOpen] = useState(false)
@@ -26,6 +27,7 @@ export function MobileNavigation() {
         </SheetTrigger>
         <SheetContent side="left" className="w-[300px] sm:w-[350px] pt-20">
           <SheetTitle className="sr-only">Mobile Navigation Menu</SheetTitle>
+          <DrawerDescription className="sr-only"></DrawerDescription>
           <div className="flex flex-col h-full">
             {/* Header with Close Button */}
             <div className="flex items-center justify-between p-4 border-b">

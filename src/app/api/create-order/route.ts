@@ -108,7 +108,6 @@ export async function POST(request: Request) {
       })
     } catch (cartError) {
       // Ignore the error if cart is already empty
-      console.log('Cart already empty or cleared during checkout')
     }
 
     return NextResponse.json(response)

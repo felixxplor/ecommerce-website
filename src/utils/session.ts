@@ -28,8 +28,6 @@ type ResponseErrors = {
 }
 async function apiCall<T>(url: string, input: globalThis.RequestInit) {
   try {
-    console.log('Making API call to:', url, 'with input:', input)
-
     const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
@@ -38,10 +36,7 @@ async function apiCall<T>(url: string, input: globalThis.RequestInit) {
       ...input,
     })
 
-    console.log('Response status:', response.status)
-
     const json: T & ResponseErrors = await response.json()
-    console.log('Response json:', json)
 
     if (json?.errors || response.status !== 200) {
       if (isDev()) {

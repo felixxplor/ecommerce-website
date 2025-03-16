@@ -18,7 +18,6 @@ export interface ShopProps {
 
 export function Shop(props: ShopProps) {
   const { products, categories, colors, categoryName } = props
-  console.log('products', products)
 
   // Display heading based on whether we're on a category page or the main shop page
   const heading = categoryName || 'All products'

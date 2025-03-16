@@ -11,7 +11,6 @@ export interface ProductImageProps {
 
 export function ProductImage({ product }: ProductImageProps) {
   const { image, galleryImages } = product
-  console.log(product)
 
   const { get } = useProductContext()
   const sourceUrl = (get('image.sourceUrl' as keyof Product) as string) || product?.image?.sourceUrl
@@ -24,8 +23,6 @@ export function ProductImage({ product }: ProductImageProps) {
     () => (galleryImages ? (galleryImages.nodes as any[]).slice(...imagesIndex) : []),
     [product, imagesIndex]
   )
-  console.log(galleryImages)
-  console.log(currentImages)
 
   useEffect(() => {
     if (galleryImages && galleryImages.nodes.length > 0 && image?.sourceUrl) {
