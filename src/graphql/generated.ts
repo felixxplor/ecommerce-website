@@ -26235,6 +26235,14 @@ export type GetRelatedProductsByCategoryQueryVariables = Exact<{
 
 export type GetRelatedProductsByCategoryQuery = { __typename?: 'RootQuery', products?: { __typename?: 'RootQueryToProductConnection', nodes: Array<{ __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, salePrice?: string | null, stockStatus?: StockStatusEnum | null, stockQuantity?: number | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null }> } | null };
 
+export type GetOrderByIdTrackQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+  idType?: InputMaybe<OrderIdTypeEnum>;
+}>;
+
+
+export type GetOrderByIdTrackQuery = { __typename?: 'RootQuery', order?: { __typename?: 'Order', id: string, databaseId?: number | null, date?: string | null, status?: OrderStatusEnum | null, total?: string | null, billing?: { __typename?: 'CustomerAddress', email?: string | null } | null, metaData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null } | null };
+
 export const MenuItemContentFragmentDoc = gql`
     fragment MenuItemContent on MenuItem {
   id
@@ -27168,6 +27176,24 @@ export const GetRelatedProductsByCategoryDocument = gql`
   }
 }
     `;
+export const GetOrderByIdTrackDocument = gql`
+    query GetOrderByIdTrack($id: ID!, $idType: OrderIdTypeEnum = DATABASE_ID) {
+  order(id: $id, idType: $idType) {
+    id
+    databaseId
+    date
+    status
+    total
+    billing {
+      email
+    }
+    metaData {
+      key
+      value
+    }
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -27262,6 +27288,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     GetRelatedProductsByCategory(variables: GetRelatedProductsByCategoryQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetRelatedProductsByCategoryQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetRelatedProductsByCategoryQuery>(GetRelatedProductsByCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetRelatedProductsByCategory', 'query', variables);
+    },
+    GetOrderByIdTrack(variables: GetOrderByIdTrackQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetOrderByIdTrackQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetOrderByIdTrackQuery>(GetOrderByIdTrackDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetOrderByIdTrack', 'query', variables);
     }
   };
 }

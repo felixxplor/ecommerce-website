@@ -41,7 +41,7 @@ const Navbar = ({ menu, categories, products }: NavBarProps) => {
 
   return (
     <ShopProvider allProducts={products}>
-      <nav className="sticky z-[100] inset-x-0 top-0 w-full bg-white/75 backdrop-blur-md transition-all">
+      <nav className="fixed z-50 top-0 left-0 right-0 w-full bg-white/75 backdrop-blur-md shadow-sm transition-all">
         <MaxWidthWrapper className="py-3 px-5 xl:px-0">
           <div className="flex items-center justify-between">
             <Link href="/" className="z-10 font-semibold w-32 h-6 order-2 lg:order-none">
@@ -243,7 +243,7 @@ const Navbar = ({ menu, categories, products }: NavBarProps) => {
                             <li>
                               <NavigationMenuLink
                                 className="focus:shadow-md text-sm"
-                                href="/about"
+                                href="/about-us"
                                 tabIndex={-1}
                               >
                                 Our Story
@@ -356,6 +356,8 @@ const Navbar = ({ menu, categories, products }: NavBarProps) => {
           </div>
         </MaxWidthWrapper>
       </nav>
+      {/* Add padding to the main content to prevent it from being hidden under the navbar */}
+      <div className="h-16"></div> {/* Adjust height value as needed to match your navbar height */}
     </ShopProvider>
   )
 }

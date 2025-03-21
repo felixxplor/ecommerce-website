@@ -14,6 +14,7 @@ import { cn } from '@/utils/ui'
 import { changePassword } from '@/utils/session'
 import Navbar from '@/components/navbar'
 import PasswordChangeForm from '@/components/password-change-form'
+import { Metadata } from 'next'
 
 type TabType = 'personal' | 'password' | 'shipping'
 
@@ -44,6 +45,11 @@ export default function ProfilePage() {
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const { refetch } = useSession()
+
+  useEffect(() => {
+    // Update document title client-side
+    document.title = 'Edit Profile | Gizmooz'
+  }, [])
 
   useEffect(() => {
     const authToken = sessionStorage.getItem(process.env.AUTH_TOKEN_SS_KEY as string)

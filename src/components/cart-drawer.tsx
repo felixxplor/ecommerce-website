@@ -60,7 +60,7 @@ function CartItem({ item }: CartItemProps) {
     <div className="py-6 flex gap-4">
       <div className="w-24 h-24 rounded-md border bg-gray-50 flex items-center justify-center">
         <Image
-          src={image?.sourceUrl ?? ''}
+          src={image?.sourceUrl || '/product-placeholder.png'}
           alt={image?.altText ?? name ?? ''}
           width={80}
           height={80}
@@ -111,9 +111,9 @@ function CartItem({ item }: CartItemProps) {
 }
 
 function CartSummary({ cart }: CartSummaryProps) {
-  const goToCheckoutPage = () => {
+  const goToCartPage = () => {
     deleteClientSessionId()
-    window.location.href = 'http://localhost:3000/checkout'
+    window.location.href = 'http://localhost:3000/cart'
   }
 
   return (
@@ -151,10 +151,10 @@ function CartSummary({ cart }: CartSummaryProps) {
         <p className="text-sm text-gray-500">Shipping and taxes calculated at checkout</p>
         <div className="pt-3">
           <button
-            onClick={goToCheckoutPage}
+            onClick={goToCartPage}
             className="block w-full bg-black text-white py-4 text-center text-sm font-medium hover:bg-gray-900 transition-colors"
           >
-            Checkout • {cart.total}
+            Go to Cart
           </button>
           <DrawerClose className="block w-full text-center mt-3 text-sm text-gray-500 hover:text-gray-800">
             Continue Shopping

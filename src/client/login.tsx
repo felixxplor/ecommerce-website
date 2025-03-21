@@ -23,11 +23,11 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import Link from 'next/link'
 
 export const LoginSchema = z.object({
-  username: z.string().min(4, {
-    message: 'Username must be at least 4 characters long',
+  email: z.string().email({
+    message: 'Please enter a valid email address',
   }),
   password: z.string().min(1, {
-    message: 'Password must enter a password',
+    message: 'Please enter your password',
   }),
 })
 
@@ -79,7 +79,7 @@ export function Login() {
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-      username: '',
+      email: '',
       password: '',
     },
   })
@@ -87,12 +87,12 @@ export function Login() {
   const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
     setLoginError('')
     try {
-      const success = await login(data.username, data.password)
+      const success = await login(data.email, data.password)
       if (success) {
         router.replace(returnUrl)
       } else {
-        setLoginError('Invalid username or password')
-        form.reset({ username: data.username, password: '' })
+        setLoginError('Invalid email or password')
+        form.reset({ email: data.email, password: '' })
       }
     } catch (error) {
       setLoginError('An error occurred during login. Please try again.')
@@ -117,21 +117,26 @@ export function Login() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 max-w-screen-lg mx-auto px-4"
         >
-          {loginError && (
-            <Alert variant="destructive">
-              <AlertDescription>{loginError}</AlertDescription>
-            </Alert>
-          )}
           <FormField
             control={form.control}
-            name="username"
+            name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username *</FormLabel>
+                <FormLabel>Email *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter e-mail address." {...field} />
+                  <Input
+                    placeholder="Enter your email address"
+                    type="email"
+                    autoComplete="email"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
+                <div className="">
+                  {loginError && loginError.toLowerCase().includes('email') && (
+                    <p className="text-sm font-medium text-destructive">{loginError}</p>
+                  )}
+                </div>
               </FormItem>
             )}
           />
@@ -142,9 +147,19 @@ export function Login() {
               <FormItem>
                 <FormLabel>Password *</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="Enter your password." {...field} />
+                  <Input
+                    type="password"
+                    placeholder="Enter your password"
+                    autoComplete="current-password"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
+                <div className="min-h-[24px]">
+                  {loginError && !loginError.toLowerCase().includes('email') && (
+                    <p className="text-sm font-medium text-destructive">{loginError}</p>
+                  )}
+                </div>
                 <div className="mt-2">
                   <Link
                     href="/login/reset-password"

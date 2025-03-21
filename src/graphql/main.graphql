@@ -898,3 +898,20 @@ query GetRelatedProductsByCategory($categoryId: Int!, $excludeId: Int!, $first: 
     }
   }
 }
+
+query GetOrderByIdTrack($id: ID!, $idType: OrderIdTypeEnum = DATABASE_ID) {
+  order(id: $id, idType: $idType) {
+    id
+    databaseId
+    date
+    status
+    total
+    billing {
+      email
+    }
+    metaData {
+      key
+      value
+    }
+  }
+}

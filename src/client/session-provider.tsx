@@ -198,6 +198,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
         title: 'Fetch Session Error',
         description: 'Failed to fetch session.',
         variant: 'destructive',
+        style: { color: '#000' },
       })
     }
     if (typeof authUrls === 'string') {
@@ -205,6 +206,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
         title: 'Session Error',
         description: 'Failed to generate session URLs. Please refresh the page.',
         variant: 'destructive',
+        style: { color: '#000' },
       })
     }
 
@@ -235,6 +237,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
         title: 'Cart Action Error',
         description: 'Cart mutation failed.',
         variant: 'destructive',
+        style: { color: '#000' },
       })
 
       dispatch({
@@ -261,11 +264,6 @@ export function SessionProvider({ children }: PropsWithChildren) {
 
     return changePasswordApiCall(currentPassword, newPassword).then((success) => {
       if (typeof success === 'string') {
-        toast({
-          title: 'Password Change Error',
-          description: success,
-          variant: 'destructive',
-        })
         dispatch({
           type: 'UPDATE_STATE',
           payload: { fetching: false } as SessionContext,
@@ -297,11 +295,6 @@ export function SessionProvider({ children }: PropsWithChildren) {
     })
     return loginApiCall(username, password).then((success) => {
       if (typeof success === 'string') {
-        toast({
-          title: 'Login Error',
-          description: success,
-          variant: 'destructive',
-        })
         dispatch({
           type: 'UPDATE_STATE',
           payload: { fetching: false } as SessionContext,
@@ -321,11 +314,6 @@ export function SessionProvider({ children }: PropsWithChildren) {
 
     return registerApiCall(username, email, password).then((success) => {
       if (typeof success === 'string') {
-        toast({
-          title: 'Registration Error',
-          description: success,
-          variant: 'destructive',
-        })
         dispatch({
           type: 'UPDATE_STATE',
           payload: { fetching: false } as SessionContext,

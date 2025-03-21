@@ -3,6 +3,20 @@ import { fetchProducts, fetchCategories, fetchColors } from '@/graphql'
 import { Shop } from '../../server/product-list'
 import Navbar from '@/components/navbar'
 import MainPolicies from '@/components/main-policies'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Collections | Gizmooz',
+  alternates: {
+    canonical: 'https://www.gizmooz.com/collections',
+  },
+  openGraph: {
+    title: 'Collections',
+    description: 'Collections',
+    url: 'https://www.gizmooz.com/collections',
+    type: 'website',
+  },
+}
 
 export default async function ShopPage() {
   const products = await fetchProducts(20, 0)

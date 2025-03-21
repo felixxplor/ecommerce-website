@@ -34,7 +34,7 @@ export async function POST(request: Request) {
 
     // Retrieve Stripe session
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ['shipping_details', 'customer_details', 'line_items'],
+      expand: ['customer_details', 'line_items'],
     })
 
     // Verify payment status

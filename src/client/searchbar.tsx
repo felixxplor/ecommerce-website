@@ -82,31 +82,28 @@ export function SearchBar() {
         {/* Desktop search input (always visible on desktop) */}
         <div
           tabIndex={0}
-          className="bg-[#F6F5F2] rounded-full py-1 px-4 focus-within:outline-none focus-within:outline-2 focus-within:outline-gray-200 focus-within:outline-offset-0 hidden lg:block"
+          className="bg-[#F6F5F2] rounded-full items-center hidden lg:flex focus-within:ring-2 focus-within:ring-gray-200"
         >
-          <div className="flex items-center relative">
-            <button className="py-2 px-6" type="submit">
-              <Search className="w-6 h-6" />
+          <button className="py-2 pl-4 pr-1" type="submit" aria-label="Search">
+            <Search className="w-5 h-5 text-gray-500" />
+          </button>
+          <input
+            type="text"
+            placeholder="Search products"
+            className="text-black py-2 pr-4 flex-grow bg-transparent border-0 outline-none focus:ring-0 focus:outline-none focus:border-0"
+            value={searchInput}
+            onChange={(event) => setSearchInput(event.target.value)}
+          />
+          {searchInput && (
+            <button
+              type="button"
+              onClick={clearSearch}
+              className="pr-4 hover:text-gray-600 transition-colors"
+              aria-label="Clear search"
+            >
+              <X className="h-4 w-4" />
             </button>
-            <input
-              tabIndex={0}
-              type="text"
-              placeholder="Search products"
-              className="text-black px-3 py-2 flex-grow border-none outline-none bg-transparent"
-              value={searchInput}
-              onChange={(event) => setSearchInput(event.target.value)}
-            />
-            {searchInput && (
-              <button
-                type="button"
-                onClick={clearSearch}
-                className="p-2 hover:text-gray-600 transition-colors"
-                aria-label="Clear search"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
+          )}
         </div>
       </form>
 

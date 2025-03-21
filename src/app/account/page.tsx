@@ -10,6 +10,7 @@ import { format } from 'date-fns'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { hasCredentials } from '@/utils/session'
+import { Metadata } from 'next'
 
 interface CustomerDetails {
   firstName: string
@@ -69,6 +70,11 @@ export default function AccountPage() {
   const { logout: killSession, isAuthenticated } = useSession()
   const searchParams = useSearchParams()
   const returnUrl = searchParams.get('returnUrl') || '/'
+
+  useEffect(() => {
+    // Update document title client-side
+    document.title = 'Account | Gizmooz'
+  }, [])
 
   useEffect(() => {
     const authToken = sessionStorage.getItem(process.env.AUTH_TOKEN_SS_KEY as string)

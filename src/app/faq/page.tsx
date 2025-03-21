@@ -1,6 +1,19 @@
 import FAQ from '@/client/faq'
 import MainPolicies from '@/components/main-policies'
-import AboutUs from '@/server/about-us'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'FAQ | Gizmooz',
+  alternates: {
+    canonical: 'https://www.gizmooz.com/faq',
+  },
+  openGraph: {
+    title: 'FAQ',
+    description: 'FAQ',
+    url: 'https://www.gizmooz.com/faq',
+    type: 'website',
+  },
+}
 
 export default function FAQPage() {
   return (

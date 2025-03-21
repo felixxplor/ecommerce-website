@@ -39,17 +39,19 @@ function CartItem({ item }: CartItemProps) {
   }
 
   return (
-    <div className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 bg-white rounded-lg shadow-sm">
+      {/* Product Image - consistent size across devices */}
       <div className="relative h-20 w-20 flex-shrink-0">
         <Image
-          src={image?.sourceUrl ?? ''}
+          src={image?.sourceUrl || '/product-placeholder.png'}
           alt={image?.altText ?? name ?? ''}
           fill
           className="object-cover rounded-md"
         />
       </div>
 
-      <div className="flex-grow">
+      {/* Product Info - takes available space */}
+      <div className="flex-grow w-full sm:w-auto">
         <h3 className="font-medium">{name}</h3>
         {variation?.attributes?.map(
           (attr) =>
@@ -59,43 +61,54 @@ function CartItem({ item }: CartItemProps) {
               </p>
             )
         )}
+
+        {/* Price shown below product info on mobile */}
+        <p className="font-medium mt-1 sm:hidden">{subtotal}</p>
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* Bottom section on mobile, flex row on desktop */}
+      <div className="flex justify-between items-center w-full sm:w-auto mt-4 sm:mt-0">
+        {/* Quantity Controls - more compact on mobile */}
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => handleQuantityChange((quantity ?? 0) - 1)}
+            className="h-8 w-8"
+          >
+            <Minus className="h-3 w-3" />
+          </Button>
+          <Input
+            type="number"
+            value={quantity ?? 0}
+            onChange={(e) => handleQuantityChange(parseInt(e.target.value))}
+            className="w-12 text-center h-8 px-1"
+          />
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => handleQuantityChange((quantity ?? 0) + 1)}
+            className="h-8 w-8"
+          >
+            <Plus className="h-3 w-3" />
+          </Button>
+        </div>
+
+        {/* Price hidden on mobile (shown above) */}
+        <div className="hidden sm:block text-right min-w-[80px] md:min-w-[100px]">
+          <p className="font-medium">{subtotal}</p>
+        </div>
+
+        {/* Delete button */}
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
-          onClick={() => handleQuantityChange((quantity ?? 0) - 1)}
+          onClick={() => cartMutations.mutate({ mutation: 'remove' })}
+          className="text-red-500 hover:text-red-600 h-8 w-8"
         >
-          <Minus className="h-4 w-4" />
-        </Button>
-        <Input
-          type="number"
-          value={quantity ?? 0}
-          onChange={(e) => handleQuantityChange(parseInt(e.target.value))}
-          className="w-16 text-center"
-        />
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => handleQuantityChange((quantity ?? 0) + 1)}
-        >
-          <Plus className="h-4 w-4" />
+          <Trash2 className="h-4 w-4" />
         </Button>
       </div>
-
-      <div className="text-right min-w-[100px]">
-        <p className="font-medium">{subtotal}</p>
-      </div>
-
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => cartMutations.mutate({ mutation: 'remove' })}
-        className="text-red-500 hover:text-red-600"
-      >
-        <Trash2 className="h-4 w-4" />
-      </Button>
     </div>
   )
 }
@@ -105,11 +118,11 @@ function CartSummary({ cart }: CartSummaryProps) {
 
   const goToCheckoutPage = () => {
     deleteClientSessionId()
-    window.location.href = checkoutUrl
+    window.location.href = 'http://localhost:3000/checkout'
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm space-y-4">
+    <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm space-y-3 md:space-y-4 sticky top-20">
       <h3 className="text-lg font-semibold">Cart Summary</h3>
 
       <div className="space-y-2">
@@ -122,7 +135,7 @@ function CartSummary({ cart }: CartSummaryProps) {
           (coupon) =>
             coupon && (
               <div key={coupon.code} className="flex justify-between text-green-600">
-                <span>Coupon: {coupon.code}</span>
+                <span className="text-sm md:text-base">Coupon: {coupon.code}</span>
                 <span>-{coupon.discountAmount}</span>
               </div>
             )
@@ -135,7 +148,7 @@ function CartSummary({ cart }: CartSummaryProps) {
           </div>
         )}
 
-        <div className="pt-4 border-t">
+        <div className="pt-3 md:pt-4 border-t">
           <div className="flex justify-between font-semibold">
             <span>Total</span>
             <span>{cart.total}</span>
@@ -143,7 +156,8 @@ function CartSummary({ cart }: CartSummaryProps) {
         </div>
       </div>
 
-      <Button className="w-full mt-6" onClick={goToCheckoutPage}>
+      {/* Full-width button with consistent spacing */}
+      <Button className="w-full mt-4 md:mt-6" onClick={goToCheckoutPage}>
         Proceed to Checkout
       </Button>
     </div>

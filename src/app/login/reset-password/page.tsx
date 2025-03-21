@@ -18,6 +18,20 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import MaxWidthWrapper from '@/components/max-width-wrapper'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import MainPolicies from '@/components/main-policies'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Reset Password | Gizmooz',
+  alternates: {
+    canonical: 'https://www.gizmooz.com/reset-password',
+  },
+  openGraph: {
+    title: 'Reset Password',
+    description: 'Reset Password',
+    url: 'https://www.gizmooz.com/reset-password',
+    type: 'website',
+  },
+}
 
 const PasswordResetSchema = z.object({
   username: z.string().email({
