@@ -102,10 +102,10 @@ export default function ReturnPolicy() {
                 <p className="text-gray-700">
                   To start a return, or if you have any questions, you can contact us at{' '}
                   <a
-                    href="mailto:hello@gizmooz.com"
+                    href="mailto:info@gizmooz.com"
                     className="text-blue-600 hover:text-blue-800 transition-colors"
                   >
-                    hello@gizmooz.com
+                    info@gizmooz.com
                   </a>{' '}
                   or by calling{' '}
                   <a
@@ -279,7 +279,7 @@ export default function ReturnPolicy() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="mailto:hello@gizmooz.com"
+                href="mailto:info@gizmooz.com"
                 className="flex items-center justify-center gap-2 px-6 py-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors shadow-sm"
               >
                 <svg
@@ -296,7 +296,7 @@ export default function ReturnPolicy() {
                     d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                   />
                 </svg>
-                <span className="font-medium">hello@gizmooz.com</span>
+                <span className="font-medium">info@gizmooz.com</span>
               </a>
               <a
                 href="tel:1300123456"

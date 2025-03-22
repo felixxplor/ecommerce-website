@@ -247,7 +247,7 @@ export default function FAQ() {
               </a>
             </Button>
             <Button variant="outline" className="border-blue-200 hover:bg-blue-100">
-              <a href="mailto:help@gizmooz.com" className="flex items-center">
+              <a href="mailto:info@gizmooz.com" className="flex items-center">
                 Email Support
               </a>
             </Button>

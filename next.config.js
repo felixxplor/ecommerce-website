@@ -7,7 +7,7 @@ const nextConfig = {
   images: {
     dangerouslyAllowSVG: true,
     formats: ['image/avif', 'image/webp'],
-    domains: ['localhost'],
+    domains: ['gizmooz.com'],
     minimumCacheTTL: 60,
     disableStaticImages: true,
   },

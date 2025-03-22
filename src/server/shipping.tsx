@@ -268,7 +268,7 @@ export default function ShippingPolicy() {
                       1300 123 456
                     </a>
                     <a
-                      href="mailto:support@gizmooz.com"
+                      href="mailto:info@gizmooz.com"
                       className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
                     >
                       <svg
@@ -285,7 +285,7 @@ export default function ShippingPolicy() {
                           d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                         />
                       </svg>
-                      support@gizmooz.com
+                      info@gizmooz.com
                     </a>
                   </div>
                 </div>
@@ -359,7 +359,7 @@ export default function ShippingPolicy() {
               <span className="font-medium">Call us at 1300 123 456</span>
             </a>
             <a
-              href="mailto:support@gizmooz.com"
+              href="mailto:info@gizmooz.com"
               className="flex items-center justify-center gap-3 px-6 py-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors shadow-sm"
             >
               <svg
@@ -376,7 +376,7 @@ export default function ShippingPolicy() {
                   d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                 />
               </svg>
-              <span className="font-medium">Email us at support@gizmooz.com</span>
+              <span className="font-medium">Email us at info@gizmooz.com</span>
             </a>
           </div>
         </div>

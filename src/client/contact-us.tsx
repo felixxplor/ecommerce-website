@@ -139,10 +139,10 @@ export default function ContactUs() {
               <h3 className="font-medium text-lg mb-2">Email</h3>
               <p className="text-gray-600 mb-4">We'll respond as soon as possible</p>
               <a
-                href="mailto:hello@gizmooz.com"
+                href="mailto:info@gizmooz.com"
                 className="text-purple-600 hover:text-purple-800 transition-colors font-medium"
               >
-                hello@gizmooz.com
+                info@gizmooz.com
               </a>
             </CardContent>
           </Card>

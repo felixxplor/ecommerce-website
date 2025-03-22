@@ -243,7 +243,7 @@ export default function PrivacyPolicy() {
                       </svg>
                       <span className="font-medium">By Email</span>
                     </div>
-                    <p className="text-gray-700">privacy@gizmooz.com</p>
+                    <p className="text-gray-700">info@gizmooz.com</p>
                   </div>
 
                   <div className="bg-blue-50 p-4 rounded-lg">

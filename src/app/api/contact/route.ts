@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     // Email options
     const mailOptions = {
       from: `"Gizmooz Contact Form" <${process.env.SMTP_USER || 'noreply@gizmooz.com'}>`,
-      to: process.env.CONTACT_EMAIL || 'hello@gizmooz.com',
+      to: process.env.CONTACT_EMAIL || 'info@gizmooz.com',
       replyTo: email,
       subject: `Contact Form: ${subject}`,
       text: `
