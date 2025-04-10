@@ -111,9 +111,9 @@ function CartItem({ item }: CartItemProps) {
 }
 
 function CartSummary({ cart }: CartSummaryProps) {
-  const goToCartPage = () => {
+  const goToCheckoutPage = () => {
     deleteClientSessionId()
-    window.location.href = 'http://gizmooz.com/cart'
+    window.location.href = 'http://localhost:3000/checkout'
   }
 
   return (
@@ -151,13 +151,18 @@ function CartSummary({ cart }: CartSummaryProps) {
         <p className="text-sm text-gray-500">Shipping and taxes calculated at checkout</p>
         <div className="pt-3">
           <button
-            onClick={goToCartPage}
+            onClick={goToCheckoutPage}
             className="block w-full bg-black text-white py-4 text-center text-sm font-medium hover:bg-gray-900 transition-colors"
           >
-            Go to Cart
+            Go to Checkout
           </button>
-          <DrawerClose className="block w-full text-center mt-3 text-sm text-gray-500 hover:text-gray-800">
-            Continue Shopping
+          <DrawerClose asChild>
+            <Link
+              href="/cart"
+              className="block w-full text-center mt-3 text-sm text-gray-500 hover:text-gray-800"
+            >
+              Go to Cart
+            </Link>
           </DrawerClose>
         </div>
       </div>
@@ -223,8 +228,10 @@ export default function CartDrawer() {
               <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
                 Looks like you haven't added any items to your cart yet.
               </p>
-              <DrawerClose className="text-xs sm:text-sm text-gray-500 hover:text-gray-800">
-                Continue Shopping
+              <DrawerClose asChild>
+                <Link href="/cart" className="text-xs sm:text-sm text-gray-500 hover:text-gray-800">
+                  Go to Cart
+                </Link>
               </DrawerClose>
             </div>
           )}

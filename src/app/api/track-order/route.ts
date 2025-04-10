@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     }
 
     // Call the WordPress REST API endpoint
-    const wpApiUrl = process.env.WORDPRESS_URL || 'http://gizmooz.com'
+    const wpApiUrl = process.env.WORDPRESS_URL || 'http://localhost:8080'
     const endpoint = `${wpApiUrl}/wp-json/wc/v3/track-order?order_id=${encodeURIComponent(
       id
     )}&email=${encodeURIComponent(email)}`

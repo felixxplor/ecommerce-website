@@ -49,7 +49,7 @@ export async function POST(request: Request) {
         },
       ],
       return_url: `${
-        process.env.NEXT_PUBLIC_URL || 'http://gizmooz.com'
+        process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'
       }/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
     })
 

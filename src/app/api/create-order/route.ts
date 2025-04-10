@@ -6,87 +6,140 @@ import Stripe from 'stripe'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
-function splitName(fullName: string) {
-  const nameParts = fullName.trim().split(' ')
-  return {
-    firstName: nameParts.slice(0, -1).join(' ') || '',
-    lastName: nameParts[nameParts.length - 1] || '',
-  }
-}
-
 export async function POST(request: Request) {
   try {
-    // Get both sessionId and wooSession from request body
-    const { sessionId, wooSession } = await request.json()
+    // Get sessionId (payment intent ID), wooSession, and billing/shipping details from request body
+    const {
+      sessionId,
+      wooSession,
+      billingDetails,
+      shippingDetails, // Add this to extract shipping details
+      shipToDifferentAddress, // Add this flag to check if shipping is different
+      paymentMethod: requestPaymentMethod,
+    } = await request.json()
 
     // Validate session ID and wooSession
     if (!sessionId) {
-      return NextResponse.json({ error: 'No Stripe session ID provided' }, { status: 400 })
+      return NextResponse.json({ error: 'No payment intent ID provided' }, { status: 400 })
     }
 
     if (!wooSession) {
       return NextResponse.json({ error: 'WooCommerce session is required' }, { status: 400 })
     }
 
+    if (!billingDetails) {
+      return NextResponse.json({ error: 'Billing details are required' }, { status: 400 })
+    }
+
     // Create GraphQL client with the woocommerce-session header
     const graphQLClient = getClient()
     graphQLClient.setHeader('woocommerce-session', `Session ${wooSession}`)
 
-    // Retrieve Stripe session
-    const session = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ['customer_details', 'line_items'],
+    // Retrieve payment intent
+    const paymentIntent = await stripe.paymentIntents.retrieve(sessionId, {
+      expand: ['payment_method'],
     })
 
-    // Verify payment status
-    if (session.payment_status !== 'paid') {
-      return NextResponse.json({ error: 'Payment not completed' }, { status: 400 })
+    // Get payment method type
+    const paymentMethodType =
+      requestPaymentMethod || paymentIntent.payment_method_types?.[0] || 'card'
+
+    // Check for valid payment statuses
+    const validPaymentStatuses = [
+      'succeeded',
+      'processing',
+      'requires_capture',
+      'requires_confirmation',
+    ]
+
+    if (!validPaymentStatuses.includes(paymentIntent.status)) {
+      return NextResponse.json(
+        {
+          error: `Invalid payment status: ${paymentIntent.status}`,
+          details: 'Payment must be in a valid state (succeeded, processing, or pending capture)',
+        },
+        { status: 400 }
+      )
     }
 
-    const isSameAddress =
-      session.shipping_details?.address?.line1 === session.customer_details?.address?.line1 &&
-      session.shipping_details?.address?.city === session.customer_details?.address?.city &&
-      session.shipping_details?.address?.postal_code ===
-        session.customer_details?.address?.postal_code
+    // Determine if the payment should be considered paid
+    const isPaid =
+      paymentIntent.status === 'succeeded' ||
+      (paymentIntent.status === 'processing' &&
+        ['afterpay_clearpay', 'klarna', 'affirm', 'zip'].includes(paymentMethodType))
 
-    // Name splitting
-    const nameParts = session.customer_details?.name?.trim().split(' ') || []
+    // Extract billing name parts
+    const billingNameParts = billingDetails.name.trim().split(' ')
+    const billingFirstName = billingNameParts.slice(0, -1).join(' ') || ''
+    const billingLastName = billingNameParts[billingNameParts.length - 1] || ''
+
+    // Create checkout input with billing details
     const checkoutInput = {
       clientMutationId: sessionId,
-      paymentMethod: 'stripe',
-      isPaid: true,
+      paymentMethod: 'stripe', // Keep as 'stripe' for WooCommerce (all Stripe methods)
+      isPaid: isPaid,
       metaData: [
-        { key: 'stripe_session_id', value: sessionId },
-        { key: 'payment_status', value: session.payment_status },
+        { key: 'stripe_payment_intent_id', value: sessionId },
+        { key: 'payment_status', value: paymentIntent.status },
+        { key: 'payment_method_type', value: paymentMethodType },
+        {
+          key: 'is_bnpl',
+          value: ['afterpay_clearpay', 'klarna', 'affirm', 'zip'].includes(paymentMethodType)
+            ? 'yes'
+            : 'no',
+        },
       ],
       billing: {
-        firstName: nameParts.slice(0, -1).join(' ') || '',
-        lastName: nameParts[nameParts.length - 1] || '',
-        email: session.customer_details?.email || '',
-        phone: session.customer_details?.phone || '',
-        address1: session.customer_details?.address?.line1 || '',
-        address2: session.customer_details?.address?.line2 || '',
-        city: session.customer_details?.address?.city || '',
-        state: session.customer_details?.address?.state || '',
-        postcode: session.customer_details?.address?.postal_code || '',
-        country: session.customer_details?.address?.country || '',
+        firstName: billingFirstName,
+        lastName: billingLastName,
+        email: billingDetails.email,
+        phone: billingDetails.phone || '',
+        address1: billingDetails.address.line1,
+        address2: billingDetails.address.line2 || '',
+        city: billingDetails.address.city,
+        state: billingDetails.address.state,
+        postcode: billingDetails.address.postal_code,
+        country: billingDetails.address.country,
       },
-      shipping: {
-        firstName: session.shipping_details?.name
-          ? session.shipping_details.name.split(' ').slice(0, -1).join(' ')
-          : nameParts.slice(0, -1).join(' ') || '', // fallback to billing name
-        lastName: session.shipping_details?.name
-          ? session.shipping_details.name.split(' ').slice(-1)[0]
-          : nameParts[nameParts.length - 1] || '', // fallback to billing name
-        address1: session.shipping_details?.address?.line1 || '',
-        address2: session.shipping_details?.address?.line2 || '',
-        city: session.shipping_details?.address?.city || '',
-        state: session.shipping_details?.address?.state || '',
-        postcode: session.shipping_details?.address?.postal_code || '',
-        country: session.shipping_details?.address?.country || '',
-      },
-      // Only set to true if shipping address is actually different
-      shipToDifferentAddress: Boolean(session.shipping_details?.address?.line1 && !isSameAddress),
+      // Use shipping details if shipToDifferentAddress is true, otherwise use billing details
+      shipping: shippingDetails
+        ? {
+            // Extract shipping name parts
+            firstName: (() => {
+              const shippingNameParts = shippingDetails.name.trim().split(' ')
+              return shippingNameParts.slice(0, -1).join(' ') || ''
+            })(),
+            lastName: (() => {
+              const shippingNameParts = shippingDetails.name.trim().split(' ')
+              return shippingNameParts[shippingNameParts.length - 1] || ''
+            })(),
+            address1: shippingDetails.address.line1,
+            address2: shippingDetails.address.line2 || '',
+            city: shippingDetails.address.city,
+            state: shippingDetails.address.state,
+            postcode: shippingDetails.address.postal_code,
+            country: shippingDetails.address.country,
+          }
+        : {
+            // Fall back to billing details if no shipping details provided
+            firstName: billingFirstName,
+            lastName: billingLastName,
+            address1: billingDetails.address.line1,
+            address2: billingDetails.address.line2 || '',
+            city: billingDetails.address.city,
+            state: billingDetails.address.state,
+            postcode: billingDetails.address.postal_code,
+            country: billingDetails.address.country,
+          },
+      shipToDifferentAddress: true,
     }
+
+    console.log('Creating order with:', {
+      paymentStatus: paymentIntent.status,
+      paymentMethodType,
+      isPaid,
+      shipToDifferentAddress: !!shipToDifferentAddress,
+    })
 
     // Attempt to create order
     const response = await graphQLClient.request<CheckoutMutation>(CheckoutDocument, {
@@ -96,6 +149,19 @@ export async function POST(request: Request) {
     // Check if the WooCommerce order was actually created
     if (!response.checkout?.order?.databaseId) {
       throw new Error('WooCommerce order creation failed')
+    }
+
+    // Store the order ID in a way that can be retrieved by the confirmation page
+    try {
+      // Update the payment intent with the order ID
+      await stripe.paymentIntents.update(sessionId, {
+        metadata: {
+          order_id: response.checkout.order.databaseId.toString(),
+        },
+      })
+    } catch (updateError) {
+      // Log but don't throw - this is not critical
+      console.warn('Failed to update payment intent with order ID:', updateError)
     }
 
     try {
@@ -108,9 +174,14 @@ export async function POST(request: Request) {
       })
     } catch (cartError) {
       // Ignore the error if cart is already empty
+      console.log('Cart clearing error (non-critical):', cartError)
     }
 
-    return NextResponse.json(response)
+    return NextResponse.json({
+      checkout: response.checkout,
+      paymentStatus: paymentIntent.status,
+      paymentMethodType,
+    })
   } catch (error) {
     console.error('Order creation error:', error)
     return NextResponse.json(

@@ -34,6 +34,7 @@ export interface SessionContext {
   updateCart: (action: CartAction) => Promise<boolean>
   changePassword: (currentPassword: string, newPassword: string) => Promise<boolean>
   refetch: () => Promise<boolean>
+  refreshCart: () => Promise<boolean>
   findInCart: (
     productId: number,
     variationId?: number,
@@ -68,6 +69,10 @@ const initialContext: SessionContext = {
       resolve(false)
     }),
   changePassword: (currentPassword: string, newPassword: string) =>
+    new Promise((resolve) => {
+      resolve(false)
+    }),
+  refreshCart: () =>
     new Promise((resolve) => {
       resolve(false)
     }),
@@ -282,9 +287,49 @@ export function SessionProvider({ children }: PropsWithChildren) {
       payload: { fetching: true } as SessionContext,
     })
 
+    // Check if we've just returned from a payment redirect
+    const params = new URLSearchParams(window.location.search)
+    const isPaymentReturn = params.has('payment_intent') || params.has('redirect_status')
+
+    if (isPaymentReturn) {
+      // Force refresh the session after payment return
+      return getSessionApiCall(true).then(async (sessionPayload) => {
+        const authUrlPayload = await fetchAuthURLs()
+        return setSession(sessionPayload, authUrlPayload)
+      })
+    }
+
     return getSessionApiCall().then(async (sessionPayload) => {
       const authUrlPayload = await fetchAuthURLs()
       return setSession(sessionPayload, authUrlPayload)
+    })
+  }
+
+  const refreshCart = () => {
+    dispatch({
+      type: 'UPDATE_STATE',
+      payload: { fetching: true } as SessionContext,
+    })
+
+    return getSessionApiCall(true).then(async (sessionPayload) => {
+      // We only need the cart data, no need to fetch auth URLs again
+      if (typeof sessionPayload === 'string') {
+        dispatch({
+          type: 'UPDATE_STATE',
+          payload: { fetching: false } as SessionContext,
+        })
+        return false
+      }
+
+      dispatch({
+        type: 'UPDATE_STATE',
+        payload: {
+          cart: sessionPayload.cart,
+          fetching: false,
+        } as SessionContext,
+      })
+
+      return true
     })
   }
 
@@ -382,6 +427,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
     login,
     register,
     changePassword,
+    refreshCart,
   }
   return <Provider value={store}>{children}</Provider>
 }

@@ -70,8 +70,6 @@ function saveCredentials(authToken: string, sessionToken?: string, refreshToken?
   // Only store auth token in sessionStorage, nothing else
   sessionStorage.setItem(process.env.AUTH_TOKEN_SS_KEY as string, authToken)
 
-  document.cookie = `woo-auth-token=${authToken}; path=/; secure; samesite=strict`
-
   // Store refresh token if provided
   if (refreshToken) {
     localStorage.setItem(process.env.REFRESH_TOKEN_LS_KEY as string, refreshToken)
@@ -80,8 +78,7 @@ function saveCredentials(authToken: string, sessionToken?: string, refreshToken?
   // Store session token if provided
   if (sessionToken) {
     localStorage.setItem(process.env.SESSION_TOKEN_LS_KEY as string, sessionToken)
-    // Set WooCommerce session cookie
-    document.cookie = `woocommerce-session=Session ${sessionToken}; path=/; secure; samesite=strict`
+    // Set WooCommerce session
   }
 }
 
@@ -323,9 +320,24 @@ export type FetchSessionResponse = {
   customer: Customer
   cart: Cart
 }
-export async function getSession(): Promise<FetchSessionResponse | string> {
+export async function getSession(forceRefresh = false): Promise<FetchSessionResponse | string> {
   const authToken = await getAuthToken()
-  const sessionToken = await getSessionToken()
+
+  // If forceRefresh is true, fetch a new session token instead of using the stored one
+  let sessionToken: string | null
+  if (forceRefresh) {
+    sessionToken = await fetchSessionToken()
+  } else {
+    sessionToken = await getSessionToken()
+  }
+
+  // Check for a backup session from payment redirects
+  const backupSession = localStorage.getItem('woo-session-backup')
+  if (backupSession && !sessionToken) {
+    sessionToken = backupSession
+    localStorage.removeItem('woo-session-backup') // Clean up after use
+  }
+
   let json: FetchSessionResponse
   try {
     json = await apiCall<FetchSessionResponse>('/api/session', {
@@ -436,8 +448,4 @@ export function deleteCredentials() {
   localStorage.removeItem(process.env.REFRESH_TOKEN_LS_KEY as string)
   localStorage.removeItem('woo-session')
   sessionStorage.removeItem(process.env.AUTH_TOKEN_EXPIRY_SS_KEY as string)
-
-  // Remove any existing cookies
-  document.cookie = 'woocommerce-session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
-  document.cookie = 'woo-auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
 }

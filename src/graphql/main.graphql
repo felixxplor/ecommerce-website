@@ -561,25 +561,77 @@ mutation ProcessCheckout($input: CheckoutInput!) {
 
 mutation Checkout($input: CheckoutInput!) {
   checkout(input: $input) {
+    clientMutationId
     order {
-      databaseId
-    }
-    redirect
-    result
-    customer {
       id
+      databaseId
+      orderNumber
+      status
+      total
+      currency
+      paymentMethod
+      date
     }
+    result
+    redirect
+  }
+}
+
+mutation UpdateOrderStatus($input: UpdateOrderInput!) {
+  updateOrder(input: $input) {
+    clientMutationId
+    order {
+      id
+      databaseId
+      orderNumber
+      status
+      total
+    }
+  }
+}
+
+query GetCart {
+  cart {
+    contents {
+      nodes {
+        key
+        product {
+          node {
+            id
+            databaseId
+            name
+            sku
+            ... on SimpleProduct {
+              price
+              regularPrice
+              salePrice
+            }
+          }
+        }
+        quantity
+        total
+        subtotal
+      }
+    }
+    total
+    subtotal
+    discountTotal
+    shippingTotal
+    feeTotal
   }
 }
 
 mutation EmptyCart($input: EmptyCartInput!) {
   emptyCart(input: $input) {
+    clientMutationId
     cart {
       contents {
+        itemCount
         nodes {
-          key
+          quantity
         }
       }
+      isEmpty
     }
   }
 }
