@@ -3,30 +3,24 @@
  */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
+  // Remove swcMinify - it's enabled by default in Next.js 15
   images: {
     dangerouslyAllowSVG: true,
     formats: ['image/avif', 'image/webp'],
-    domains: ['gizmooz.com'],
+    // Use remotePatterns instead of domains (deprecated)
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'gizmooz.com',
+        pathname: '/**',
+      },
+    ],
     minimumCacheTTL: 60,
-    disableStaticImages: true,
+    // Remove disableStaticImages - not needed
   },
-  env: {
-    NEXT_PUBLIC_API_ENDPOINT: process.env.NEXT_PUBLIC_API_ENDPOINT,
-    NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
-    BACKEND_URL: process.env.BACKEND_URL,
-    SITE_NAME: process.env.SITE_NAME,
-    SITE_DESCRIPTION: process.env.SITE_DESCRIPTION,
-    SESSION_TOKEN_LS_KEY: process.env.SESSION_TOKEN_LS_KEY,
-    REFRESH_TOKEN_LS_KEY: process.env.REFRESH_TOKEN_LS_KEY,
-    AUTH_TOKEN_SS_KEY: process.env.AUTH_TOKEN_SS_KEY,
-    AUTH_TOKEN_EXP_SS_KEY: process.env.AUTH_TOKEN_EXP_SS_KEY,
-    CLIENT_CREDENTIALS_LS_KEY: process.env.CLIENT_CREDENTIALS_LS_KEY,
-    CLIENT_SESSION_SS_KEY: process.env.CLIENT_SESSION_SS_KEY,
-    CLIENT_SESSION_EXP_SS_KEY: process.env.CLIENT_SESSION_EXP_SS_KEY,
-    NONCE_KEY: process.env.NONCE_KEY,
-    NONCE_SALT: process.env.NONCE_SALT,
-  },
+  // Remove env section - these should be set in Vercel dashboard instead
+  // Environment variables starting with NEXT_PUBLIC_ are automatically available
+  // Server-side env vars should be added to Vercel dashboard
 }
 
 module.exports = nextConfig
