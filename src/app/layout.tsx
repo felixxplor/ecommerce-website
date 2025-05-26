@@ -7,6 +7,7 @@ import Footer from '@/components/footer'
 import { SessionProvider } from '@/client/session-provider'
 import NavbarWrapper from '@/components/navbar-wrapper'
 import Script from 'next/script'
+import { Analytics } from '@vercel/analytics/react'
 
 const quicksand = Quicksand({
   subsets: ['latin'],
@@ -152,6 +153,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Footer />
         </SessionProvider>
         <Toaster />
+        <Analytics />
       </body>
     </html>
   )
