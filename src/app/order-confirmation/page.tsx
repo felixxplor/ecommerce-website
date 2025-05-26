@@ -1,4 +1,4 @@
-import OrderConfirmation from '@/client/order-confirmation'
+// app/order-confirmation/page.tsx
 import MainPolicies from '@/components/main-policies'
 import { Metadata } from 'next'
 
@@ -15,10 +15,14 @@ export const metadata: Metadata = {
   },
 }
 
-export default function OrderConfirmationPage() {
+// Add the searchParams prop to the component
+export default function OrderConfirmationPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
   return (
     <div className="">
-      <OrderConfirmation />
       <MainPolicies className="" />
     </div>
   )

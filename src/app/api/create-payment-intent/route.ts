@@ -8,26 +8,29 @@ if (!process.env.STRIPE_SECRET_KEY) {
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
-// In your /api/create-payment-intent/route.ts
 export async function POST(request: Request) {
   try {
-    const { amount } = await request.json()
+    const { amount, checkoutType, sessionToken } = await request.json()
 
     // Remove currency symbol and commas to get numeric value
     const numericAmount = parseFloat(amount.replace(/[$,]/g, ''))
     const amountInCents = Math.round(numericAmount * 100)
 
-    // Create a PaymentIntent with the order amount and currency
+    // Build metadata
+    const metadata: Record<string, string> = {
+      integration_check: 'stripe_elements',
+      checkoutType: checkoutType || 'unknown',
+    }
+    if (sessionToken) {
+      metadata.woo_session = sessionToken
+    }
+
+    // Create a PaymentIntent that supports card + BNPL methods
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInCents,
       currency: 'aud',
-      automatic_payment_methods: {
-        enabled: true,
-      },
-      // DON'T include return_url here
-      metadata: {
-        integration_check: 'stripe_elements',
-      },
+      payment_method_types: ['card', 'afterpay_clearpay', 'zip'],
+      metadata,
     })
 
     return NextResponse.json({

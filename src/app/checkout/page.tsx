@@ -1,25 +1,26 @@
-import Checkout from '@/client/checkout'
-import MainPolicies from '@/components/main-policies'
-import { Metadata } from 'next'
+// app/checkout/page.tsx
+import { Suspense } from 'react'
+import MaxWidthWrapper from '@/components/max-width-wrapper'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
+import { CheckoutClient } from '@/client/checkout'
 
-export const metadata: Metadata = {
-  title: 'Checkout | Gizmooz',
-  alternates: {
-    canonical: 'https://www.gizmooz.com/checkout',
-  },
-  openGraph: {
-    title: 'Checkout',
-    description: 'Checkout',
-    url: 'https://www.gizmooz.com/checkout',
-    type: 'website',
-  },
-}
-
+// This is a server component
 export default function CheckoutPage() {
   return (
-    <div className="">
-      <Checkout />
-      <MainPolicies className="" />
-    </div>
+    <MaxWidthWrapper className="py-14">
+      <Suspense
+        fallback={
+          <div className="flex flex-col items-center justify-center py-12">
+            <LoadingSpinner className="h-8 w-8" />
+            <p className="mt-4 text-gray-600">Loading checkout...</p>
+          </div>
+        }
+      >
+        <CheckoutClient />
+      </Suspense>
+
+      {/* Add the session debug component */}
+      {process.env.NODE_ENV !== 'production'}
+    </MaxWidthWrapper>
   )
 }

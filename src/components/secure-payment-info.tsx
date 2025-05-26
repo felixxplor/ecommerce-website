@@ -44,6 +44,24 @@ export const SecurePaymentInfo = () => {
               className="object-contain w-auto"
             />
           </div>
+          <div className="flex items-center justify-center h-8 w-14 bg-white rounded border border-gray-200">
+            <Image
+              src="/logo-afterpay.svg"
+              alt="Afterpay"
+              width={40}
+              height={30}
+              className="object-contain w-auto"
+            />
+          </div>
+          <div className="flex items-center justify-center h-8 w-14 bg-white rounded border border-gray-200">
+            <Image
+              src="/logo-zip.svg"
+              alt="Zip"
+              width={40}
+              height={30}
+              className="object-contain w-auto"
+            />
+          </div>
         </div>
       </div>
     </div>

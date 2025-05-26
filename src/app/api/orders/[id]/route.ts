@@ -5,6 +5,7 @@ import { GetOrderByIdDocument, GetOrderByIdQuery } from '@/graphql/generated'
 import { print } from 'graphql'
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
+  const resolvedParams = await params
   try {
     const authToken = request.headers.get('Authorization')?.replace('Bearer ', '')
     if (!authToken) {
@@ -20,7 +21,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     }
 
     // Convert string ID to number for WooCommerce
-    const orderId = parseInt(params.id, 10)
+    const orderId = parseInt(resolvedParams.id, 10)
 
     const data = await client.request<GetOrderByIdQuery>(print(GetOrderByIdDocument), {
       id: orderId,

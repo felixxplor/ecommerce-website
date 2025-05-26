@@ -9,7 +9,7 @@ import {
   getSession as getSessionApiCall,
   FetchSessionResponse as Session,
   FetchAuthURLResponse as AuthUrls,
-  fetchAuthURLs,
+  // fetchAuthURLs,
   login as loginApiCall,
   register as registerApiCall,
   updateCart as updateCartApiCall,
@@ -197,7 +197,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
   const [state, dispatch] = useReducer(reducer, initialContext)
 
   // Process session fetch request response.
-  const setSession = (session: Session | string, authUrls: AuthUrls | string) => {
+  const setSession = (session: Session | string, authUrls?: AuthUrls | string) => {
     if (typeof session === 'string') {
       toast({
         title: 'Fetch Session Error',
@@ -287,21 +287,8 @@ export function SessionProvider({ children }: PropsWithChildren) {
       payload: { fetching: true } as SessionContext,
     })
 
-    // Check if we've just returned from a payment redirect
-    const params = new URLSearchParams(window.location.search)
-    const isPaymentReturn = params.has('payment_intent') || params.has('redirect_status')
-
-    if (isPaymentReturn) {
-      // Force refresh the session after payment return
-      return getSessionApiCall(true).then(async (sessionPayload) => {
-        const authUrlPayload = await fetchAuthURLs()
-        return setSession(sessionPayload, authUrlPayload)
-      })
-    }
-
     return getSessionApiCall().then(async (sessionPayload) => {
-      const authUrlPayload = await fetchAuthURLs()
-      return setSession(sessionPayload, authUrlPayload)
+      return setSession(sessionPayload)
     })
   }
 

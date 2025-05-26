@@ -577,7 +577,7 @@ mutation Checkout($input: CheckoutInput!) {
   }
 }
 
-mutation UpdateOrderStatus($input: UpdateOrderInput!) {
+mutation UpdateOrder($input: UpdateOrderInput!) {
   updateOrder(input: $input) {
     clientMutationId
     order {
@@ -678,6 +678,7 @@ query GetCustomerOrders {
 query GetCustomerDetails {
   customer {
     id
+    databaseId
     firstName
     lastName
     email
@@ -965,5 +966,33 @@ query GetOrderByIdTrack($id: ID!, $idType: OrderIdTypeEnum = DATABASE_ID) {
       key
       value
     }
+  }
+}
+
+mutation UpdateOrderMetadata($input: UpdateOrderInput!) {
+  updateOrder(input: $input) {
+    clientMutationId
+    order {
+      id
+      databaseId
+    }
+  }
+}
+
+mutation FinalizeOrderStatusPayPal($input: UpdateOrderInput!) {
+  updateOrder(input: $input) {
+    clientMutationId
+    order {
+      id
+      databaseId
+      status
+    }
+  }
+}
+
+mutation RefreshJwtAuthToken($input: RefreshJwtAuthTokenInput!) {
+  refreshJwtAuthToken(input: $input) {
+    authToken
+    clientMutationId
   }
 }

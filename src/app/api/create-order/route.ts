@@ -1,97 +1,116 @@
-// app/api/create-order/route.ts
-import { NextResponse } from 'next/server'
+'use server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getClient } from '@/graphql'
 import { CheckoutDocument, CheckoutMutation, EmptyCartDocument } from '@/graphql/generated'
 import Stripe from 'stripe'
+import { cookies } from 'next/headers'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    // Get sessionId (payment intent ID), wooSession, and billing/shipping details from request body
+    // Parse request body
     const {
       sessionId,
-      wooSession,
+      wooSession: bodyWooSession,
       billingDetails,
-      shippingDetails, // Add this to extract shipping details
-      shipToDifferentAddress, // Add this flag to check if shipping is different
+      shippingDetails,
+      shipToDifferentAddress,
+      emptyCartOnSuccess,
+      doNotEmptyCart,
       paymentMethod: requestPaymentMethod,
     } = await request.json()
 
-    // Validate session ID and wooSession
+    // Gather cookies and headers
+    const cookieStore = cookies()
+    let wooSession = (await cookieStore).get('woo-session')?.value
+
+    // Fallback: parse from Cookie header
+    if (!wooSession) {
+      const cookieHeader = request.headers.get('cookie')
+      if (cookieHeader) {
+        const match = cookieHeader.match(/woo-session=([^;]+)/)
+        if (match) wooSession = match[1]
+      }
+    }
+
+    // Fallback: woocommerce-session header
+    if (!wooSession) {
+      const wooHeader = request.headers.get('woocommerce-session')
+      if (wooHeader) wooSession = wooHeader.replace('Session ', '')
+    }
+
+    // Fallback: body
+    if (!wooSession && bodyWooSession) {
+      wooSession = bodyWooSession
+    }
+
+    // Validate
     if (!sessionId) {
       return NextResponse.json({ error: 'No payment intent ID provided' }, { status: 400 })
     }
-
     if (!wooSession) {
       return NextResponse.json({ error: 'WooCommerce session is required' }, { status: 400 })
     }
-
     if (!billingDetails) {
       return NextResponse.json({ error: 'Billing details are required' }, { status: 400 })
     }
 
-    // Create GraphQL client with the woocommerce-session header
+    // Initialize GraphQL client
     const graphQLClient = getClient()
+
+    // Forward WordPress auth if present
+    const authHeader = request.headers.get('authorization')
+    if (authHeader) {
+      graphQLClient.setHeader('Authorization', authHeader)
+    }
+
+    // Set WooCommerce session header
     graphQLClient.setHeader('woocommerce-session', `Session ${wooSession}`)
 
-    // Retrieve payment intent
+    // Retrieve payment intent from Stripe
     const paymentIntent = await stripe.paymentIntents.retrieve(sessionId, {
       expand: ['payment_method'],
     })
 
-    // Get payment method type
     const paymentMethodType =
       requestPaymentMethod || paymentIntent.payment_method_types?.[0] || 'card'
 
-    // Check for valid payment statuses
-    const validPaymentStatuses = [
-      'succeeded',
-      'processing',
-      'requires_capture',
-      'requires_confirmation',
-    ]
-
-    if (!validPaymentStatuses.includes(paymentIntent.status)) {
+    // Ensure valid status
+    const validStatus = ['succeeded', 'processing', 'requires_capture', 'requires_confirmation']
+    if (!validStatus.includes(paymentIntent.status)) {
       return NextResponse.json(
-        {
-          error: `Invalid payment status: ${paymentIntent.status}`,
-          details: 'Payment must be in a valid state (succeeded, processing, or pending capture)',
-        },
+        { error: `Invalid payment status: ${paymentIntent.status}` },
         { status: 400 }
       )
     }
 
-    // Determine if the payment should be considered paid
     const isPaid =
       paymentIntent.status === 'succeeded' ||
       (paymentIntent.status === 'processing' &&
-        ['afterpay_clearpay', 'klarna', 'affirm', 'zip'].includes(paymentMethodType))
+        ['afterpay_clearpay', 'zip'].includes(paymentMethodType))
 
-    // Extract billing name parts
-    const billingNameParts = billingDetails.name.trim().split(' ')
-    const billingFirstName = billingNameParts.slice(0, -1).join(' ') || ''
-    const billingLastName = billingNameParts[billingNameParts.length - 1] || ''
+    // Extract first/last name
+    const [firstName, ...lastParts] = billingDetails.name.trim().split(' ')
+    const lastName = lastParts.join(' ') || ''
 
-    // Create checkout input with billing details
-    const checkoutInput = {
+    // Build checkout input
+    const checkoutInput: any = {
       clientMutationId: sessionId,
-      paymentMethod: 'stripe', // Keep as 'stripe' for WooCommerce (all Stripe methods)
-      isPaid: isPaid,
+      paymentMethod: 'stripe',
+      isPaid,
       metaData: [
         { key: 'stripe_payment_intent_id', value: sessionId },
         { key: 'payment_status', value: paymentIntent.status },
         { key: 'payment_method_type', value: paymentMethodType },
         {
           key: 'is_bnpl',
-          value: ['afterpay_clearpay', 'klarna', 'affirm', 'zip'].includes(paymentMethodType)
-            ? 'yes'
-            : 'no',
+          value: isPaid && ['afterpay_clearpay', 'zip'].includes(paymentMethodType) ? 'yes' : 'no',
         },
       ],
       billing: {
-        firstName: billingFirstName,
-        lastName: billingLastName,
+        firstName,
+        lastName,
         email: billingDetails.email,
         phone: billingDetails.phone || '',
         address1: billingDetails.address.line1,
@@ -101,18 +120,10 @@ export async function POST(request: Request) {
         postcode: billingDetails.address.postal_code,
         country: billingDetails.address.country,
       },
-      // Use shipping details if shipToDifferentAddress is true, otherwise use billing details
       shipping: shippingDetails
         ? {
-            // Extract shipping name parts
-            firstName: (() => {
-              const shippingNameParts = shippingDetails.name.trim().split(' ')
-              return shippingNameParts.slice(0, -1).join(' ') || ''
-            })(),
-            lastName: (() => {
-              const shippingNameParts = shippingDetails.name.trim().split(' ')
-              return shippingNameParts[shippingNameParts.length - 1] || ''
-            })(),
+            firstName,
+            lastName,
             address1: shippingDetails.address.line1,
             address2: shippingDetails.address.line2 || '',
             city: shippingDetails.address.city,
@@ -120,75 +131,38 @@ export async function POST(request: Request) {
             postcode: shippingDetails.address.postal_code,
             country: shippingDetails.address.country,
           }
-        : {
-            // Fall back to billing details if no shipping details provided
-            firstName: billingFirstName,
-            lastName: billingLastName,
-            address1: billingDetails.address.line1,
-            address2: billingDetails.address.line2 || '',
-            city: billingDetails.address.city,
-            state: billingDetails.address.state,
-            postcode: billingDetails.address.postal_code,
-            country: billingDetails.address.country,
-          },
-      shipToDifferentAddress: true,
+        : undefined,
+      shipToDifferentAddress: shipToDifferentAddress === true,
     }
 
-    console.log('Creating order with:', {
-      paymentStatus: paymentIntent.status,
-      paymentMethodType,
-      isPaid,
-      shipToDifferentAddress: !!shipToDifferentAddress,
-    })
-
-    // Attempt to create order
+    // Run the checkout mutation
     const response = await graphQLClient.request<CheckoutMutation>(CheckoutDocument, {
       input: checkoutInput,
     })
 
-    // Check if the WooCommerce order was actually created
     if (!response.checkout?.order?.databaseId) {
       throw new Error('WooCommerce order creation failed')
     }
 
-    // Store the order ID in a way that can be retrieved by the confirmation page
+    // Optionally update Stripe metadata
     try {
-      // Update the payment intent with the order ID
       await stripe.paymentIntents.update(sessionId, {
-        metadata: {
-          order_id: response.checkout.order.databaseId.toString(),
-        },
+        metadata: { order_id: String(response.checkout.order.databaseId) },
       })
-    } catch (updateError) {
-      // Log but don't throw - this is not critical
-      console.warn('Failed to update payment intent with order ID:', updateError)
-    }
+    } catch {}
 
-    try {
-      // Try to clear the cart, but don't throw if it's already empty
+    // Empty cart via GraphQL if needed
+    if (!doNotEmptyCart) {
       await graphQLClient.request(EmptyCartDocument, {
-        input: {
-          clientMutationId: sessionId,
-          clearPersistentCart: true,
-        },
+        input: { clientMutationId: sessionId, clearPersistentCart: true },
       })
-    } catch (cartError) {
-      // Ignore the error if cart is already empty
-      console.log('Cart clearing error (non-critical):', cartError)
     }
 
-    return NextResponse.json({
-      checkout: response.checkout,
-      paymentStatus: paymentIntent.status,
-      paymentMethodType,
-    })
-  } catch (error) {
-    console.error('Order creation error:', error)
+    return NextResponse.json({ checkout: response.checkout })
+  } catch (err: any) {
+    console.error('Order creation failed:', err)
     return NextResponse.json(
-      {
-        error: 'Failed to create order',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
+      { error: 'Failed to create order', details: err.message },
       { status: 500 }
     )
   }
