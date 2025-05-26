@@ -8,13 +8,14 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { Metadata } from 'next'
 
+// Updated interface for Next.js 15 - params is now a Promise
 export interface ProductPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
-// Add this generateMetadata function
+// generateMetadata function is already correct for Next.js 15
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params
 
@@ -135,6 +136,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   }
 }
 
+// Updated main function to await params
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params
   const product = await fetchProductBy(slug, ProductIdTypeEnum.SLUG)
