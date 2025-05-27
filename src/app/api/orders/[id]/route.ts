@@ -4,9 +4,12 @@ import { getClient } from '@/graphql'
 import { GetOrderByIdDocument, GetOrderByIdQuery } from '@/graphql/generated'
 import { print } from 'graphql'
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-  const resolvedParams = await params
+// Updated function signature for Next.js 15 - params is now a Promise
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    // Await params directly in Next.js 15
+    const { id } = await params
+
     const authToken = request.headers.get('Authorization')?.replace('Bearer ', '')
     if (!authToken) {
       return NextResponse.json({ errors: { message: 'Unauthorized' } }, { status: 401 })
@@ -21,7 +24,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     }
 
     // Convert string ID to number for WooCommerce
-    const orderId = parseInt(resolvedParams.id, 10)
+    const orderId = parseInt(id, 10)
 
     const data = await client.request<GetOrderByIdQuery>(print(GetOrderByIdDocument), {
       id: orderId,
