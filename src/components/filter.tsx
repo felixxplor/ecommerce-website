@@ -17,17 +17,17 @@ import { NavLink } from './ui/navlink'
 import InputNumber from './input-number'
 import { cn } from '@/utils/ui'
 import { useShopContext } from '@/client/shop-provider'
-import { PaColorPicker } from '@/client/pa-color-picker'
+// import { PaColorPicker } from '@/client/pa-color-picker'
 import { priceRangeSchema, type PriceRangeSchema } from '@/schemaValidations/minmax.schema'
-import { PaColor, Product, ProductCategory } from '@/graphql'
+import { Product, ProductCategory } from '@/graphql'
 
 interface ShopFiltersProps {
   categories?: ProductCategory[]
-  colors: PaColor[]
+  // colors: PaColor[]
   products: Product[]
 }
 
-export function ShopFilters({ categories, colors }: ShopFiltersProps) {
+export function ShopFilters({ categories }: ShopFiltersProps) {
   const { selectedCategories, buildUrl } = useShopContext()
   const router = useRouter()
 
@@ -127,9 +127,7 @@ export function ShopFilters({ categories, colors }: ShopFiltersProps) {
 
         <AccordionItem value="colors">
           <AccordionTrigger className="py-2 sm:py-3">Colors</AccordionTrigger>
-          <AccordionContent>
-            <PaColorPicker colors={colors} />
-          </AccordionContent>
+          <AccordionContent>{/* <PaColorPicker colors={colors} /> */}</AccordionContent>
         </AccordionItem>
 
         <AccordionItem value="price">

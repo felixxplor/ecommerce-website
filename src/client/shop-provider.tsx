@@ -13,7 +13,7 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import {
   Product,
   ProductCategory,
-  PaColor,
+  // PaColor,
   SimpleProduct,
   VariableProduct,
   ProductTypesEnum,
@@ -96,13 +96,13 @@ function filterProducts(products: Product[], state: ShopContext) {
   }
 
   // Search by color.
-  if (state.selectedColors.length) {
-    filteredProducts = filteredProducts.filter((product) => {
-      return product.allPaColor?.nodes?.some((color: PaColor) => {
-        return state.selectedColors.includes(color.slug as string)
-      })
-    })
-  }
+  // if (state.selectedColors.length) {
+  //   filteredProducts = filteredProducts.filter((product) => {
+  //     return product.allPaColor?.nodes?.some((color: PaColor) => {
+  //       return state.selectedColors.includes(color.slug as string)
+  //     })
+  //   })
+  // }
 
   // Search by name, description, and short description.
   if (state.search) {

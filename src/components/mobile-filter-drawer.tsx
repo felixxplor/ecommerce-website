@@ -4,15 +4,15 @@ import { useState, useEffect } from 'react'
 import { X, SlidersHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ShopFilters } from './filter'
-import { PaColor, Product, ProductCategory } from '@/graphql'
+import { Product, ProductCategory } from '@/graphql'
 
 interface MobileFilterDrawerProps {
   categories?: ProductCategory[]
-  colors: PaColor[]
+  // colors: PaColor[]
   products: Product[]
 }
 
-export function MobileFilterDrawer({ categories, products, colors }: MobileFilterDrawerProps) {
+export function MobileFilterDrawer({ categories, products }: MobileFilterDrawerProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   // Prevent scrolling when drawer is open
@@ -91,7 +91,7 @@ export function MobileFilterDrawer({ categories, products, colors }: MobileFilte
 
           {/* Filters content */}
           <div className="p-4">
-            <ShopFilters categories={categories} products={products} colors={colors} />
+            <ShopFilters categories={categories} products={products} />
           </div>
 
           {/* Footer with apply/close buttons */}
