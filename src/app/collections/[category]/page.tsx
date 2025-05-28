@@ -1,5 +1,5 @@
 import { ShopProvider } from '@/client/shop-provider'
-import { fetchProducts, fetchColors } from '@/graphql'
+import { fetchProducts } from '@/graphql'
 import { Shop } from '../../../server/product-list'
 import MaxWidthWrapper from '@/components/max-width-wrapper'
 import { Button } from '@/components/ui/button'

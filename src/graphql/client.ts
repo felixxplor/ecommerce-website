@@ -93,33 +93,33 @@ export async function fetchCategories(
   }
 }
 
-// export async function fetchColors(
-//   pageSize: number,
-//   pageLimit = 0,
-//   where?: RootQueryToPaColorConnectionWhereArgs
-// ) {
-//   try {
-//     const client = getClientWithSdk()
-//     let data = { allPaColor: initialConnectionResults }
-//     let after = ''
-//     let count = 0
-//     while (data.allPaColor.pageInfo.hasNextPage && (pageLimit === 0 || count < pageLimit)) {
-//       const next = await client.GetShopColors({
-//         first: pageSize,
-//         after,
-//         where,
-//       })
+export async function fetchColors(
+  pageSize: number,
+  pageLimit = 0,
+  where?: RootQueryToPaColorConnectionWhereArgs
+) {
+  try {
+    const client = getClientWithSdk()
+    let data = { allPaColor: initialConnectionResults }
+    let after = ''
+    let count = 0
+    while (data.allPaColor.pageInfo.hasNextPage && (pageLimit === 0 || count < pageLimit)) {
+      const next = await client.GetShopColors({
+        first: pageSize,
+        after,
+        where,
+      })
 
-//       data = deepmerge(data, next)
-//       after = next.allPaColor?.pageInfo.endCursor || ''
-//       count++
-//     }
+      data = deepmerge(data, next)
+      after = next.allPaColor?.pageInfo.endCursor || ''
+      count++
+    }
 
-//     return data.allPaColor.nodes as PaColor[]
-//   } catch (err) {
-//     console.error(err || 'Failed to fetch product color attributes!!!')
-//   }
-// }
+    return data.allPaColor.nodes as PaColor[]
+  } catch (err) {
+    console.error(err || 'Failed to fetch product color attributes!!!')
+  }
+}
 
 export async function fetchProductBy(slug: string, idType: ProductIdTypeEnum) {
   try {
