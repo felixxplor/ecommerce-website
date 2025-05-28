@@ -9,17 +9,16 @@ import PaymentProcessingClient from './client'
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
-// Updated interface for Next.js 15 - searchParams is now a Promise
-interface PaymentProcessingPageProps {
-  params: Promise<{}>
-  searchParams: Promise<{
+interface PageProps {
+  params: {}
+  searchParams?: {
     [key: string]: string | string[] | undefined
-  }>
+  }
 }
 
-export default async function PaymentProcessingPage(props: PaymentProcessingPageProps) {
-  // Await searchParams in Next.js 15
-  const searchParams = await props.searchParams
+export default async function PaymentProcessingPage(props: PageProps) {
+  // Access searchParams safely
+  const searchParams = (await props.searchParams) || {}
 
   // Get payment intent (handling array case)
   const paymentIntentParam = searchParams.payment_intent
