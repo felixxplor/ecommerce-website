@@ -103,13 +103,6 @@ fragment ProductContentSmall on Product {
       name
     }
   }
-  allPaColor(first: 100) {
-    nodes {
-      id
-      slug
-      name
-    }
-  }
   ... on SimpleProduct {
     onSale
     stockStatus
@@ -157,32 +150,37 @@ fragment ProductContentFull on Product {
       name
     }
   }
-  attributes {
-    nodes {
-      id
-      attributeId
-      ... on LocalProductAttribute {
-        name
-        label
-        options
-        variation
-      }
-      ... on GlobalProductAttribute {
-        name
-        label
-        options
-        variation
-        slug
-        terms(first: 100) {
-          nodes {
-            id
-            name
-            slug
+
+  # Only ask for attributes when the product implements ProductWithAttributes
+  ... on ProductWithAttributes {
+    attributes {
+      nodes {
+        id
+        attributeId
+        ... on LocalProductAttribute {
+          name
+          label
+          options
+          variation
+        }
+        ... on GlobalProductAttribute {
+          name
+          label
+          options
+          variation
+          slug
+          terms(first: 100) {
+            nodes {
+              id
+              name
+              slug
+            }
           }
         }
       }
     }
   }
+
   ... on SimpleProduct {
     onSale
     stockStatus
@@ -203,6 +201,7 @@ fragment ProductContentFull on Product {
       }
     }
   }
+
   ... on VariableProduct {
     onSale
     price
@@ -349,7 +348,7 @@ query GetTopNav {
   }
 }
 
-query GetProducts($first: Int, $after: String, $where: RootQueryToProductConnectionWhereArgs) {
+query GetProducts($first: Int, $after: String, $where: RootQueryToProductUnionConnectionWhereArgs) {
   products(first: $first, after: $after, where: $where) {
     pageInfo {
       endCursor
@@ -414,27 +413,6 @@ query GetShopCategories(
 
 query GetShopTags($first: Int, $after: String, $where: RootQueryToProductTagConnectionWhereArgs) {
   productTags(first: $first, after: $after, where: $where) {
-    pageInfo {
-      hasNextPage
-      endCursor
-    }
-    edges {
-      node {
-        id
-        name
-        slug
-      }
-    }
-    nodes {
-      id
-      name
-      slug
-    }
-  }
-}
-
-query GetShopColors($first: Int, $after: String, $where: RootQueryToPaColorConnectionWhereArgs) {
-  allPaColor(first: $first, after: $after, where: $where) {
     pageInfo {
       hasNextPage
       endCursor
