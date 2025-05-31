@@ -28,7 +28,7 @@ export default async function ShopPage() {
   return (
     <>
       <ShopProvider allProducts={products}>
-        <Shop products={products} categories={categories} />
+        <Shop products={products} categories={categories} colors={colors} />
       </ShopProvider>
       <MainPolicies />
     </>

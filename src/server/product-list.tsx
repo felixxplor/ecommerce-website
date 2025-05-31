@@ -1,7 +1,7 @@
-import { Product, ProductCategory } from '@/graphql'
+import { Product, ProductCategory, PaColor } from '@/graphql'
 import { ShopSidebar } from './sidebar'
 import { ProductGrid } from '@/client/product-grid'
-// import { PaColorPicker } from '@/client/pa-color-picker'
+import { PaColorPicker } from '@/client/pa-color-picker'
 import { ShopCategories } from '@/client/categories'
 import MaxWidthWrapper from '@/components/max-width-wrapper'
 import { ShopFilters } from '@/components/filter'
@@ -12,12 +12,12 @@ import { MobileFilterDrawer } from '@/components/mobile-filter-drawer'
 export interface ShopProps {
   products: Product[]
   categories?: ProductCategory[]
-  // colors: PaColor[]
+  colors: PaColor[]
   categoryName?: string
 }
 
 export function Shop(props: ShopProps) {
-  const { products, categories, categoryName } = props
+  const { products, categories, colors, categoryName } = props
 
   // Display heading based on whether we're on a category page or the main shop page
   const heading = categoryName || 'All products'
@@ -56,11 +56,11 @@ export function Shop(props: ShopProps) {
         <div className="flex flex-col lg:flex-row gap-6 py-0 sm:py-6 md:py-8 w-full">
           {/* Filters - Hidden on mobile, shown in sidebar on larger screens */}
           <div className="hidden lg:block">
-            <ShopFilters categories={categories} products={products} />
+            <ShopFilters categories={categories} products={products} colors={colors} />
           </div>
 
           {/* Mobile Filter Drawer - Only visible on small screens */}
-          <MobileFilterDrawer categories={categories} products={products} />
+          <MobileFilterDrawer categories={categories} products={products} colors={colors} />
 
           {/* Product grid area - Takes full width on mobile */}
           <div className="flex-1">
