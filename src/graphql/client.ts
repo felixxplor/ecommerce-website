@@ -2,11 +2,13 @@ import { GraphQLClient } from 'graphql-request'
 import deepmerge from 'deepmerge'
 
 import {
-  RootQueryToProductUnionConnectionWhereArgs,
+  RootQueryToProductConnectionWhereArgs,
   Product,
   ProductCategory,
+  PaColor,
   getSdk,
   RootQueryToProductCategoryConnectionWhereArgs,
+  RootQueryToPaColorConnectionWhereArgs,
   ProductIdTypeEnum,
 } from './generated'
 
@@ -40,7 +42,7 @@ const initialConnectionResults = {
 export async function fetchProducts(
   pageSize: number,
   pageLimit = 0,
-  where?: RootQueryToProductUnionConnectionWhereArgs
+  where?: RootQueryToProductConnectionWhereArgs
 ) {
   try {
     const client = getClientWithSdk()
