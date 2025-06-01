@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
@@ -60,7 +60,8 @@ const montserrat = Montserrat({
   display: 'swap',
 })
 
-export function ProductGrid({ products }: ProductGridProps) {
+// Create a separate component for the grid content that uses useSearchParams
+function ProductGridContent({ products }: ProductGridProps) {
   const { push } = useRouter()
   const isMobile = useIsMobile()
   const maxPages = isMobile ? 5 : 10
@@ -213,5 +214,39 @@ export function ProductGrid({ products }: ProductGridProps) {
         <Pagination pageCount={pageCount} />
       </div>
     </>
+  )
+}
+
+// Fallback component for Suspense
+function ProductGridSkeleton() {
+  return (
+    <div className="animate-pulse">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 w-full">
+        <div className="h-4 bg-gray-200 rounded w-48 mb-2 sm:mb-0"></div>
+        <div className="h-10 bg-gray-200 rounded w-full sm:w-48"></div>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
+            <div className="aspect-square bg-gray-200"></div>
+            <div className="p-3">
+              <div className="h-4 bg-gray-200 rounded mb-2"></div>
+              <div className="h-6 bg-gray-200 rounded w-20"></div>
+              <div className="h-4 bg-gray-200 rounded w-24 mt-1"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Main ProductGrid component with Suspense boundary
+export function ProductGrid({ products }: ProductGridProps) {
+  return (
+    <Suspense fallback={<ProductGridSkeleton />}>
+      <ProductGridContent products={products} />
+    </Suspense>
   )
 }
