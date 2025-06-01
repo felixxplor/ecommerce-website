@@ -1,7 +1,7 @@
 // app/client/order-confirmation-client.tsx
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, Suspense } from 'react'
 import { useSearchParams, useParams } from 'next/navigation'
 import { CheckCircle } from 'lucide-react'
 import Link from 'next/link'
@@ -9,7 +9,27 @@ import { Button } from '@/components/ui/button'
 import MaxWidthWrapper from '@/components/max-width-wrapper'
 import { useSession } from './session-provider'
 
-export function OrderConfirmationClient() {
+// Skeleton component for loading state
+function OrderConfirmationSkeleton() {
+  return (
+    <MaxWidthWrapper className="py-14">
+      <div className="text-center max-w-md mx-auto animate-pulse">
+        <div className="bg-gray-200 p-6 rounded-full inline-flex mb-6 w-32 h-32"></div>
+        <div className="h-9 bg-gray-200 rounded w-48 mx-auto mb-4"></div>
+        <div className="h-6 bg-gray-200 rounded w-64 mx-auto mb-2"></div>
+        <div className="h-5 bg-gray-200 rounded w-48 mx-auto mb-6"></div>
+        <div className="h-5 bg-gray-200 rounded w-80 mx-auto mb-8"></div>
+        <div className="flex justify-center gap-4">
+          <div className="h-10 bg-gray-200 rounded w-32"></div>
+          <div className="h-10 bg-gray-200 rounded w-36"></div>
+        </div>
+      </div>
+    </MaxWidthWrapper>
+  )
+}
+
+// Main content component that uses useSearchParams
+function OrderConfirmationContent() {
   const { isAuthenticated } = useSession()
   const searchParams = useSearchParams()
   const params = useParams()
@@ -66,5 +86,14 @@ export function OrderConfirmationClient() {
         </div>
       </div>
     </MaxWidthWrapper>
+  )
+}
+
+// Main OrderConfirmationClient component with Suspense boundary
+export function OrderConfirmationClient() {
+  return (
+    <Suspense fallback={<OrderConfirmationSkeleton />}>
+      <OrderConfirmationContent />
+    </Suspense>
   )
 }

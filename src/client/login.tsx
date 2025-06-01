@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import * as z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -31,8 +31,34 @@ export const LoginSchema = z.object({
   }),
 })
 
-// Add this to your Login page component
-export function Login() {
+// Skeleton component for loading state
+function LoginSkeleton() {
+  return (
+    <MaxWidthWrapper className="py-14">
+      <div className="animate-pulse">
+        <div className="h-10 bg-gray-200 rounded w-32 mx-auto mb-8"></div>
+        <div className="space-y-8 max-w-screen-lg mx-auto px-4">
+          <div className="space-y-2">
+            <div className="h-4 bg-gray-200 rounded w-16"></div>
+            <div className="h-12 bg-gray-200 rounded"></div>
+          </div>
+          <div className="space-y-2">
+            <div className="h-4 bg-gray-200 rounded w-20"></div>
+            <div className="h-12 bg-gray-200 rounded"></div>
+            <div className="h-4 bg-gray-200 rounded w-32 mt-2"></div>
+          </div>
+          <div className="flex flex-col items-center mt-8">
+            <div className="h-12 bg-gray-200 rounded w-full md:w-1/5"></div>
+            <div className="h-4 bg-gray-200 rounded w-32 mt-4"></div>
+          </div>
+        </div>
+      </div>
+    </MaxWidthWrapper>
+  )
+}
+
+// Main login content component that uses useSearchParams
+function LoginContent() {
   const { login, isAuthenticated, fetching } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -193,5 +219,14 @@ export function Login() {
         </form>
       </Form>
     </MaxWidthWrapper>
+  )
+}
+
+// Main Login component with Suspense boundary
+export function Login() {
+  return (
+    <Suspense fallback={<LoginSkeleton />}>
+      <LoginContent />
+    </Suspense>
   )
 }

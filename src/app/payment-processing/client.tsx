@@ -1,12 +1,27 @@
 // app/payment-processing/client.tsx
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { useSession } from '@/client/session-provider'
 
-export default function PaymentProcessingClient() {
+// Skeleton component for loading state
+function PaymentProcessingSkeleton() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="animate-pulse space-y-4 text-center">
+        <div className="h-12 w-12 bg-gray-200 rounded-full mx-auto"></div>
+        <div className="h-8 bg-gray-200 rounded w-64 mx-auto"></div>
+        <div className="h-4 bg-gray-200 rounded w-48 mx-auto"></div>
+        <div className="h-4 bg-gray-200 rounded w-56 mx-auto"></div>
+      </div>
+    </div>
+  )
+}
+
+// Main content component that uses useSearchParams
+function PaymentProcessingContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isProcessing, setIsProcessing] = useState(true)
@@ -298,4 +313,13 @@ export default function PaymentProcessingClient() {
   }
 
   return null
+}
+
+// Main PaymentProcessingClient component with Suspense boundary
+export default function PaymentProcessingClient() {
+  return (
+    <Suspense fallback={<PaymentProcessingSkeleton />}>
+      <PaymentProcessingContent />
+    </Suspense>
+  )
 }

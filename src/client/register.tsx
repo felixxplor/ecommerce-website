@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import * as z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -37,7 +37,37 @@ export const RegisterSchema = z
     path: ['confirmPassword'],
   })
 
-export function Register() {
+// Skeleton component for loading state
+function RegisterSkeleton() {
+  return (
+    <MaxWidthWrapper className="py-14">
+      <div className="animate-pulse">
+        <div className="h-10 bg-gray-200 rounded w-40 mx-auto mb-8"></div>
+        <div className="space-y-8 max-w-screen-lg mx-auto px-4">
+          <div className="space-y-2">
+            <div className="h-4 bg-gray-200 rounded w-16"></div>
+            <div className="h-12 bg-gray-200 rounded"></div>
+          </div>
+          <div className="space-y-2">
+            <div className="h-4 bg-gray-200 rounded w-20"></div>
+            <div className="h-12 bg-gray-200 rounded"></div>
+          </div>
+          <div className="space-y-2">
+            <div className="h-4 bg-gray-200 rounded w-32"></div>
+            <div className="h-12 bg-gray-200 rounded"></div>
+          </div>
+          <div className="flex flex-col items-center mt-8">
+            <div className="h-12 bg-gray-200 rounded w-full md:w-1/5"></div>
+            <div className="h-4 bg-gray-200 rounded w-48 mt-4"></div>
+          </div>
+        </div>
+      </div>
+    </MaxWidthWrapper>
+  )
+}
+
+// Main register content component that uses useSearchParams
+function RegisterContent() {
   const { register, isAuthenticated, fetching } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -148,5 +178,14 @@ export function Register() {
         </form>
       </Form>
     </MaxWidthWrapper>
+  )
+}
+
+// Main Register component with Suspense boundary
+export function Register() {
+  return (
+    <Suspense fallback={<RegisterSkeleton />}>
+      <RegisterContent />
+    </Suspense>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useSession } from '@/client/session-provider'
@@ -62,7 +62,74 @@ interface Order {
   } | null
 }
 
-export default function AccountPage() {
+// Skeleton component for loading state
+function AccountPageSkeleton() {
+  return (
+    <MaxWidthWrapper className="py-8 md:py-14 px-4 md:px-0">
+      <div className="min-h-[600px] animate-pulse">
+        {/* Account Details Section Skeleton */}
+        <div className="mb-8 md:mb-12">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div className="h-8 bg-gray-200 rounded w-48"></div>
+            <div className="flex gap-3">
+              <div className="h-10 bg-gray-200 rounded w-24"></div>
+              <div className="h-10 bg-gray-200 rounded w-20"></div>
+            </div>
+          </div>
+
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <div className="h-5 bg-gray-200 rounded w-32 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-40"></div>
+                <div className="h-4 bg-gray-200 rounded w-48"></div>
+              </div>
+              <div className="space-y-2">
+                <div className="h-5 bg-gray-200 rounded w-40 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-36"></div>
+                <div className="h-4 bg-gray-200 rounded w-32"></div>
+                <div className="h-4 bg-gray-200 rounded w-44"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Orders Section Skeleton */}
+        <div>
+          <div className="h-7 bg-gray-200 rounded w-32 mb-4 md:mb-6"></div>
+          <div className="space-y-6">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="bg-white border rounded-lg p-4 md:p-6 shadow-sm">
+                <div className="flex flex-col sm:flex-row justify-between items-start mb-4 gap-4">
+                  <div className="space-y-4 w-full sm:w-auto">
+                    <div className="flex flex-wrap items-center gap-2 md:gap-4">
+                      <div className="h-5 bg-gray-200 rounded w-24"></div>
+                      <div className="h-8 bg-gray-200 rounded w-20"></div>
+                      <div className="h-8 bg-gray-200 rounded w-24"></div>
+                    </div>
+                    <div className="h-4 bg-gray-200 rounded w-32"></div>
+                  </div>
+                  <div className="flex justify-between items-center gap-2 w-full sm:w-auto">
+                    <div className="h-6 bg-gray-200 rounded w-20"></div>
+                    <div className="h-5 bg-gray-200 rounded w-16"></div>
+                  </div>
+                </div>
+                <div className="border-t pt-4 space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-20"></div>
+                  <div className="h-4 bg-gray-200 rounded"></div>
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </MaxWidthWrapper>
+  )
+}
+
+// Main content component that uses useSearchParams
+function AccountPageContent() {
   const router = useRouter()
   const [customer, setCustomer] = useState<CustomerDetails | null>(null)
   const [orders, setOrders] = useState<Order[]>([])
@@ -314,5 +381,14 @@ export default function AccountPage() {
         </div>
       </div>
     </MaxWidthWrapper>
+  )
+}
+
+// Main AccountPage component with Suspense boundary
+export default function AccountPage() {
+  return (
+    <Suspense fallback={<AccountPageSkeleton />}>
+      <AccountPageContent />
+    </Suspense>
   )
 }

@@ -7,6 +7,7 @@ import {
   createContext,
   PropsWithChildren,
   useCallback,
+  Suspense,
 } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
@@ -181,7 +182,13 @@ export interface ShopProviderProps {
   allProducts: Product[]
 }
 
-export function ShopProvider({ allProducts, children }: PropsWithChildren<ShopProviderProps>) {
+// Skeleton provider for loading state
+function ShopProviderSkeleton({ children }: PropsWithChildren<{}>) {
+  return <Provider value={initialState}>{children}</Provider>
+}
+
+// Main shop provider content that uses useSearchParams
+function ShopProviderContent({ allProducts, children }: PropsWithChildren<ShopProviderProps>) {
   const [state, dispatch] = useReducer(reducer, initialState)
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -283,4 +290,13 @@ export function ShopProvider({ allProducts, children }: PropsWithChildren<ShopPr
   }
 
   return <Provider value={store}>{children}</Provider>
+}
+
+// Main ShopProvider component with Suspense boundary
+export function ShopProvider({ allProducts, children }: PropsWithChildren<ShopProviderProps>) {
+  return (
+    <Suspense fallback={<ShopProviderSkeleton>{children}</ShopProviderSkeleton>}>
+      <ShopProviderContent allProducts={allProducts}>{children}</ShopProviderContent>
+    </Suspense>
+  )
 }
