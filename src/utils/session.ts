@@ -77,13 +77,13 @@ function saveCredentials(authToken: string, sessionToken?: string, refreshToken?
 
   // Store session token if provided
   if (sessionToken) {
-    localStorage.setItem(process.env.SESSION_TOKEN_LS_KEY as string, sessionToken)
+    localStorage.setItem('woo-session-token' as string, sessionToken)
     // Set WooCommerce session
   }
 }
 
 function saveSessionToken(sessionToken: string) {
-  localStorage.setItem(process.env.SESSION_TOKEN_LS_KEY as string, sessionToken)
+  localStorage.setItem('woo-session-token' as string, sessionToken)
 }
 
 export function hasCredentials() {
@@ -443,7 +443,7 @@ export function deleteCredentials() {
   }
 
   // Clear tokens
-  localStorage.removeItem(process.env.SESSION_TOKEN_LS_KEY as string)
+  localStorage.removeItem('woo-session-token' as string)
   sessionStorage.removeItem(process.env.AUTH_TOKEN_SS_KEY as string)
   localStorage.removeItem(process.env.REFRESH_TOKEN_LS_KEY as string)
   localStorage.removeItem('woo-session')
