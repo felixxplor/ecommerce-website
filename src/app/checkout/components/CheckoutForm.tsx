@@ -98,7 +98,9 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
   // Get session tokens
   const authToken = typeof window !== 'undefined' ? sessionStorage.getItem('woo-auth-token') : null
   const wooSessionToken =
-    typeof window !== 'undefined' ? localStorage.getItem('woo-session-token') : null
+    typeof window !== 'undefined'
+      ? localStorage.getItem(process.env.SESSION_TOKEN_LS_KEY as string)
+      : null
 
   // Build base headers including auth token and woo session
   const baseHeaders: Record<string, string> = {
