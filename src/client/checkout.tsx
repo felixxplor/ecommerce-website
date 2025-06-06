@@ -55,7 +55,7 @@ export function CheckoutClient() {
       }
 
       // Get the WooCommerce session
-      const wooSession = localStorage.getItem(process.env.SESSION_TOKEN_LS_KEY as string) || ''
+      const wooSession = localStorage.getItem('woo-session-token') || ''
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }

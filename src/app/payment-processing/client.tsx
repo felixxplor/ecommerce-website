@@ -82,7 +82,7 @@ function PaymentProcessingContent() {
 
         // CRITICAL: Load stored tokens for user authentication
         const authToken = sessionStorage.getItem('woo-auth-token')
-        const wooSession = localStorage.getItem(process.env.SESSION_TOKEN_LS_KEY as string)
+        const wooSession = localStorage.getItem('woo-session-token')
 
         console.log('Client processing payment:', {
           paymentMethod,

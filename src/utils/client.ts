@@ -47,7 +47,7 @@ async function createClientSessionId() {
 }
 
 function hasSessionToken() {
-  const sessionToken = localStorage.getItem(process.env.SESSION_TOKEN_LS_KEY as string)
+  const sessionToken = localStorage.getItem('woo-session-token')
 
   return !!sessionToken
 }

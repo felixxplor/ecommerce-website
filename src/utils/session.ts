@@ -90,7 +90,7 @@ export function hasCredentials() {
   if (isSSR()) {
     return false
   }
-  const sessionToken = localStorage.getItem(process.env.SESSION_TOKEN_LS_KEY as string)
+  const sessionToken = localStorage.getItem('woo-session-token')
   const authToken = sessionStorage.getItem(process.env.AUTH_TOKEN_SS_KEY as string)
   const refreshToken = localStorage.getItem(process.env.REFRESH_TOKEN_LS_KEY as string)
 
@@ -297,7 +297,7 @@ async function fetchSessionToken() {
 }
 
 async function getSessionToken() {
-  let sessionToken = localStorage.getItem(process.env.SESSION_TOKEN_LS_KEY as string)
+  let sessionToken = localStorage.getItem('woo-session-token')
   if (!sessionToken) {
     sessionToken = await fetchSessionToken()
   }
