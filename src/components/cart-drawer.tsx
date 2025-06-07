@@ -47,6 +47,7 @@ function CartItem({ item }: CartItemProps) {
   const productId = productNode?.databaseId ?? 0
   const image = productNode?.image
   const name = productNode?.name ?? ''
+  const slug = productNode?.slug ?? ''
   const variationId = variationNode?.databaseId
 
   const cartMutations = useCartMutations(productId, variationId)
@@ -59,19 +60,25 @@ function CartItem({ item }: CartItemProps) {
   return (
     <div className="py-6 flex gap-4">
       <div className="w-24 h-24 rounded-md border bg-gray-50 flex items-center justify-center">
-        <Image
-          src={image?.sourceUrl || '/product-placeholder.png'}
-          alt={image?.altText ?? name ?? ''}
-          width={80}
-          height={80}
-          className="object-cover"
-        />
+        <Link href={`/collections/${slug}`}>
+          {' '}
+          <Image
+            src={image?.sourceUrl || '/product-placeholder.png'}
+            alt={image?.altText ?? name ?? ''}
+            width={80}
+            height={80}
+            className="object-cover"
+          />
+        </Link>
       </div>
 
       <div className="flex-1 flex flex-col">
         <div className="flex justify-between">
           <div>
-            <h3 className="text-sm font-medium">{name}</h3>
+            <Link href={`/collections/${slug}`}>
+              <h3 className="text-sm font-medium">{name}</h3>
+            </Link>
+
             {variation?.attributes?.map(
               (attr) =>
                 attr && (

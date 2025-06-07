@@ -207,7 +207,7 @@ function ProductGridContent({ products }: ProductGridProps) {
                     </div>
 
                     {/* Free delivery text */}
-                    <p className="text-sm font-medium text-gray-800 uppercase">FREE DELIVERY</p>
+                    <p className="text-sm font-semibold text-gray-800 uppercase">FREE DELIVERY</p>
                   </div>
                 </div>
               </div>

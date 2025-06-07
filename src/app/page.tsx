@@ -224,7 +224,7 @@ export default function ResponsiveHomePage() {
                             buttonVariants({
                               size: 'sm', // Default size for mobile
                               className:
-                                'mx-auto !w-auto !min-w-0 bg-transparent !border-0 !rounded-full !mt-auto !font-bold hover:!bg-white hover:!text-black !transition-colors !duration-300 !whitespace-nowrap',
+                                'mx-auto !w-auto !min-w-0 bg-transparent !border-0 sm:!border sm:!border-white !rounded-full !mt-auto !font-bold hover:!bg-white hover:!text-black !transition-colors !duration-300 !whitespace-nowrap',
                             }),
                             '!text-xs !px-2 !py-0.5', // Mobile (default)
                             'sm:!text-sm sm:!px-3 sm:!py-1.5', // Small screens

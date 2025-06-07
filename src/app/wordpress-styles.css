@@ -633,7 +633,7 @@ div.aligncenter {
   }
 }
 
-/* Remove WordPress spell-check styling from frontend */
+/* Remove WordPress spell-check styling from frontend - COMPLETE VERSION */
 .wp-content *,
 .product-description *,
 [data-rich-text-format-boundary] {
@@ -642,6 +642,8 @@ div.aligncenter {
   border-bottom: none !important;
   color: inherit !important;
   background-color: transparent !important;
+  /* Remove bold styling from spell-check */
+  font-weight: inherit !important;
 }
 
 /* Specifically target potential spell-check classes */
@@ -649,18 +651,63 @@ div.aligncenter {
 .grammar-error,
 [style*='text-decoration: underline'],
 [style*='color: red'],
-[style*='border-bottom'] {
+[style*='border-bottom'],
+[style*='font-weight: bold'],
+[style*='font-weight: 700'],
+[style*='font-weight:bold'],
+[style*='font-weight:700'] {
   text-decoration: none !important;
   color: inherit !important;
   border-bottom: none !important;
+  font-weight: inherit !important;
 }
 
 /* Remove any inline styles that might be spell-check related */
 span[style*='text-decoration'],
 span[style*='color: red'],
-span[style*='border-bottom'] {
+span[style*='border-bottom'],
+span[style*='font-weight'],
+span[style*='font-style'] {
   text-decoration: none !important;
   color: inherit !important;
   border-bottom: none !important;
   background: none !important;
+  font-weight: inherit !important;
+  font-style: inherit !important;
+}
+
+/* Target specific WordPress spell-check elements */
+.rich-text span,
+.block-editor-rich-text__editable span,
+.wp-block-paragraph span {
+  text-decoration: none !important;
+  color: inherit !important;
+  border-bottom: none !important;
+  font-weight: inherit !important;
+  background: none !important;
+}
+
+/* Remove any WordPress generated spell-check attributes */
+[data-rich-text-format-boundary='true'],
+[data-rich-text-format-boundary='false'] {
+  text-decoration: none !important;
+  color: inherit !important;
+  border-bottom: none !important;
+  font-weight: inherit !important;
+  background: none !important;
+}
+
+/* Ensure normal font weight for measurements and technical terms */
+.wp-content span:not(.measurement-highlight):not(.intentional-bold) {
+  font-weight: inherit !important;
+}
+
+/* Allow intentional styling to work normally */
+.wp-content strong,
+.wp-content b,
+.wp-content .font-bold,
+.wp-content .font-semibold,
+.wp-content .measurement-highlight {
+  /* These should keep their intended styling */
+  font-weight: inherit; /* Remove !important to allow intentional styling */
 }

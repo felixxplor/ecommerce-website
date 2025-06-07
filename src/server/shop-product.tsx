@@ -336,7 +336,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
 
                   {/* Price with schema markup */}
                   <div
-                    className="flex items-baseline mb-4"
+                    className="flex flex-col gap-2 mb-4"
                     itemProp="offers"
                     itemScope
                     itemType="https://schema.org/Offer"
@@ -355,19 +355,34 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                       itemProp="url"
                       href={`https://www.gizmooz.com/products/${product.slug}`}
                     />
-                    <span className="text-2xl font-bold text-gray-900">${priceValue}</span>
-                    <br />
-                    <span className="ml-2 text-green-600 text-sm">
-                      You save{' '}
-                      {Math.round(
-                        ((parseFloat(rrpValue) - parseFloat(priceValue)) / parseFloat(rrpValue)) *
-                          100
+
+                    {/* Price line */}
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-bold text-gray-900">${priceValue}</span>
+                      {parseFloat(rrpValue) > parseFloat(priceValue) && (
+                        <span className="text-gray-500">
+                          <span>Was</span> <span className="line-through">${rrpValue}</span>
+                        </span>
                       )}
-                      %
-                    </span>
-                    <span className="ml-2 text-gray-500">
-                      <span>Was</span> <span className="line-through">${rrpValue}</span>
-                    </span>
+                    </div>
+
+                    {/* Savings badge line */}
+                    {parseFloat(rrpValue) > parseFloat(priceValue) && (
+                      <div className="flex items-center">
+                        <span className="bg-yellow-400 text-black text-sm font-bold px-3 py-1 rounded-sm">
+                          SAVE ${Math.round(parseFloat(rrpValue) - parseFloat(priceValue))}
+                        </span>
+                        <span className="ml-2 text-green-600 text-sm">
+                          You save{' '}
+                          {Math.round(
+                            ((parseFloat(rrpValue) - parseFloat(priceValue)) /
+                              parseFloat(rrpValue)) *
+                              100
+                          )}
+                          %
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Small screen shipping information */}
@@ -510,7 +525,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
 
                 {/* Price with schema.org markup */}
                 <div
-                  className="flex items-baseline mb-4"
+                  className="flex flex-col gap-2 mb-4"
                   itemProp="offers"
                   itemScope
                   itemType="https://schema.org/Offer"
@@ -524,7 +539,33 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                     }
                   />
                   <link itemProp="url" href={`https://www.gizmooz.com/products/${product.slug}`} />
-                  <span className="text-2xl font-semibold text-gray-900">${priceValue}</span>
+
+                  {/* Price line */}
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl font-semibold text-gray-900">${priceValue}</span>
+                    {parseFloat(rrpValue) > parseFloat(priceValue) && (
+                      <span className="text-gray-500">
+                        <span>Was</span> <span className="line-through">${rrpValue}</span>
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Savings badge line */}
+                  {parseFloat(rrpValue) > parseFloat(priceValue) && (
+                    <div className="flex items-center">
+                      <span className="bg-yellow-400 text-black text-sm font-bold px-3 py-1 rounded-sm">
+                        SAVE ${Math.round(parseFloat(rrpValue) - parseFloat(priceValue))}
+                      </span>
+                      <span className="ml-2 text-green-600 text-sm">
+                        You save{' '}
+                        {Math.round(
+                          ((parseFloat(rrpValue) - parseFloat(priceValue)) / parseFloat(rrpValue)) *
+                            100
+                        )}
+                        %
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Conditionally render CartOptions or Out of Stock message */}
