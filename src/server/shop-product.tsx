@@ -216,6 +216,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
 
   // Convert price string to number for schema
   const priceValue = (product as SimpleProduct).price?.replace(/[^0-9.]/g, '') || '0'
+  const rrpValue = (product as SimpleProduct).regularPrice?.replace(/[^0-9.]/g, '') || '0'
 
   // Generate category keywords for SEO
   const categoryNames = categories.map((category: any) => category.name).join(', ')
@@ -354,7 +355,19 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                       itemProp="url"
                       href={`https://www.gizmooz.com/products/${product.slug}`}
                     />
-                    <span className="text-2xl font-semibold text-gray-900">${priceValue}</span>
+                    <span className="text-2xl font-bold text-gray-900">${priceValue}</span>
+                    <br />
+                    <span className="ml-2 text-green-600 text-sm">
+                      You save{' '}
+                      {Math.round(
+                        ((parseFloat(rrpValue) - parseFloat(priceValue)) / parseFloat(rrpValue)) *
+                          100
+                      )}
+                      %
+                    </span>
+                    <span className="ml-2 text-gray-500">
+                      <span>Was</span> <span className="line-through">${rrpValue}</span>
+                    </span>
                   </div>
 
                   {/* Small screen shipping information */}

@@ -632,3 +632,35 @@ div.aligncenter {
     text-decoration: underline;
   }
 }
+
+/* Remove WordPress spell-check styling from frontend */
+.wp-content *,
+.product-description *,
+[data-rich-text-format-boundary] {
+  /* Remove any spell-check styling */
+  text-decoration: none !important;
+  border-bottom: none !important;
+  color: inherit !important;
+  background-color: transparent !important;
+}
+
+/* Specifically target potential spell-check classes */
+.spelling-error,
+.grammar-error,
+[style*='text-decoration: underline'],
+[style*='color: red'],
+[style*='border-bottom'] {
+  text-decoration: none !important;
+  color: inherit !important;
+  border-bottom: none !important;
+}
+
+/* Remove any inline styles that might be spell-check related */
+span[style*='text-decoration'],
+span[style*='color: red'],
+span[style*='border-bottom'] {
+  text-decoration: none !important;
+  color: inherit !important;
+  border-bottom: none !important;
+  background: none !important;
+}

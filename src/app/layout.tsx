@@ -111,9 +111,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               "url": "https://www.gizmooz.com",
               "logo": "https://www.gizmooz.com/logo.png",
               "sameAs": [
-                "https://www.facebook.com/gizmooz",
-                "https://www.instagram.com/gizmooz",
-                "https://twitter.com/gizmooz"
+                "https://www.facebook.com/gizmoozdotcom",
+                "https://www.instagram.com/gizmoozdotcom",
+                "https://x.com/gizmoozdotcom"
               ],
               "contactPoint": {
                 "@type": "ContactPoint",

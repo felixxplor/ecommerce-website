@@ -211,7 +211,7 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
         <div className="relative">
           {isOnSale && (
             <div className="absolute top-2 left-2 z-10">
-              <span className="inline-block border border-gray-300 bg-white rounded-full px-2 py-0.5 text-sm">
+              <span className="inline-block border border-gray-300 bg-red-500 rounded-full px-2 py-0.5 text-sm">
                 Sale
               </span>
             </div>
@@ -248,7 +248,9 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
         {isOnSale && regularPrice ? (
           <div className="flex gap-2 mb-2">
             <span className="text-sm">{price}</span>
-            WAS <span className="line-through text-xs font-semibold">{regularPrice}</span>
+            <span className="text-xs font-semibold">
+              <span>Was</span> <span className="line-through">{regularPrice}</span>
+            </span>
           </div>
         ) : (
           <div className="mb-2 text-sm font-medium">{price}</div>

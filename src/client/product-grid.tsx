@@ -198,6 +198,12 @@ function ProductGridContent({ products }: ProductGridProps) {
                       >
                         ${(product as SimpleProduct).price?.replace(/[^0-9.]/g, '')}
                       </span>
+                      <span className="ml-2 text-gray-500">
+                        <span>Was</span>{' '}
+                        <span className="line-through">
+                          ${(product as SimpleProduct).regularPrice?.replace(/[^0-9.]/g, '')}
+                        </span>
+                      </span>
                     </div>
 
                     {/* Free delivery text */}

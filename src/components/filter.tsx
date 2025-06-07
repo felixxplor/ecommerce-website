@@ -20,6 +20,7 @@ import { useShopContext } from '@/client/shop-provider'
 import { PaColorPicker } from '@/client/pa-color-picker'
 import { priceRangeSchema, type PriceRangeSchema } from '@/schemaValidations/minmax.schema'
 import { PaColor, Product, ProductCategory } from '@/graphql'
+import { X } from 'lucide-react'
 
 interface ShopFiltersProps {
   categories?: ProductCategory[]
@@ -62,37 +63,64 @@ export function ShopFilters({ categories, colors }: ShopFiltersProps) {
     [buildUrl, router]
   )
 
+  const handleClearAllCategories = useCallback(() => {
+    const href = buildUrl({
+      categories: [],
+      page: 1,
+    })
+    router.push(href)
+  }, [buildUrl, router])
+
   return (
     // Responsive ShopFilters component
     <div className="w-full lg:w-64 lg:pr-8">
       {/* Selected Categories Section */}
       <div className="mb-4 sm:mb-6">
-        <h3 className="text-sm font-medium mb-2 hidden lg:block">Selected Categories</h3>
-        <div className="flex gap-2 flex-wrap">
-          {selectedCategories.map((slug) => {
-            const category = categories?.find((c) => c.slug === slug)
-            if (!category) return null
-
-            const href = buildUrl({
-              categories: selectedCategories.filter((s) => s !== slug),
-              page: 1,
-            })
-
-            return (
-              <Link key={category.id} href={href} shallow prefetch={false}>
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    'hover:bg-red-500 hover:text-white cursor-pointer',
-                    'transition-colors duration-250 ease-in-out'
-                  )}
-                >
-                  {category.name}
-                </Badge>
-              </Link>
-            )
-          })}
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-medium hidden lg:block">Selected Categories</h3>
+          {selectedCategories.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClearAllCategories}
+              className="text-xs text-gray-500 hover:text-red-500 p-1 h-auto font-normal"
+            >
+              Clear All
+            </Button>
+          )}
         </div>
+
+        {selectedCategories.length > 0 ? (
+          <div className="flex gap-2 flex-wrap">
+            {selectedCategories.map((slug) => {
+              const category = categories?.find((c) => c.slug === slug)
+              if (!category) return null
+
+              const href = buildUrl({
+                categories: selectedCategories.filter((s) => s !== slug),
+                page: 1,
+              })
+
+              return (
+                <Link key={category.id} href={href} shallow prefetch={false}>
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      'hover:bg-red-500 hover:text-white cursor-pointer group',
+                      'transition-colors duration-250 ease-in-out',
+                      'flex items-center gap-1 pr-1'
+                    )}
+                  >
+                    <span>{category.name}</span>
+                    <X className="h-3 w-3 group-hover:text-white" />
+                  </Badge>
+                </Link>
+              )
+            })}
+          </div>
+        ) : (
+          <p className="text-xs text-gray-500 hidden lg:block">No categories selected</p>
+        )}
       </div>
 
       <Accordion type="single" collapsible className="space-y-3 sm:space-y-4">
@@ -147,7 +175,7 @@ export function ShopFilters({ categories, colors }: ShopFiltersProps) {
                       className="w-full text-sm"
                       {...form.register('price_min')}
                     />
-                    <div className="min-h-[20px] mt-1">
+                    <div className="mt-1">
                       {form.formState.errors.price_min && (
                         <p className="text-xs text-red-500">
                           {form.formState.errors.price_min.message}
@@ -155,7 +183,6 @@ export function ShopFilters({ categories, colors }: ShopFiltersProps) {
                       )}
                     </div>
                   </div>
-
                   {/* Maximum price input with fixed error space */}
                   <div className="flex flex-col">
                     <label className="text-xs text-gray-500 mb-1">Max Price</label>
@@ -164,7 +191,7 @@ export function ShopFilters({ categories, colors }: ShopFiltersProps) {
                       className="w-full text-sm"
                       {...form.register('price_max')}
                     />
-                    <div className="min-h-[20px] mt-1">
+                    <div className="mt-1">
                       {form.formState.errors.price_max && (
                         <p className="text-xs text-red-500">
                           {form.formState.errors.price_max.message}
@@ -188,7 +215,11 @@ export function ShopFilters({ categories, colors }: ShopFiltersProps) {
                         price_min: '',
                         price_max: '',
                       })
-                      // Add your clear filter logic here
+                      // Clear price filters from URL by omitting the price property
+                      const href = buildUrl({
+                        page: 1,
+                      })
+                      router.push(href)
                     }}
                   >
                     Clear
