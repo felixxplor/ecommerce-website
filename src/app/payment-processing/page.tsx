@@ -145,7 +145,7 @@ export default async function PaymentProcessingPage(props: PaymentProcessingPage
   let createOrderResponse
   try {
     createOrderResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/create-post-payment-order`,
+      `${process.env.NEXT_PUBLIC_URL || 'http://gizmooz.com'}/api/create-post-payment-order`,
       {
         method: 'POST',
         headers,

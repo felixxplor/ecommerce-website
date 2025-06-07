@@ -113,7 +113,7 @@ function CartItem({ item }: CartItemProps) {
 function CartSummary({ cart }: CartSummaryProps) {
   const goToCheckoutPage = () => {
     deleteClientSessionId()
-    window.location.href = 'http://localhost:3000/checkout'
+    window.location.href = 'http://gizmooz.com/checkout'
   }
 
   return (

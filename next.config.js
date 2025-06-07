@@ -11,7 +11,12 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'gizmooz.com',
+        hostname: '*.gizmooz.com', // This allows any subdomain
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'gizmooz.com', // Keep the main domain too
         pathname: '/**',
       },
     ],
