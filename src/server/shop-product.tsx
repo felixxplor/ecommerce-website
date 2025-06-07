@@ -23,7 +23,7 @@ import { cn } from '@/utils/ui'
 import { SecurePaymentInfo } from '@/components/secure-payment-info'
 import { RelatedProducts } from '@/components/related-products'
 import MobileBottomCart from '@/components/mobile-bottom-cart'
-import { cleanWordPressContent, processWordPressContent } from '@/utils/wordpress-content'
+import { formatProductDescription } from '@/utils/advanced-wp-processor'
 
 export interface ShopProductProps {
   product: Product
@@ -175,13 +175,8 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
   const { rawPrice } = product as ProductWithPrice
   const categories = product.productCategories?.nodes || []
 
-  const processedDescription = cleanWordPressContent(
-    processWordPressContent(product.description as string)
-  )
-
-  const processedShortDescription = cleanWordPressContent(
-    processWordPressContent(product.shortDescription as string)
-  )
+  const formattedDescription = formatProductDescription(product.description as string)
+  const formattedShortDescription = formatProductDescription(product.shortDescription as string)
 
   // Hard-coded free shipping badge
   const hasFreeShipping = true
@@ -399,7 +394,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                         className="prose prose-sm sm:prose-base lg:prose-lg max-w-none prose-headings:font-serif prose-headings:font-medium wp-content"
                         itemProp="description"
                       >
-                        <div dangerouslySetInnerHTML={{ __html: processedDescription }} />
+                        <div dangerouslySetInnerHTML={{ __html: formattedDescription }} />
                       </div>
                     </TabsContent>
 

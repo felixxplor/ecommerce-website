@@ -242,6 +242,10 @@ div.aligncenter {
   width: 100%;
   max-width: 100%;
   overflow-wrap: break-word;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+    sans-serif;
+  line-height: 1.6;
+  color: #333;
 }
 
 /* Fix for floating elements */
@@ -249,4 +253,382 @@ div.aligncenter {
   content: '';
   display: table;
   clear: both;
+}
+
+/* ===== ENHANCED PRODUCT DESCRIPTION STYLES ===== */
+
+/* Measurement highlighting (like WordPress red underlines) */
+.measurement-highlight {
+  color: #dc2626 !important;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+/* Enhanced headings for product descriptions */
+.wp-content h1,
+.wp-content h2,
+.wp-content h3,
+.wp-content h4,
+.wp-content h5,
+.wp-content h6 {
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+  color: #1a1a1a;
+}
+
+.wp-content h1:first-child,
+.wp-content h2:first-child,
+.wp-content h3:first-child {
+  margin-top: 0;
+}
+
+.wp-content h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+.wp-content h2 {
+  font-size: 1.75rem;
+  margin-bottom: 0.875rem;
+}
+.wp-content h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+.wp-content h4 {
+  font-size: 1.25rem;
+  margin-bottom: 0.625rem;
+}
+.wp-content h5 {
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+}
+.wp-content h6 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Enhanced paragraphs */
+.wp-content p {
+  margin-bottom: 1em;
+  margin-top: 0;
+  line-height: 1.6;
+}
+
+.wp-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Enhanced lists for product descriptions */
+.wp-content ul,
+.wp-content ol {
+  margin: 1em 0;
+  padding-left: 2em;
+}
+
+.wp-content li {
+  margin-bottom: 0.5em;
+  line-height: 1.5;
+}
+
+.wp-content ul li {
+  list-style-type: disc;
+}
+
+.wp-content ol li {
+  list-style-type: decimal;
+}
+
+/* Nested lists */
+.wp-content ul ul,
+.wp-content ol ol,
+.wp-content ul ol,
+.wp-content ol ul {
+  margin: 0.5em 0;
+}
+
+/* Enhanced tables for specifications */
+.wp-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 0.95em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.wp-content th,
+.wp-content td {
+  border: 1px solid #ddd;
+  padding: 12px 16px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.wp-content th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #2c3e50;
+  border-bottom: 2px solid #ddd;
+}
+
+.wp-content tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.wp-content tr:hover {
+  background-color: #f1f3f4;
+}
+
+/* Feature/Details table specific styling */
+.wp-content table.specs-table th:first-child,
+.wp-content table.specs-table td:first-child {
+  font-weight: 600;
+  background-color: #f8f9fa;
+  width: 30%;
+  min-width: 120px;
+}
+
+/* Product specification tables */
+.wp-content .product-specs table {
+  border: 1px solid #e1e5e9;
+}
+
+.wp-content .product-specs th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85em;
+  letter-spacing: 0.5px;
+}
+
+.wp-content .product-specs td:first-child {
+  font-weight: 500;
+  color: #495057;
+}
+
+/* Responsive tables */
+@media (max-width: 768px) {
+  .wp-content table {
+    font-size: 0.875rem;
+    border-radius: 4px;
+  }
+
+  .wp-content th,
+  .wp-content td {
+    padding: 8px 12px;
+  }
+
+  /* Stack table on mobile for better readability */
+  .wp-content table.mobile-stack {
+    border: none;
+  }
+
+  .wp-content table.mobile-stack thead {
+    display: none;
+  }
+
+  .wp-content table.mobile-stack tr {
+    display: block;
+    margin-bottom: 1em;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.5em;
+  }
+
+  .wp-content table.mobile-stack td {
+    display: block;
+    border: none;
+    padding: 0.25em 0;
+  }
+
+  .wp-content table.mobile-stack td:before {
+    content: attr(data-label) ': ';
+    font-weight: bold;
+  }
+}
+
+/* Strong/bold text */
+.wp-content strong,
+.wp-content b {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* Links in product descriptions */
+.wp-content a {
+  color: #0073aa;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.wp-content a:hover {
+  color: #005177;
+}
+
+/* Blockquotes */
+.wp-content blockquote {
+  border-left: 4px solid #ddd;
+  margin: 1.5em 0;
+  padding: 1em 1.5em;
+  background-color: #f9f9f9;
+  font-style: italic;
+  border-radius: 0 4px 4px 0;
+}
+
+/* Code elements */
+.wp-content code {
+  background-color: #f1f1f1;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'SFMono-Regular', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  font-size: 0.9em;
+  color: #e83e8c;
+}
+
+.wp-content pre {
+  background-color: #f5f5f5;
+  padding: 1em;
+  border-radius: 4px;
+  overflow-x: auto;
+  border: 1px solid #e2e2e2;
+  line-height: 1.4;
+}
+
+.wp-content pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+/* Horizontal rules */
+.wp-content hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 2em 0;
+}
+
+/* Images in content */
+.wp-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Product feature lists */
+.wp-content .product-features {
+  background-color: #f8f9fa;
+  padding: 1.5em;
+  border-radius: 6px;
+  margin: 1.5em 0;
+}
+
+.wp-content .product-features h3 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+.wp-content .product-features ul {
+  margin-bottom: 0;
+}
+
+.wp-content .product-features li {
+  position: relative;
+  padding-left: 1.5em;
+  margin-bottom: 0.75em;
+}
+
+.wp-content .product-features li:before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #28a745;
+  font-weight: bold;
+}
+
+/* Product highlights */
+.wp-content .highlight {
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  padding: 1em;
+  border-radius: 4px;
+  margin: 1em 0;
+}
+
+/* Technical specifications styling */
+.wp-content .tech-specs {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 0;
+  margin: 1.5em 0;
+  overflow: hidden;
+}
+
+.wp-content .tech-specs h3 {
+  background-color: #e9ecef;
+  margin: 0;
+  padding: 1em;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.wp-content .tech-specs table {
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* Spacing utilities for better content flow */
+.wp-content > *:first-child {
+  margin-top: 0 !important;
+}
+
+.wp-content > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Product description specific spacing */
+.wp-content.product-description {
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.wp-content.product-description h3 {
+  color: #2c3e50;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 0.5em;
+  margin-bottom: 1em;
+}
+
+/* Ensure proper spacing between sections */
+.wp-content > h1 + *,
+.wp-content > h2 + *,
+.wp-content > h3 + * {
+  margin-top: 0.5em;
+}
+
+/* Print styles */
+@media print {
+  .wp-content {
+    color: #000;
+    background: #fff;
+  }
+
+  .wp-content table {
+    border: 1px solid #000;
+  }
+
+  .wp-content th,
+  .wp-content td {
+    border: 1px solid #000;
+    padding: 0.5em;
+  }
+
+  .wp-content .measurement-highlight {
+    color: #000 !important;
+    text-decoration: underline;
+  }
 }
