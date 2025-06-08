@@ -256,13 +256,6 @@ div.aligncenter {
 
 /* ===== ENHANCED PRODUCT DESCRIPTION STYLES ===== */
 
-/* Measurement highlighting (like WordPress red underlines) */
-.measurement-highlight {
-  color: #dc2626 !important;
-  text-decoration: underline;
-  font-weight: 500;
-}
-
 /* Enhanced headings for product descriptions */
 .wp-content h1,
 .wp-content h2,
