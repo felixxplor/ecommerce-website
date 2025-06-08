@@ -246,11 +246,11 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
 
         {/* Price */}
         {isOnSale && regularPrice ? (
-          <div className="flex gap-2 mb-2">
-            <span className="text-sm font-semibold">{price}</span>
-            <span className="text-sm">
+          <div className="mb-2">
+            <div className="text-sm font-semibold">{price}</div>
+            <div className="text-sm sm:inline sm:ml-2 block">
               <span>Was</span> <span className="line-through">{regularPrice}</span>
-            </span>
+            </div>
           </div>
         ) : (
           <div className="mb-2 text-sm font-medium">{price}</div>

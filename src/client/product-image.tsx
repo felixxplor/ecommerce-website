@@ -88,7 +88,7 @@ export function ProductImage({ product }: ProductImageProps) {
     const offsetX = e.pageX - rect.x
     const offsetY = e.pageY - rect.y
 
-    const zoomScale = 1.5
+    const zoomScale = 1.2
     const { naturalWidth, naturalHeight } = image
 
     const zoomedWidth = naturalWidth * zoomScale

@@ -725,3 +725,44 @@ div.aligncenter {
 .wp-content a:hover {
   color: #005177 !important;
 }
+
+.wp-content a,
+.prose a {
+  color: inherit !important;
+  text-decoration: none !important;
+  border: none !important;
+}
+
+/* Specifically target product description content */
+.wp-content {
+  color: #374151; /* gray-700 */
+}
+
+.wp-content * {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+/* Remove any red color and underlines from all elements */
+.wp-content span,
+.wp-content strong,
+.wp-content em,
+.wp-content p,
+.wp-content li,
+.wp-content td,
+.wp-content th {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+/* Alternative approach - target the specific component */
+.prose-lg a {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+/* If you want some links to still be styled as links, you can add exceptions */
+.wp-content a[href^='http']:not([href*='3W']):not([href*='52mm']):not([href*='21.9cm']) {
+  color: #3b82f6 !important; /* blue-500 */
+  text-decoration: underline !important;
+}
