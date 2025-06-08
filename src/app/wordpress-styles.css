@@ -632,40 +632,37 @@ div.aligncenter {
   }
 }
 
-/* ===== SELECTIVE SPELL-CHECK REMOVAL (PRESERVES INTENTIONAL FORMATTING) ===== */
+/* ===== COMPREHENSIVE SPELL-CHECK REMOVAL (PRESERVES INTENTIONAL FORMATTING) ===== */
 
-/* Only remove spell-check styling from spans that have specific error styling */
-.wp-content span.spelling-error,
-.wp-content span.grammar-error,
-.wp-content span[style*='text-decoration: underline']:not(strong):not(b),
-.wp-content span[style*='color: red']:not(strong):not(b),
-.wp-content span[style*='border-bottom']:not(strong):not(b) {
+/* Remove ALL red underlines and spell-check styling from spans */
+.wp-content span:not(.measurement-highlight):not(.intentional-underline) {
   text-decoration: none !important;
-  color: inherit !important;
   border-bottom: none !important;
   background-color: transparent !important;
 }
 
-/* Remove spell-check bold only from spans that are NOT intentionally bold */
-.wp-content span[style*='font-weight: bold']:not(strong):not(b):not(.intentional-bold),
-.wp-content span[style*='font-weight: 700']:not(strong):not(b):not(.intentional-bold),
-.wp-content span[style*='font-weight:bold']:not(strong):not(b):not(.intentional-bold),
-.wp-content span[style*='font-weight:700']:not(strong):not(b):not(.intentional-bold) {
-  font-weight: inherit !important;
-}
-
-/* Target WordPress rich text boundary spans that are spell-check artifacts */
-.wp-content span[data-rich-text-format-boundary]:not(strong):not(b) {
-  text-decoration: none !important;
+/* Remove red color from spans unless intentionally colored */
+.wp-content span:not(.measurement-highlight):not(.intentional-red):not(.has-text-color) {
   color: inherit !important;
-  border-bottom: none !important;
-  background-color: transparent !important;
-  font-weight: inherit !important;
 }
 
-/* Remove styling from random spans that don't contain intentional formatting */
+/* Remove font-weight from spans unless intentionally bold */
 .wp-content
-  span:not(strong):not(b):not(.measurement-highlight):not(.intentional-bold):not([class]) {
+  span:not(strong):not(b):not(.measurement-highlight):not(.intentional-bold):not(.font-bold):not(
+    .font-semibold
+  ) {
+  font-weight: inherit !important;
+}
+
+/* Target specific spell-check classes and attributes */
+.wp-content .spelling-error,
+.wp-content .grammar-error,
+.wp-content [data-rich-text-format-boundary],
+.wp-content span[style*='text-decoration'],
+.wp-content span[style*='color: red'],
+.wp-content span[style*='color:red'],
+.wp-content span[style*='border-bottom'],
+.wp-content span[style*='font-weight'] {
   text-decoration: none !important;
   color: inherit !important;
   border-bottom: none !important;
@@ -673,27 +670,58 @@ div.aligncenter {
   font-weight: inherit !important;
 }
 
-/* Ensure intentional formatting is preserved */
+/* More aggressive spell-check removal */
+.wp-content span[style],
+.wp-content span[class*='error'],
+.wp-content span[class*='spelling'],
+.wp-content span[class*='grammar'] {
+  text-decoration: none !important;
+  color: inherit !important;
+  border-bottom: none !important;
+  background-color: transparent !important;
+  font-weight: inherit !important;
+}
+
+/* Ensure intentional formatting is preserved - MUST come after spell-check removal */
 .wp-content strong,
 .wp-content b,
-.wp-content strong span,
-.wp-content b span,
+.wp-content strong *,
+.wp-content b *,
 .wp-content .font-bold,
 .wp-content .font-semibold,
-.wp-content .measurement-highlight,
 .wp-content .intentional-bold {
   font-weight: 600 !important;
+  color: inherit; /* Don't override color unless specifically set */
 }
 
-/* WordPress block editor bold formatting */
-.wp-content .has-inline-color,
-.wp-content .has-text-color {
-  color: inherit; /* Allow color to be inherited unless specifically set */
-}
-
-/* Ensure measurement highlights work */
+/* Preserve measurement highlights */
 .wp-content .measurement-highlight {
   color: #dc2626 !important;
   text-decoration: underline !important;
   font-weight: 500 !important;
+}
+
+/* Preserve intentional underlines and colors */
+.wp-content .intentional-underline {
+  text-decoration: underline !important;
+}
+
+.wp-content .intentional-red {
+  color: #dc2626 !important;
+}
+
+/* WordPress color classes */
+.wp-content .has-text-color,
+.wp-content .has-inline-color {
+  color: var(--wp--preset--color--custom) !important;
+}
+
+/* Links should keep their styling */
+.wp-content a {
+  color: #0073aa !important;
+  text-decoration: underline !important;
+}
+
+.wp-content a:hover {
+  color: #005177 !important;
 }
