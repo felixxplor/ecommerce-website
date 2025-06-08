@@ -248,7 +248,7 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
         {isOnSale && regularPrice ? (
           <div className="mb-2">
             <div className="text-sm font-semibold">{price}</div>
-            <div className="text-sm sm:inline sm:ml-2 block">
+            <div className="text-sm block sm:inline sm:ml-2">
               <span>Was</span> <span className="line-through">{regularPrice}</span>
             </div>
           </div>
