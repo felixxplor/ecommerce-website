@@ -370,6 +370,17 @@ query GetProducts($first: Int, $after: String, $where: RootQueryToProductConnect
 query GetProduct($id: ID!, $idType: ProductIdTypeEnum) {
   product(id: $id, idType: $idType) {
     ...ProductContentFull
+    # Add high-quality image fields here
+    image {
+      sourceUrl(size: LARGE)
+      altText
+    }
+    galleryImages {
+      nodes {
+        sourceUrl(size: LARGE)
+        altText
+      }
+    }
     productCategories {
       nodes {
         id

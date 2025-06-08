@@ -60,7 +60,7 @@ function CartItem({ item }: CartItemProps) {
   return (
     <div className="py-6 flex gap-4">
       <div className="w-24 h-24 rounded-md border bg-gray-50 flex items-center justify-center">
-        <Link href={`/collections/${slug}`}>
+        <Link href={`/products/${slug}`}>
           {' '}
           <Image
             src={image?.sourceUrl || '/product-placeholder.png'}
