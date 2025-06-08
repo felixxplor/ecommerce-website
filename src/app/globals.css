@@ -102,3 +102,9 @@ body {
 .animate-slide-down {
   animation: slideDown 0.2s ease-out;
 }
+
+:global(.measurement-highlight) {
+  color: inherit !important;
+  text-decoration: none !important;
+  font-weight: inherit !important;
+}
