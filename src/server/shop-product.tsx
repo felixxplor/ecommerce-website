@@ -370,13 +370,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                     {parseFloat(rrpValue) > parseFloat(priceValue) && (
                       <div className="flex items-center">
                         <span className="bg-yellow-400 text-black text-sm font-bold px-3 py-1 rounded-sm">
-                          You save{' '}
-                          {Math.round(
-                            ((parseFloat(rrpValue) - parseFloat(priceValue)) /
-                              parseFloat(rrpValue)) *
-                              100
-                          )}
-                          %
+                          SAVE ${Math.round(parseFloat(rrpValue) - parseFloat(priceValue))}
                         </span>
                       </div>
                     )}
@@ -552,14 +546,6 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                     <div className="flex items-center">
                       <span className="bg-yellow-400 text-black text-sm font-bold px-3 py-1 rounded-sm">
                         SAVE ${Math.round(parseFloat(rrpValue) - parseFloat(priceValue))}
-                      </span>
-                      <span className="ml-2 text-green-600 text-sm">
-                        You save{' '}
-                        {Math.round(
-                          ((parseFloat(rrpValue) - parseFloat(priceValue)) / parseFloat(rrpValue)) *
-                            100
-                        )}
-                        %
                       </span>
                     </div>
                   )}

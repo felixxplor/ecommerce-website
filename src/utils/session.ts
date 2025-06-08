@@ -162,7 +162,7 @@ export async function login(username: string, password: string): Promise<boolean
     const sessionResponse = await fetch('/api/auth', { method: 'GET' })
     const sessionData = await sessionResponse.json()
     if (sessionData.sessionToken) {
-      localStorage.setItem('woo-session', sessionData.sessionToken)
+      localStorage.setItem('woo-session-token', sessionData.sessionToken)
     }
   } catch (error) {
     console.error('Failed to get new session:', error)

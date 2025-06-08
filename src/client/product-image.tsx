@@ -42,7 +42,7 @@ export function ProductImage({ product }: ProductImageProps) {
 
       images.push(
         ...galleryNodes.map((galleryImage: any) => ({
-          sourceUrl: galleryImage.sourceUrl,
+          sourceUrl: galleryImage.sourceUrl.replace(/-\d+x\d+/, ''),
           altText: galleryImage.altText || '',
           isMainImage: false,
         }))
