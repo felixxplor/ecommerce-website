@@ -37,6 +37,26 @@ interface ProductWithReviews extends Product {
   isLoadingReviews?: boolean
 }
 
+// Helper function to check if product belongs to 'hidden' category
+const isProductHidden = (product: Product): boolean => {
+  // Check if product has categories
+  if (!product.productCategories?.nodes) {
+    return false
+  }
+
+  // Check if any category has name 'hidden' (case-insensitive)
+  return product.productCategories.nodes.some((category) => {
+    // Cast to the proper category type or check if it has the name property
+    const categoryNode = category as any
+    return categoryNode?.name?.toLowerCase() === 'hidden'
+  })
+}
+
+// Helper function to filter out hidden products
+const filterVisibleProducts = (products: Product[]): Product[] => {
+  return products.filter((product) => !isProductHidden(product))
+}
+
 // Helper to encode/decode IDs
 function encodeId(type: string, id: number | string): string {
   const numericId = typeof id === 'string' ? parseInt(id, 10) : id
@@ -376,8 +396,9 @@ export default function TopSellingProductsClient({
         return
       }
 
-      // Sort products by purchase count and get top 8 instead of just 4
-      const topSellingProducts = [...products]
+      // Filter out hidden products first, then sort by purchase count and get top 8
+      const visibleProducts = filterVisibleProducts(products)
+      const topSellingProducts = [...visibleProducts]
         .sort((a, b) => getProductPurchases(b) - getProductPurchases(a))
         .slice(0, 8)
         .map((product) => ({
