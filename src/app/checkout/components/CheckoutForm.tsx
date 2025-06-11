@@ -423,7 +423,7 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
   async function refreshAuthToken() {
     try {
       // Get stored refresh token
-      const refreshToken = localStorage.getItem(process.env.REFRESH_TOKEN_LS_KEY as string)
+      const refreshToken = localStorage.getItem('woo-refresh-token')
 
       if (!refreshToken) {
         console.warn('No refresh token available')
@@ -449,7 +449,7 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
 
       if (data.authToken) {
         // Store the new auth token
-        sessionStorage.setItem(process.env.AUTH_TOKEN_SS_KEY as string, data.authToken)
+        sessionStorage.setItem('woo-auth-token', data.authToken)
 
         // Update auth token expiry
         const authTimeout = Math.floor(Date.now() / 1000) + 15 * 60 // 15 minutes

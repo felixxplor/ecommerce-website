@@ -52,7 +52,7 @@ export default function ProfilePage() {
   }, [])
 
   useEffect(() => {
-    const authToken = sessionStorage.getItem(process.env.AUTH_TOKEN_SS_KEY as string)
+    const authToken = sessionStorage.getItem('woo-auth-token')
 
     if (!authToken) {
       router.replace('/login?returnUrl=/account/profile')
@@ -93,7 +93,7 @@ export default function ProfilePage() {
     if (!customer) return
 
     setIsSaving(true)
-    const authToken = sessionStorage.getItem(process.env.AUTH_TOKEN_SS_KEY as string)
+    const authToken = sessionStorage.getItem('woo-auth-token')
 
     try {
       const response = await fetch('/api/customer', {
@@ -184,7 +184,7 @@ export default function ProfilePage() {
     if (!customer) return
 
     setIsSaving(true)
-    const authToken = sessionStorage.getItem(process.env.AUTH_TOKEN_SS_KEY as string)
+    const authToken = sessionStorage.getItem('woo-auth-token')
 
     try {
       const response = await fetch('/api/addresses', {

@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
 import { cn } from '@/utils/ui'
-import { Product, ProductTypesEnum, SimpleProduct } from '@/graphql'
+import { Product, ProductCategory, ProductTypesEnum, SimpleProduct } from '@/graphql'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { ProductWithPrice, useShopContext } from './shop-provider'
 import { Image } from '@/components/ui/image'
@@ -33,6 +33,23 @@ interface ProductWithPurchases extends Product {
 }
 
 const pageSize = 12
+
+// Helper function to check if product belongs to 'hidden' category
+const isProductHidden = (product: Product): boolean => {
+  if (!product.productCategories?.nodes) {
+    return false
+  }
+
+  return product.productCategories.nodes.some((category) => {
+    const categoryNode = category as ProductCategory
+    return categoryNode?.name?.toLowerCase() === 'hidden'
+  })
+}
+
+// Helper function to filter out hidden products
+const filterVisibleProducts = (products: Product[]): Product[] => {
+  return products.filter((product) => !isProductHidden(product))
+}
 
 // Helper function to get purchase count
 const getProductPurchases = (product: Product): number => {
@@ -66,8 +83,16 @@ function ProductGridContent({ products }: ProductGridProps) {
   const isMobile = useIsMobile()
   const maxPages = isMobile ? 5 : 10
   const { products: filteredProducts, buildUrl, page } = useShopContext()
-  const totalProducts = (filteredProducts || products).length
-  const pageCount = Math.ceil((filteredProducts || products).length / pageSize)
+
+  // Filter out hidden products from both the base products and filtered products
+  const visibleProducts = useMemo(() => filterVisibleProducts(products), [products])
+  const visibleFilteredProducts = useMemo(
+    () => (filteredProducts ? filterVisibleProducts(filteredProducts) : null),
+    [filteredProducts]
+  )
+
+  const totalProducts = (visibleFilteredProducts || visibleProducts).length
+  const pageCount = Math.ceil((visibleFilteredProducts || visibleProducts).length / pageSize)
 
   // Use Next.js searchParams hook instead of window.location
   const searchParams = useSearchParams()
@@ -123,15 +148,15 @@ function ProductGridContent({ products }: ProductGridProps) {
   }
 
   const displayProducts = useMemo(() => {
-    let sorted = sortProducts(filteredProducts || products)
+    let sorted = sortProducts(visibleFilteredProducts || visibleProducts)
     return sorted.slice((page - 1) * pageSize, page * pageSize)
-  }, [filteredProducts, products, sortOrder, page])
+  }, [visibleFilteredProducts, visibleProducts, sortOrder, page])
 
   const startIndex = (page - 1) * pageSize + 1
   const endIndex = Math.min(page * pageSize, totalProducts)
 
   useEffect(() => {
-    if (page > pageCount) {
+    if (page > pageCount && pageCount > 0) {
       const url = buildUrl({ page: pageCount })
       push(url, { shallow: true } as any)
     }

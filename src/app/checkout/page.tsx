@@ -7,7 +7,7 @@ import { CheckoutClient } from '@/client/checkout'
 // This is a server component
 export default function CheckoutPage() {
   return (
-    <MaxWidthWrapper className="py-14">
+    <MaxWidthWrapper className="py-4 md:py-14">
       <Suspense
         fallback={
           <div className="flex flex-col items-center justify-center py-12">

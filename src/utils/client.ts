@@ -39,8 +39,8 @@ async function createClientSessionId() {
   const timeout = `${credentials.issued + HOUR_IN_SECONDS}`
 
   // Save Client Session ID.
-  sessionStorage.setItem(process.env.CLIENT_SESSION_SS_KEY as string, clientSessionId)
-  sessionStorage.setItem(process.env.CLIENT_SESSION_EXP_SS_KEY as string, timeout)
+  sessionStorage.setItem('woo-client-session', clientSessionId)
+  sessionStorage.setItem('woo-client-session-exp', timeout)
 
   // Return Client Session ID.
   return { clientSessionId, timeout }
@@ -73,8 +73,8 @@ function setClientFetcher() {
 }
 
 export async function getClientSessionId() {
-  let clientSessionId = sessionStorage.getItem(process.env.CLIENT_SESSION_SS_KEY as string)
-  let timeout = sessionStorage.getItem(process.env.CLIENT_SESSION_EXP_SS_KEY as string)
+  let clientSessionId = sessionStorage.getItem('woo-client-session')
+  let timeout = sessionStorage.getItem('woo-client-session-exp')
   if (!clientSessionId || !timeout || time() > Number(timeout)) {
     ;({ clientSessionId, timeout } = await createClientSessionId())
     setClientFetcher()
@@ -87,8 +87,8 @@ export function deleteClientSessionId() {
   if (clientSetter) {
     clearInterval(clientSetter)
   }
-  sessionStorage.removeItem(process.env.CLIENT_SESSION_SS_KEY as string)
-  sessionStorage.removeItem(process.env.CLIENT_SESSION_EXP_SS_KEY as string)
+  sessionStorage.removeItem('woo-client-session')
+  sessionStorage.removeItem('woo-client-session-exp')
 }
 
 export function deleteClientCredentials() {

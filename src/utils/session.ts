@@ -68,11 +68,11 @@ function saveCredentials(authToken: string, sessionToken?: string, refreshToken?
   }
 
   // Only store auth token in sessionStorage, nothing else
-  sessionStorage.setItem(process.env.AUTH_TOKEN_SS_KEY as string, authToken)
+  sessionStorage.setItem('woo-auth-token', authToken)
 
   // Store refresh token if provided
   if (refreshToken) {
-    localStorage.setItem(process.env.REFRESH_TOKEN_LS_KEY as string, refreshToken)
+    localStorage.setItem('woo-refresh-token', refreshToken)
   }
 
   // Store session token if provided
@@ -91,8 +91,8 @@ export function hasCredentials() {
     return false
   }
   const sessionToken = localStorage.getItem('woo-session-token')
-  const authToken = sessionStorage.getItem(process.env.AUTH_TOKEN_SS_KEY as string)
-  const refreshToken = localStorage.getItem(process.env.REFRESH_TOKEN_LS_KEY as string)
+  const authToken = sessionStorage.getItem('woo-auth-token')
+  const refreshToken = localStorage.getItem('woo-refresh-token')
 
   if (!!sessionToken && !!authToken && !!refreshToken) {
     return true
@@ -119,7 +119,7 @@ type FetchAuthTokenResponse = {
 }
 
 async function fetchAuthToken() {
-  const refreshToken = localStorage.getItem(process.env.REFRESH_TOKEN_LS_KEY as string)
+  const refreshToken = localStorage.getItem('woo-refresh-token')
   if (!refreshToken) {
     // eslint-disable-next-line no-console
     isDev() && console.error('Unauthorized')
@@ -221,7 +221,7 @@ export const changePassword = async (
   newPassword: string
 ): Promise<true | string> => {
   try {
-    const authToken = sessionStorage.getItem(process.env.AUTH_TOKEN_SS_KEY as string)
+    const authToken = sessionStorage.getItem('woo-auth-token')
     if (!authToken) {
       return 'No authentication token found'
     }
@@ -272,7 +272,7 @@ export const changePassword = async (
 }
 
 export async function getAuthToken() {
-  let authToken = sessionStorage.getItem(process.env.AUTH_TOKEN_SS_KEY as string)
+  let authToken = sessionStorage.getItem('woo-auth-token')
   if (!authToken || authTokenIsExpired()) {
     authToken = await fetchAuthToken()
   }
@@ -305,13 +305,13 @@ async function getSessionToken() {
 }
 
 export function hasRefreshToken() {
-  const refreshToken = localStorage.getItem(process.env.REFRESH_TOKEN_LS_KEY as string)
+  const refreshToken = localStorage.getItem('woo-refresh-token')
 
   return !!refreshToken
 }
 
 export function hasAuthToken() {
-  const authToken = sessionStorage.getItem(process.env.AUTH_TOKEN_SS_KEY as string)
+  const authToken = sessionStorage.getItem('woo-auth-token')
 
   return !!authToken
 }
@@ -444,8 +444,8 @@ export function deleteCredentials() {
 
   // Clear tokens
   localStorage.removeItem('woo-session-token' as string)
-  sessionStorage.removeItem(process.env.AUTH_TOKEN_SS_KEY as string)
-  localStorage.removeItem(process.env.REFRESH_TOKEN_LS_KEY as string)
+  sessionStorage.removeItem('woo-auth-token')
+  localStorage.removeItem('woo-refresh-token')
   localStorage.removeItem('woo-session')
   sessionStorage.removeItem(process.env.AUTH_TOKEN_EXPIRY_SS_KEY as string)
 }
