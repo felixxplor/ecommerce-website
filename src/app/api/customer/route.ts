@@ -39,14 +39,66 @@ interface GraphQLError {
 
 const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT as string
 
+// Helper function to validate and extract token
+function extractAndValidateToken(request: Request): {
+  token: string | null
+  error: NextResponse | null
+} {
+  const authHeader = request.headers.get('Authorization')
+
+  if (!authHeader) {
+    console.log('No Authorization header found')
+    return {
+      token: null,
+      error: NextResponse.json({ errors: { message: 'No authorization header' } }, { status: 401 }),
+    }
+  }
+
+  if (!authHeader.startsWith('Bearer ')) {
+    console.log('Authorization header does not start with Bearer:', authHeader)
+    return {
+      token: null,
+      error: NextResponse.json(
+        { errors: { message: 'Invalid authorization format' } },
+        { status: 401 }
+      ),
+    }
+  }
+
+  const token = authHeader.replace('Bearer ', '')
+
+  if (!token) {
+    console.log('No token found after Bearer')
+    return {
+      token: null,
+      error: NextResponse.json({ errors: { message: 'No token provided' } }, { status: 401 }),
+    }
+  }
+
+  // Validate JWT format (should have 3 segments separated by dots)
+  const segments = token.split('.')
+  if (segments.length !== 3) {
+    console.log(
+      'Invalid token format - segments:',
+      segments.length,
+      'token:',
+      token.substring(0, 50) + '...'
+    )
+    return {
+      token: null,
+      error: NextResponse.json({ errors: { message: 'Invalid token format' } }, { status: 401 }),
+    }
+  }
+
+  console.log('Valid token extracted, length:', token.length)
+  return { token, error: null }
+}
+
 export async function PUT(request: Request) {
   try {
-    const authHeader = request.headers.get('authorization')
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const { token, error } = extractAndValidateToken(request)
+    if (error) return error
 
-    const authToken = authHeader.split(' ')[1]
     const body = await request.json()
     const { firstName, lastName, email } = body
 
@@ -60,7 +112,7 @@ export async function PUT(request: Request) {
 
     const client = new GraphQLClient(GRAPHQL_ENDPOINT, {
       headers: {
-        Authorization: `Bearer ${authToken}`,
+        Authorization: `Bearer ${token}`,
       },
     })
 
@@ -103,13 +155,31 @@ export async function PUT(request: Request) {
     })
   } catch (error) {
     const graphqlError = error as GraphQLError
-    console.error('Error updating customer:', graphqlError)
+    console.error('Error updating customer:', {
+      message: graphqlError.message,
+      response: graphqlError.response,
+    })
 
-    if (graphqlError.response?.errors?.[0]?.message.includes('email')) {
-      return NextResponse.json(
-        { error: 'Invalid email address or email already in use' },
-        { status: 400 }
-      )
+    // Handle specific GraphQL errors
+    if (graphqlError.response?.errors?.[0]?.message) {
+      const errorMessage = graphqlError.response.errors[0].message.toLowerCase()
+
+      if (
+        errorMessage.includes('invalid-secret-key') ||
+        errorMessage.includes('wrong number of segments')
+      ) {
+        return NextResponse.json(
+          { error: 'Authentication failed - invalid token' },
+          { status: 401 }
+        )
+      }
+
+      if (errorMessage.includes('email')) {
+        return NextResponse.json(
+          { error: 'Invalid email address or email already in use' },
+          { status: 400 }
+        )
+      }
     }
 
     return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 })
@@ -118,32 +188,56 @@ export async function PUT(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    const authToken = request.headers.get('Authorization')?.replace('Bearer ', '')
-
-    if (!authToken) {
-      return NextResponse.json({ errors: { message: 'Unauthorized' } }, { status: 401 })
-    }
+    const { token, error } = extractAndValidateToken(request)
+    if (error) return error
 
     const client = getClient()
-    client.setHeader('Authorization', `Bearer ${authToken}`)
+    client.setHeader('Authorization', `Bearer ${token}`)
 
     const wooSession = request.headers.get('woocommerce-session')
     if (wooSession) {
       client.setHeader('woocommerce-session', wooSession)
     }
 
+    console.log('Making GraphQL request for customer details...')
     const data = await client.request<GetCustomerDetailsQuery>(print(GetCustomerDetailsDocument))
 
     if (!data.customer) {
+      console.log('No customer data returned')
       return NextResponse.json(
         { errors: { message: 'Failed to retrieve customer details.' } },
         { status: 500 }
       )
     }
 
+    console.log('Customer details retrieved successfully')
     return NextResponse.json({ customer: data.customer })
   } catch (err) {
-    console.error('Error fetching customer details:', err)
+    const error = err as GraphQLError
+    console.error('Error fetching customer details:', {
+      message: error.message,
+      response: error.response,
+    })
+
+    // Handle specific authentication errors
+    if (error.response?.errors?.[0]?.message) {
+      const errorMessage = error.response.errors[0].message.toLowerCase()
+
+      if (
+        errorMessage.includes('invalid-secret-key') ||
+        errorMessage.includes('wrong number of segments')
+      ) {
+        return NextResponse.json(
+          { errors: { message: 'Authentication failed - invalid or malformed token' } },
+          { status: 401 }
+        )
+      }
+
+      if (errorMessage.includes('unauthorized') || errorMessage.includes('auth')) {
+        return NextResponse.json({ errors: { message: 'Authentication failed' } }, { status: 401 })
+      }
+    }
+
     return NextResponse.json(
       { errors: { message: 'Failed to fetch customer details' } },
       { status: 500 }
