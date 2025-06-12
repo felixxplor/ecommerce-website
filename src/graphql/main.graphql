@@ -370,14 +370,14 @@ query GetProducts($first: Int, $after: String, $where: RootQueryToProductConnect
 query GetProduct($id: ID!, $idType: ProductIdTypeEnum) {
   product(id: $id, idType: $idType) {
     ...ProductContentFull
-    # Add high-quality image fields here
-    image {
-      sourceUrl(size: LARGE)
+    # Use aliases for different image sizes to avoid conflicts
+    largeImage: image {
+      largeSourceUrl: sourceUrl(size: LARGE)
       altText
     }
-    galleryImages {
+    largeGalleryImages: galleryImages {
       nodes {
-        sourceUrl(size: LARGE)
+        largeSourceUrl: sourceUrl(size: LARGE)
         altText
       }
     }
@@ -1005,5 +1005,74 @@ mutation RefreshJwtAuthToken($input: RefreshJwtAuthTokenInput!) {
   refreshJwtAuthToken(input: $input) {
     authToken
     clientMutationId
+  }
+}
+
+# Add these mutations to your main.graphql file
+
+mutation ApplyCoupon($input: ApplyCouponInput!) {
+  applyCoupon(input: $input) {
+    applied {
+      ...AppliedCouponFragment
+    }
+    cart {
+      ...CartFragment
+    }
+    clientMutationId
+  }
+}
+
+mutation RemoveCoupons($input: RemoveCouponsInput!) {
+  removeCoupons(input: $input) {
+    cart {
+      ...CartFragment
+    }
+    clientMutationId
+  }
+}
+
+# You'll also need to add the AppliedCouponFragment if it doesn't exist:
+fragment AppliedCouponFragment on AppliedCoupon {
+  code
+  discountAmount
+  description
+}
+
+# Make sure your CartFragment includes appliedCoupons field:
+fragment CartFragment on Cart {
+  isEmpty
+  subtotal
+  total
+  shippingTotal
+  appliedCoupons {
+    ...AppliedCouponFragment
+  }
+  contents {
+    nodes {
+      key
+      quantity
+      subtotal
+      product {
+        node {
+          id
+          databaseId
+          name
+          image {
+            sourceUrl
+            altText
+          }
+        }
+      }
+      variation {
+        node {
+          id
+          databaseId
+        }
+        attributes {
+          name
+          value
+        }
+      }
+    }
   }
 }

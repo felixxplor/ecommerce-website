@@ -169,7 +169,7 @@ export function CheckoutClient() {
   }
 
   return (
-    <MaxWidthWrapper className="py-14">
+    <MaxWidthWrapper className="py-10 md:py-14">
       {/* Checkout method selection - only show if not authenticated and no choice made */}
       {!isAuthenticated && !checkoutChoice && (
         <div className="max-w-2xl mx-auto">

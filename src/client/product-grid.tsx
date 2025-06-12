@@ -34,7 +34,7 @@ interface ProductWithPurchases extends Product {
 
 const pageSize = 12
 
-// Helper function to check if product belongs to 'hidden' category
+// Helper function to check if product belongs to 'misc' category
 const isProductHidden = (product: Product): boolean => {
   if (!product.productCategories?.nodes) {
     return false
@@ -42,7 +42,7 @@ const isProductHidden = (product: Product): boolean => {
 
   return product.productCategories.nodes.some((category) => {
     const categoryNode = category as ProductCategory
-    return categoryNode?.name?.toLowerCase() === 'hidden'
+    return categoryNode?.name?.toLowerCase() === 'misc'
   })
 }
 

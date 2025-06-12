@@ -3586,10 +3586,6 @@ export type CreateVisibleProductPayload = {
 /** A customer object */
 export type Customer = Node & {
   __typename?: 'Customer';
-  /** A nonce for the account page. By default, it expires in 1 hour. */
-  accountNonce?: Maybe<Scalars['String']['output']>;
-  /** A nonce link to the account page for session user. Expires in 24 hours. */
-  accountUrl?: Maybe<Scalars['String']['output']>;
   /** Customer&#039;s stored payment tokens. */
   availablePaymentMethods?: Maybe<Array<Maybe<PaymentToken>>>;
   /** Customer&#039;s stored payment tokens. */
@@ -3600,14 +3596,6 @@ export type Customer = Node & {
   billing?: Maybe<CustomerAddress>;
   /** Has customer calculated shipping? */
   calculatedShipping?: Maybe<Scalars['Boolean']['output']>;
-  /** A nonce for the cart page. By default, it expires in 1 hour. */
-  cartNonce?: Maybe<Scalars['String']['output']>;
-  /** A nonced link to the cart page. By default, it expires in 1 hour. */
-  cartUrl?: Maybe<Scalars['String']['output']>;
-  /** A nonce for the checkout page. By default, it expires in 1 hour. */
-  checkoutNonce?: Maybe<Scalars['String']['output']>;
-  /** A nonce link to the checkout page for session user. Expires in 24 hours. */
-  checkoutUrl?: Maybe<Scalars['String']['output']>;
   /** The ID of the customer in the database */
   databaseId?: Maybe<Scalars['Int']['output']>;
   /** Return the date customer was created */
@@ -4979,7 +4967,6 @@ export type ExternalProductglobalAttributesArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToGlobalProductAttributeConnectionWhereArgs>;
 };
 
 
@@ -4989,7 +4976,6 @@ export type ExternalProductlocalAttributesArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToLocalProductAttributeConnectionWhereArgs>;
 };
 
 
@@ -5719,7 +5705,6 @@ export type GroupProductglobalAttributesArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToGlobalProductAttributeConnectionWhereArgs>;
 };
 
 
@@ -5729,7 +5714,6 @@ export type GroupProductlocalAttributesArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToLocalProductAttributeConnectionWhereArgs>;
 };
 
 
@@ -7306,7 +7290,7 @@ export enum MenuItemNodeIdTypeEnum {
 }
 
 /** Deprecated in favor of MenuItemLinkeable Interface */
-export type MenuItemObjectUnion = Category | Page | Post | PostFormat | ProductCategory | ProductTag | Tag;
+export type MenuItemObjectUnion = Category | Page | Post | ProductCategory | ProductTag | Tag;
 
 /** Connection between the MenuItem type and the Menu type */
 export type MenuItemToMenuConnectionEdge = Edge & MenuConnectionEdge & OneToOneConnection & {
@@ -9850,7 +9834,7 @@ export type PostConnectionPageInfo = {
 };
 
 /** A standardized classification system for content presentation styles. These formats can be used to display content differently based on type, such as &quot;standard&quot;, &quot;gallery&quot;, &quot;video&quot;, etc. */
-export type PostFormat = DatabaseIdentifier & MenuItemLinkable & Node & TermNode & UniformResourceIdentifiable & {
+export type PostFormat = DatabaseIdentifier & Node & TermNode & UniformResourceIdentifiable & {
   __typename?: 'PostFormat';
   /** Connection between the PostFormat type and the ContentNode type */
   contentNodes?: Maybe<PostFormatToContentNodeConnection>;
@@ -11233,7 +11217,6 @@ export type ProductglobalAttributesArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToGlobalProductAttributeConnectionWhereArgs>;
 };
 
 
@@ -11243,7 +11226,6 @@ export type ProductlocalAttributesArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToLocalProductAttributeConnectionWhereArgs>;
 };
 
 
@@ -12804,12 +12786,6 @@ export type ProductToGlobalProductAttributeConnectionPageInfo = GlobalProductAtt
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
-/** Arguments for filtering the ProductToGlobalProductAttributeConnection connection */
-export type ProductToGlobalProductAttributeConnectionWhereArgs = {
-  /** Filter results by attribute scope. */
-  type?: InputMaybe<ProductAttributeTypesEnum>;
-};
-
 /** Connection between the Product type and the LocalProductAttribute type */
 export type ProductToLocalProductAttributeConnection = Connection & LocalProductAttributeConnection & {
   __typename?: 'ProductToLocalProductAttributeConnection';
@@ -12841,12 +12817,6 @@ export type ProductToLocalProductAttributeConnectionPageInfo = LocalProductAttri
   hasPreviousPage: Scalars['Boolean']['output'];
   /** When paginating backwards, the cursor to continue. */
   startCursor?: Maybe<Scalars['String']['output']>;
-};
-
-/** Arguments for filtering the ProductToLocalProductAttributeConnection connection */
-export type ProductToLocalProductAttributeConnectionWhereArgs = {
-  /** Filter results by attribute scope. */
-  type?: InputMaybe<ProductAttributeTypesEnum>;
 };
 
 /** Connection between the Product type and the MediaItem type */
@@ -14244,8 +14214,6 @@ export enum ProductTypesEnum {
   GROUPED = 'GROUPED',
   /** A simple product */
   SIMPLE = 'SIMPLE',
-  /** An unsupported product */
-  UNSUPPORTED = 'UNSUPPORTED',
   /** A variable product */
   VARIABLE = 'VARIABLE',
   /** A product variation */
@@ -15939,8 +15907,6 @@ export type RootQuery = {
   theme?: Maybe<Theme>;
   /** Connection between the RootQuery type and the Theme type */
   themes?: Maybe<RootQueryToThemeConnection>;
-  /** A unsupported product object */
-  unsupportedProduct?: Maybe<UnsupportedProduct>;
   /** Returns a user */
   user?: Maybe<User>;
   /** Returns a user role */
@@ -16546,13 +16512,6 @@ export type RootQuerythemesArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-/** The root entry point into the Graph */
-export type RootQueryunsupportedProductArgs = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-  idType?: InputMaybe<ProductIdTypeEnum>;
 };
 
 
@@ -19653,7 +19612,6 @@ export type SimpleProductglobalAttributesArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToGlobalProductAttributeConnectionWhereArgs>;
 };
 
 
@@ -19663,7 +19621,6 @@ export type SimpleProductlocalAttributesArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToLocalProductAttributeConnectionWhereArgs>;
 };
 
 
@@ -20635,13 +20592,6 @@ export type TaxonomyToTermNodeConnectionPageInfo = PageInfo & TermNodeConnection
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
-/** The template assigned to the node */
-export type Template_PageNoTitle = ContentTemplate & {
-  __typename?: 'Template_PageNoTitle';
-  /** The name of the template */
-  templateName?: Maybe<Scalars['String']['output']>;
-};
-
 /** Base interface for taxonomy terms such as categories and tags. Terms are used to organize and classify content. */
 export type TermNode = {
   /** The number of objects connected to the object */
@@ -20903,468 +20853,6 @@ export type UniformResourceIdentifiable = {
   isTermNode: Scalars['Boolean']['output'];
   /** The unique resource identifier path */
   uri?: Maybe<Scalars['String']['output']>;
-};
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProduct = ContentNode & DatabaseIdentifier & MenuItemLinkable & Node & NodeWithComments & NodeWithContentEditor & NodeWithExcerpt & NodeWithFeaturedImage & NodeWithTemplate & NodeWithTitle & Previewable & Product & UniformResourceIdentifiable & {
-  __typename?: 'UnsupportedProduct';
-  /** Connection between the Product type and the paColor type */
-  allPaColor?: Maybe<ProductToPaColorConnection>;
-  /**
-   * The ancestors of the content node.
-   * @deprecated This content type is not hierarchical and typically will not have ancestors
-   */
-  ancestors?: Maybe<ProductToAncestorsConnection>;
-  /** Connection between the Product type and the ProductAttribute type */
-  attributes?: Maybe<ProductToProductAttributeConnection>;
-  /** Product average count */
-  averageRating?: Maybe<Scalars['Float']['output']>;
-  /** Product backorders status */
-  backorders?: Maybe<BackordersEnum>;
-  /** Can product be backordered? */
-  backordersAllowed?: Maybe<Scalars['Boolean']['output']>;
-  /** Catalog visibility */
-  catalogVisibility?: Maybe<CatalogVisibilityEnum>;
-  /** The number of comments. Even though WPGraphQL denotes this field as an integer, in WordPress this field should be saved as a numeric string for compatibility. */
-  commentCount?: Maybe<Scalars['Int']['output']>;
-  /** Whether the comments are open or closed for this particular post. */
-  commentStatus?: Maybe<Scalars['String']['output']>;
-  /** Connection between the Product type and the Comment type */
-  comments?: Maybe<ProductToCommentsConnection>;
-  /** The content of the post. */
-  content?: Maybe<Scalars['String']['output']>;
-  /** Connection between the ContentNode type and the ContentType type */
-  contentType?: Maybe<ContentNodeToContentTypeConnectionEdge>;
-  /** The name of the Content Type the node belongs to */
-  contentTypeName: Scalars['String']['output'];
-  /** The unique identifier stored in the database */
-  databaseId: Scalars['Int']['output'];
-  /** Post publishing date. */
-  date?: Maybe<Scalars['String']['output']>;
-  /** The publishing date set in GMT. */
-  dateGmt?: Maybe<Scalars['String']['output']>;
-  /** Date on sale from */
-  dateOnSaleFrom?: Maybe<Scalars['String']['output']>;
-  /** Date on sale to */
-  dateOnSaleTo?: Maybe<Scalars['String']['output']>;
-  /** Product description */
-  description?: Maybe<Scalars['String']['output']>;
-  /** The desired slug of the post */
-  desiredSlug?: Maybe<Scalars['String']['output']>;
-  /** Download expiry */
-  downloadExpiry?: Maybe<Scalars['Int']['output']>;
-  /** Download limit */
-  downloadLimit?: Maybe<Scalars['Int']['output']>;
-  /** Is downloadable? */
-  downloadable?: Maybe<Scalars['Boolean']['output']>;
-  /** Product downloads */
-  downloads?: Maybe<Array<Maybe<ProductDownload>>>;
-  /** If a user has edited the node within the past 15 seconds, this will return the user that last edited. Null if the edit lock doesn&#039;t exist or is greater than 15 seconds */
-  editingLockedBy?: Maybe<ContentNodeToEditLockConnectionEdge>;
-  /** The RSS enclosure for the object */
-  enclosure?: Maybe<Scalars['String']['output']>;
-  /** Connection between the ContentNode type and the EnqueuedScript type */
-  enqueuedScripts?: Maybe<ContentNodeToEnqueuedScriptConnection>;
-  /** Connection between the ContentNode type and the EnqueuedStylesheet type */
-  enqueuedStylesheets?: Maybe<ContentNodeToEnqueuedStylesheetConnection>;
-  /** The excerpt of the post. */
-  excerpt?: Maybe<Scalars['String']['output']>;
-  /** If the product is featured */
-  featured?: Maybe<Scalars['Boolean']['output']>;
-  /** Connection between the NodeWithFeaturedImage type and the MediaItem type */
-  featuredImage?: Maybe<NodeWithFeaturedImageToMediaItemConnectionEdge>;
-  /** The database identifier for the featured image node assigned to the content node */
-  featuredImageDatabaseId?: Maybe<Scalars['Int']['output']>;
-  /** Globally unique ID of the featured image assigned to the node */
-  featuredImageId?: Maybe<Scalars['ID']['output']>;
-  /** Connection between the Product type and the MediaItem type */
-  galleryImages?: Maybe<ProductToMediaItemConnection>;
-  /** Connection between the Product type and the GlobalProductAttribute type */
-  globalAttributes?: Maybe<ProductToGlobalProductAttributeConnection>;
-  /** The global unique identifier for this post. This currently matches the value stored in WP_Post-&gt;guid and the guid column in the &quot;post_objects&quot; database table. */
-  guid?: Maybe<Scalars['String']['output']>;
-  /** Whether the product object is password protected. */
-  hasPassword?: Maybe<Scalars['Boolean']['output']>;
-  /** Product&#039;s height */
-  height?: Maybe<Scalars['String']['output']>;
-  /** The globally unique ID for the object */
-  id: Scalars['ID']['output'];
-  /** Main image */
-  image?: Maybe<MediaItem>;
-  /** Whether the node is a Comment */
-  isComment: Scalars['Boolean']['output'];
-  /** Whether the node is a Content Node */
-  isContentNode: Scalars['Boolean']['output'];
-  /** Whether the node represents the front page. */
-  isFrontPage: Scalars['Boolean']['output'];
-  /** Whether  the node represents the blog page. */
-  isPostsPage: Scalars['Boolean']['output'];
-  /** Whether the object is a node in the preview state */
-  isPreview?: Maybe<Scalars['Boolean']['output']>;
-  /** Whether the object is restricted from the current viewer */
-  isRestricted?: Maybe<Scalars['Boolean']['output']>;
-  /** Whether the node is a Term */
-  isTermNode: Scalars['Boolean']['output'];
-  /** The user that most recently edited the node */
-  lastEditedBy?: Maybe<ContentNodeToEditLastConnectionEdge>;
-  /** Product&#039;s length */
-  length?: Maybe<Scalars['String']['output']>;
-  /** The permalink of the post */
-  link?: Maybe<Scalars['String']['output']>;
-  /** Connection between the Product type and the LocalProductAttribute type */
-  localAttributes?: Maybe<ProductToLocalProductAttributeConnection>;
-  /** If product manage stock */
-  manageStock?: Maybe<Scalars['Boolean']['output']>;
-  /** Menu order */
-  menuOrder?: Maybe<Scalars['Int']['output']>;
-  /** Object meta data */
-  metaData?: Maybe<Array<Maybe<MetaData>>>;
-  /** The local modified time for a post. If a post was recently updated the modified field will change to match the corresponding time. */
-  modified?: Maybe<Scalars['String']['output']>;
-  /** The GMT modified time for a post. If a post was recently updated the modified field will change to match the corresponding time in GMT. */
-  modifiedGmt?: Maybe<Scalars['String']['output']>;
-  /** Product name */
-  name?: Maybe<Scalars['String']['output']>;
-  /** Is product on sale? */
-  onSale?: Maybe<Scalars['Boolean']['output']>;
-  /**
-   * The parent of the content node.
-   * @deprecated This content type is not hierarchical and typically will not have a parent
-   */
-  parent?: Maybe<ProductToParentConnectionEdge>;
-  /** The password for the product object. */
-  password?: Maybe<Scalars['String']['output']>;
-  /** Connection between the Product type and the Product type */
-  preview?: Maybe<ProductToPreviewConnectionEdge>;
-  /** The database id of the preview node */
-  previewRevisionDatabaseId?: Maybe<Scalars['Int']['output']>;
-  /** Whether the object is a node in the preview state */
-  previewRevisionId?: Maybe<Scalars['ID']['output']>;
-  /** Product&#039;s active price */
-  price?: Maybe<Scalars['String']['output']>;
-  /** Connection between the Product type and the productCategory type */
-  productCategories?: Maybe<ProductToProductCategoryConnection>;
-  /**
-   * The id field matches the WP_Post-&gt;ID field.
-   * @deprecated Deprecated in favor of the databaseId field
-   */
-  productId: Scalars['Int']['output'];
-  /** Connection between the Product type and the productTag type */
-  productTags?: Maybe<ProductToProductTagConnection>;
-  /** Connection between the Product type and the productType type */
-  productTypes?: Maybe<ProductToProductTypeConnection>;
-  /** Can product be purchased? */
-  purchasable?: Maybe<Scalars['Boolean']['output']>;
-  /** Number of times this product has been purchased */
-  purchaseCount?: Maybe<Scalars['Int']['output']>;
-  /** Purchase note */
-  purchaseNote?: Maybe<Scalars['String']['output']>;
-  /** Product&#039;s regular price */
-  regularPrice?: Maybe<Scalars['String']['output']>;
-  /** Connection between the Product type and the Product type */
-  related?: Maybe<ProductToProductConnection>;
-  /** Product review count */
-  reviewCount?: Maybe<Scalars['Int']['output']>;
-  /** Connection between the Product type and the Comment type */
-  reviews?: Maybe<ProductToCommentConnection>;
-  /** If reviews are allowed */
-  reviewsAllowed?: Maybe<Scalars['Boolean']['output']>;
-  /** Product&#039;s sale price */
-  salePrice?: Maybe<Scalars['String']['output']>;
-  /** shipping class ID */
-  shippingClassId?: Maybe<Scalars['Int']['output']>;
-  /** Connection between the Product type and the shippingClass type */
-  shippingClasses?: Maybe<ProductToShippingClassConnection>;
-  /** Does product need to be shipped? */
-  shippingRequired?: Maybe<Scalars['Boolean']['output']>;
-  /** Is product shipping taxable? */
-  shippingTaxable?: Maybe<Scalars['Boolean']['output']>;
-  /** Product short description */
-  shortDescription?: Maybe<Scalars['String']['output']>;
-  /** Product SKU */
-  sku?: Maybe<Scalars['String']['output']>;
-  /** The uri slug for the post. This is equivalent to the WP_Post-&gt;post_name field and the post_name column in the database for the &quot;post_objects&quot; table. */
-  slug?: Maybe<Scalars['String']['output']>;
-  /** If should be sold individually */
-  soldIndividually?: Maybe<Scalars['Boolean']['output']>;
-  /** The current status of the object */
-  status?: Maybe<Scalars['String']['output']>;
-  /** Number of items available for sale */
-  stockQuantity?: Maybe<Scalars['Int']['output']>;
-  /** Product stock status */
-  stockStatus?: Maybe<StockStatusEnum>;
-  /** Tax class */
-  taxClass?: Maybe<TaxClassEnum>;
-  /** Tax status */
-  taxStatus?: Maybe<TaxStatusEnum>;
-  /** The template assigned to the node */
-  template?: Maybe<ContentTemplate>;
-  /** Connection between the Product type and the TermNode type */
-  terms?: Maybe<ProductToTermNodeConnection>;
-  /** The title of the post. This is currently just the raw title. An amendment to support rendered title needs to be made. */
-  title?: Maybe<Scalars['String']['output']>;
-  /** Number total of sales */
-  totalSales?: Maybe<Scalars['Int']['output']>;
-  /** Product type */
-  type?: Maybe<ProductTypesEnum>;
-  /** Connection between the Product type and the Product type */
-  upsell?: Maybe<ProductToUpsellConnection>;
-  /** The unique resource identifier path */
-  uri?: Maybe<Scalars['String']['output']>;
-  /** Is product virtual? */
-  virtual?: Maybe<Scalars['Boolean']['output']>;
-  /** Connection between the Product type and the visibleProduct type */
-  visibleProducts?: Maybe<ProductToVisibleProductConnection>;
-  /** Product&#039;s weight */
-  weight?: Maybe<Scalars['String']['output']>;
-  /** Product&#039;s width */
-  width?: Maybe<Scalars['String']['output']>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductallPaColorArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToPaColorConnectionWhereArgs>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductancestorsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToAncestorsConnectionWhereArgs>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductattributesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToProductAttributeConnectionWhereArgs>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductcommentsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToCommentsConnectionWhereArgs>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductcontentArgs = {
-  format?: InputMaybe<PostObjectFieldFormatEnum>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductdescriptionArgs = {
-  format?: InputMaybe<PostObjectFieldFormatEnum>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductenqueuedScriptsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductenqueuedStylesheetsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductexcerptArgs = {
-  format?: InputMaybe<PostObjectFieldFormatEnum>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductgalleryImagesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToMediaItemConnectionWhereArgs>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductglobalAttributesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToGlobalProductAttributeConnectionWhereArgs>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductlocalAttributesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToLocalProductAttributeConnectionWhereArgs>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductmetaDataArgs = {
-  key?: InputMaybe<Scalars['String']['input']>;
-  keysIn?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  multiple?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductparentArgs = {
-  where?: InputMaybe<ProductToParentConnectionWhereArgs>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductpreviewArgs = {
-  where?: InputMaybe<ProductToPreviewConnectionWhereArgs>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductpriceArgs = {
-  format?: InputMaybe<PricingFieldFormatEnum>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductproductCategoriesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToProductCategoryConnectionWhereArgs>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductproductTagsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToProductTagConnectionWhereArgs>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductproductTypesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToProductTypeConnectionWhereArgs>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductregularPriceArgs = {
-  format?: InputMaybe<PricingFieldFormatEnum>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductrelatedArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToProductConnectionWhereArgs>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductreviewsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToCommentConnectionWhereArgs>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductsalePriceArgs = {
-  format?: InputMaybe<PricingFieldFormatEnum>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductshippingClassesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToShippingClassConnectionWhereArgs>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductshortDescriptionArgs = {
-  format?: InputMaybe<PostObjectFieldFormatEnum>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProducttermsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToTermNodeConnectionWhereArgs>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProducttitleArgs = {
-  format?: InputMaybe<PostObjectFieldFormatEnum>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductupsellArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToUpsellConnectionWhereArgs>;
-};
-
-
-/** A product object for a product type that is unsupported by the current API. */
-export type UnsupportedProductvisibleProductsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToVisibleProductConnectionWhereArgs>;
 };
 
 /** Input for the updateCategory mutation. */
@@ -23362,7 +22850,6 @@ export type VariableProductglobalAttributesArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToGlobalProductAttributeConnectionWhereArgs>;
 };
 
 
@@ -23372,7 +22859,6 @@ export type VariableProductlocalAttributesArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductToLocalProductAttributeConnectionWhereArgs>;
 };
 
 
@@ -24253,11 +23739,9 @@ type ProductContentSlice_GroupProduct_Fragment = { __typename?: 'GroupProduct', 
 
 type ProductContentSlice_SimpleProduct_Fragment = { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null };
 
-type ProductContentSlice_UnsupportedProduct_Fragment = { __typename?: 'UnsupportedProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null };
-
 type ProductContentSlice_VariableProduct_Fragment = { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null };
 
-export type ProductContentSliceFragment = ProductContentSlice_ExternalProduct_Fragment | ProductContentSlice_GroupProduct_Fragment | ProductContentSlice_SimpleProduct_Fragment | ProductContentSlice_UnsupportedProduct_Fragment | ProductContentSlice_VariableProduct_Fragment;
+export type ProductContentSliceFragment = ProductContentSlice_ExternalProduct_Fragment | ProductContentSlice_GroupProduct_Fragment | ProductContentSlice_SimpleProduct_Fragment | ProductContentSlice_VariableProduct_Fragment;
 
 export type ProductVariationContentSliceFragment = { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null };
 
@@ -24267,11 +23751,9 @@ type ProductContentSmall_GroupProduct_Fragment = { __typename?: 'GroupProduct', 
 
 type ProductContentSmall_SimpleProduct_Fragment = { __typename?: 'SimpleProduct', onSale?: boolean | null, stockStatus?: StockStatusEnum | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, rawPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null };
 
-type ProductContentSmall_UnsupportedProduct_Fragment = { __typename?: 'UnsupportedProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null };
-
 type ProductContentSmall_VariableProduct_Fragment = { __typename?: 'VariableProduct', onSale?: boolean | null, stockStatus?: StockStatusEnum | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, rawPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null };
 
-export type ProductContentSmallFragment = ProductContentSmall_ExternalProduct_Fragment | ProductContentSmall_GroupProduct_Fragment | ProductContentSmall_SimpleProduct_Fragment | ProductContentSmall_UnsupportedProduct_Fragment | ProductContentSmall_VariableProduct_Fragment;
+export type ProductContentSmallFragment = ProductContentSmall_ExternalProduct_Fragment | ProductContentSmall_GroupProduct_Fragment | ProductContentSmall_SimpleProduct_Fragment | ProductContentSmall_VariableProduct_Fragment;
 
 type ProductContentFull_ExternalProduct_Fragment = { __typename?: 'ExternalProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, description?: string | null, shortDescription?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, galleryImages?: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, attributes?: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, slug?: string | null, id: string, attributeId: number, terms?: { __typename?: 'GlobalProductAttributeToTermNodeConnection', nodes: Array<{ __typename?: 'Category', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PaColor', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PostFormat', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductTag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductType', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ShippingClass', id: string, name?: string | null, slug?: string | null } | { __typename?: 'Tag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'VisibleProduct', id: string, name?: string | null, slug?: string | null }> } | null } | { __typename?: 'LocalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, id: string, attributeId: number }> } | null };
 
@@ -24279,17 +23761,15 @@ type ProductContentFull_GroupProduct_Fragment = { __typename?: 'GroupProduct', i
 
 type ProductContentFull_SimpleProduct_Fragment = { __typename?: 'SimpleProduct', onSale?: boolean | null, stockStatus?: StockStatusEnum | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, stockQuantity?: number | null, soldIndividually?: boolean | null, id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, description?: string | null, shortDescription?: string | null, rawPrice?: string | null, defaultAttributes?: { __typename?: 'SimpleProductToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', id: string, attributeId?: number | null, name?: string | null, value?: string | null, label?: string | null }> } | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, galleryImages?: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, attributes?: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, slug?: string | null, id: string, attributeId: number, terms?: { __typename?: 'GlobalProductAttributeToTermNodeConnection', nodes: Array<{ __typename?: 'Category', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PaColor', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PostFormat', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductTag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductType', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ShippingClass', id: string, name?: string | null, slug?: string | null } | { __typename?: 'Tag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'VisibleProduct', id: string, name?: string | null, slug?: string | null }> } | null } | { __typename?: 'LocalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, id: string, attributeId: number }> } | null };
 
-type ProductContentFull_UnsupportedProduct_Fragment = { __typename?: 'UnsupportedProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, description?: string | null, shortDescription?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, galleryImages?: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, attributes?: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, slug?: string | null, id: string, attributeId: number, terms?: { __typename?: 'GlobalProductAttributeToTermNodeConnection', nodes: Array<{ __typename?: 'Category', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PaColor', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PostFormat', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductTag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductType', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ShippingClass', id: string, name?: string | null, slug?: string | null } | { __typename?: 'Tag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'VisibleProduct', id: string, name?: string | null, slug?: string | null }> } | null } | { __typename?: 'LocalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, id: string, attributeId: number }> } | null };
-
 type ProductContentFull_VariableProduct_Fragment = { __typename?: 'VariableProduct', onSale?: boolean | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, stockStatus?: StockStatusEnum | null, stockQuantity?: number | null, soldIndividually?: boolean | null, id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, description?: string | null, shortDescription?: string | null, rawPrice?: string | null, defaultAttributes?: { __typename?: 'VariableProductToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', id: string, attributeId?: number | null, label?: string | null, name?: string | null, value?: string | null }> } | null, variations?: { __typename?: 'VariableProductToProductVariationConnection', nodes: Array<{ __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, onSale?: boolean | null, rawPrice?: string | null, attributes?: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name?: string | null, label?: string | null, value?: string | null }> } | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null }> } | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, galleryImages?: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, attributes?: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, slug?: string | null, id: string, attributeId: number, terms?: { __typename?: 'GlobalProductAttributeToTermNodeConnection', nodes: Array<{ __typename?: 'Category', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PaColor', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PostFormat', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductTag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductType', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ShippingClass', id: string, name?: string | null, slug?: string | null } | { __typename?: 'Tag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'VisibleProduct', id: string, name?: string | null, slug?: string | null }> } | null } | { __typename?: 'LocalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, id: string, attributeId: number }> } | null };
 
-export type ProductContentFullFragment = ProductContentFull_ExternalProduct_Fragment | ProductContentFull_GroupProduct_Fragment | ProductContentFull_SimpleProduct_Fragment | ProductContentFull_UnsupportedProduct_Fragment | ProductContentFull_VariableProduct_Fragment;
+export type ProductContentFullFragment = ProductContentFull_ExternalProduct_Fragment | ProductContentFull_GroupProduct_Fragment | ProductContentFull_SimpleProduct_Fragment | ProductContentFull_VariableProduct_Fragment;
 
 export type VariationContentFragment = { __typename?: 'ProductVariation', id: string, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, stockStatus?: StockStatusEnum | null, stockQuantity?: number | null, onSale?: boolean | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null };
 
-export type CartItemContentFragment = { __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null };
+export type CartItemContentFragment = { __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null };
 
-export type CartContentFragment = { __typename?: 'Cart', needsShippingAddress?: boolean | null, subtotal?: string | null, subtotalTax?: string | null, shippingTax?: string | null, shippingTotal?: string | null, total?: string | null, totalTax?: string | null, feeTax?: string | null, feeTotal?: string | null, discountTax?: string | null, discountTotal?: string | null, contents?: { __typename?: 'CartToCartItemConnection', itemCount?: number | null, nodes: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null }> } | null, appliedCoupons?: Array<{ __typename?: 'AppliedCoupon', code: string, discountAmount: string, discountTax: string } | null> | null, availableShippingMethods?: Array<{ __typename?: 'ShippingPackage', packageDetails?: string | null, supportsShippingCalculator?: boolean | null, rates?: Array<{ __typename?: 'ShippingRate', id: string, instanceId?: number | null, methodId: string, label?: string | null, cost?: string | null } | null> | null } | null> | null };
+export type CartContentFragment = { __typename?: 'Cart', needsShippingAddress?: boolean | null, subtotal?: string | null, subtotalTax?: string | null, shippingTax?: string | null, shippingTotal?: string | null, total?: string | null, totalTax?: string | null, feeTax?: string | null, feeTotal?: string | null, discountTax?: string | null, discountTotal?: string | null, contents?: { __typename?: 'CartToCartItemConnection', itemCount?: number | null, nodes: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null }> } | null, appliedCoupons?: Array<{ __typename?: 'AppliedCoupon', code: string, discountAmount: string, discountTax: string } | null> | null, availableShippingMethods?: Array<{ __typename?: 'ShippingPackage', packageDetails?: string | null, supportsShippingCalculator?: boolean | null, rates?: Array<{ __typename?: 'ShippingRate', id: string, instanceId?: number | null, methodId: string, label?: string | null, cost?: string | null } | null> | null } | null> | null };
 
 export type CustomerFieldsFragment = { __typename?: 'Customer', id: string, databaseId?: number | null, firstName?: string | null, lastName?: string | null, displayName?: string | null, email?: string | null, sessionToken?: string | null, metaData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null };
 
@@ -24305,7 +23785,7 @@ export type GetProductsQueryVariables = Exact<{
 }>;
 
 
-export type GetProductsQuery = { __typename?: 'RootQuery', products?: { __typename?: 'RootQueryToProductConnection', pageInfo: { __typename?: 'RootQueryToProductConnectionPageInfo', endCursor?: string | null, hasNextPage: boolean }, edges: Array<{ __typename?: 'RootQueryToProductConnectionEdge', cursor?: string | null, node: { __typename?: 'ExternalProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null } | { __typename?: 'SimpleProduct', onSale?: boolean | null, stockStatus?: StockStatusEnum | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, rawPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null } | { __typename?: 'VariableProduct', onSale?: boolean | null, stockStatus?: StockStatusEnum | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, rawPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null } }>, nodes: Array<{ __typename?: 'ExternalProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null } | { __typename?: 'SimpleProduct', onSale?: boolean | null, stockStatus?: StockStatusEnum | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, rawPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null } | { __typename?: 'VariableProduct', onSale?: boolean | null, stockStatus?: StockStatusEnum | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, rawPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null }> } | null };
+export type GetProductsQuery = { __typename?: 'RootQuery', products?: { __typename?: 'RootQueryToProductConnection', pageInfo: { __typename?: 'RootQueryToProductConnectionPageInfo', endCursor?: string | null, hasNextPage: boolean }, edges: Array<{ __typename?: 'RootQueryToProductConnectionEdge', cursor?: string | null, node: { __typename?: 'ExternalProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null } | { __typename?: 'SimpleProduct', onSale?: boolean | null, stockStatus?: StockStatusEnum | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, rawPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null } | { __typename?: 'VariableProduct', onSale?: boolean | null, stockStatus?: StockStatusEnum | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, rawPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null } }>, nodes: Array<{ __typename?: 'ExternalProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null } | { __typename?: 'SimpleProduct', onSale?: boolean | null, stockStatus?: StockStatusEnum | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, rawPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null } | { __typename?: 'VariableProduct', onSale?: boolean | null, stockStatus?: StockStatusEnum | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, purchaseCount?: number | null, shortDescription?: string | null, rawPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, slug?: string | null, name?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, allPaColor?: { __typename?: 'ProductToPaColorConnection', nodes: Array<{ __typename?: 'PaColor', id: string, slug?: string | null, name?: string | null }> } | null }> } | null };
 
 export type GetProductQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -24313,7 +23793,7 @@ export type GetProductQueryVariables = Exact<{
 }>;
 
 
-export type GetProductQuery = { __typename?: 'RootQuery', product?: { __typename?: 'ExternalProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, description?: string | null, shortDescription?: string | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null, databaseId: number, count?: number | null, description?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null }> } | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, galleryImages?: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, attributes?: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, slug?: string | null, id: string, attributeId: number, terms?: { __typename?: 'GlobalProductAttributeToTermNodeConnection', nodes: Array<{ __typename?: 'Category', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PaColor', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PostFormat', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductTag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductType', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ShippingClass', id: string, name?: string | null, slug?: string | null } | { __typename?: 'Tag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'VisibleProduct', id: string, name?: string | null, slug?: string | null }> } | null } | { __typename?: 'LocalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, id: string, attributeId: number }> } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, description?: string | null, shortDescription?: string | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null, databaseId: number, count?: number | null, description?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null }> } | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, galleryImages?: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, attributes?: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, slug?: string | null, id: string, attributeId: number, terms?: { __typename?: 'GlobalProductAttributeToTermNodeConnection', nodes: Array<{ __typename?: 'Category', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PaColor', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PostFormat', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductTag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductType', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ShippingClass', id: string, name?: string | null, slug?: string | null } | { __typename?: 'Tag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'VisibleProduct', id: string, name?: string | null, slug?: string | null }> } | null } | { __typename?: 'LocalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, id: string, attributeId: number }> } | null } | { __typename?: 'SimpleProduct', onSale?: boolean | null, stockStatus?: StockStatusEnum | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, stockQuantity?: number | null, soldIndividually?: boolean | null, id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, description?: string | null, shortDescription?: string | null, rawPrice?: string | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null, databaseId: number, count?: number | null, description?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null }> } | null, defaultAttributes?: { __typename?: 'SimpleProductToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', id: string, attributeId?: number | null, name?: string | null, value?: string | null, label?: string | null }> } | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, galleryImages?: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, attributes?: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, slug?: string | null, id: string, attributeId: number, terms?: { __typename?: 'GlobalProductAttributeToTermNodeConnection', nodes: Array<{ __typename?: 'Category', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PaColor', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PostFormat', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductTag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductType', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ShippingClass', id: string, name?: string | null, slug?: string | null } | { __typename?: 'Tag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'VisibleProduct', id: string, name?: string | null, slug?: string | null }> } | null } | { __typename?: 'LocalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, id: string, attributeId: number }> } | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, description?: string | null, shortDescription?: string | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null, databaseId: number, count?: number | null, description?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null }> } | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, galleryImages?: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, attributes?: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, slug?: string | null, id: string, attributeId: number, terms?: { __typename?: 'GlobalProductAttributeToTermNodeConnection', nodes: Array<{ __typename?: 'Category', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PaColor', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PostFormat', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductTag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductType', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ShippingClass', id: string, name?: string | null, slug?: string | null } | { __typename?: 'Tag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'VisibleProduct', id: string, name?: string | null, slug?: string | null }> } | null } | { __typename?: 'LocalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, id: string, attributeId: number }> } | null } | { __typename?: 'VariableProduct', onSale?: boolean | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, stockStatus?: StockStatusEnum | null, stockQuantity?: number | null, soldIndividually?: boolean | null, id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, description?: string | null, shortDescription?: string | null, rawPrice?: string | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null, databaseId: number, count?: number | null, description?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null }> } | null, defaultAttributes?: { __typename?: 'VariableProductToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', id: string, attributeId?: number | null, label?: string | null, name?: string | null, value?: string | null }> } | null, variations?: { __typename?: 'VariableProductToProductVariationConnection', nodes: Array<{ __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, onSale?: boolean | null, rawPrice?: string | null, attributes?: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name?: string | null, label?: string | null, value?: string | null }> } | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null }> } | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, galleryImages?: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, attributes?: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, slug?: string | null, id: string, attributeId: number, terms?: { __typename?: 'GlobalProductAttributeToTermNodeConnection', nodes: Array<{ __typename?: 'Category', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PaColor', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PostFormat', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductTag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductType', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ShippingClass', id: string, name?: string | null, slug?: string | null } | { __typename?: 'Tag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'VisibleProduct', id: string, name?: string | null, slug?: string | null }> } | null } | { __typename?: 'LocalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, id: string, attributeId: number }> } | null } | null };
+export type GetProductQuery = { __typename?: 'RootQuery', product?: { __typename?: 'ExternalProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, description?: string | null, shortDescription?: string | null, largeImage?: { __typename?: 'MediaItem', altText?: string | null, largeSourceUrl?: string | null } | null, largeGalleryImages?: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', altText?: string | null, largeSourceUrl?: string | null }> } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null, databaseId: number, count?: number | null, description?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null }> } | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, galleryImages?: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, attributes?: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, slug?: string | null, id: string, attributeId: number, terms?: { __typename?: 'GlobalProductAttributeToTermNodeConnection', nodes: Array<{ __typename?: 'Category', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PaColor', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PostFormat', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductTag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductType', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ShippingClass', id: string, name?: string | null, slug?: string | null } | { __typename?: 'Tag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'VisibleProduct', id: string, name?: string | null, slug?: string | null }> } | null } | { __typename?: 'LocalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, id: string, attributeId: number }> } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, description?: string | null, shortDescription?: string | null, largeImage?: { __typename?: 'MediaItem', altText?: string | null, largeSourceUrl?: string | null } | null, largeGalleryImages?: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', altText?: string | null, largeSourceUrl?: string | null }> } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null, databaseId: number, count?: number | null, description?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null }> } | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, galleryImages?: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, attributes?: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, slug?: string | null, id: string, attributeId: number, terms?: { __typename?: 'GlobalProductAttributeToTermNodeConnection', nodes: Array<{ __typename?: 'Category', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PaColor', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PostFormat', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductTag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductType', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ShippingClass', id: string, name?: string | null, slug?: string | null } | { __typename?: 'Tag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'VisibleProduct', id: string, name?: string | null, slug?: string | null }> } | null } | { __typename?: 'LocalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, id: string, attributeId: number }> } | null } | { __typename?: 'SimpleProduct', onSale?: boolean | null, stockStatus?: StockStatusEnum | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, stockQuantity?: number | null, soldIndividually?: boolean | null, id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, description?: string | null, shortDescription?: string | null, rawPrice?: string | null, largeImage?: { __typename?: 'MediaItem', altText?: string | null, largeSourceUrl?: string | null } | null, largeGalleryImages?: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', altText?: string | null, largeSourceUrl?: string | null }> } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null, databaseId: number, count?: number | null, description?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null }> } | null, defaultAttributes?: { __typename?: 'SimpleProductToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', id: string, attributeId?: number | null, name?: string | null, value?: string | null, label?: string | null }> } | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, galleryImages?: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, attributes?: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, slug?: string | null, id: string, attributeId: number, terms?: { __typename?: 'GlobalProductAttributeToTermNodeConnection', nodes: Array<{ __typename?: 'Category', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PaColor', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PostFormat', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductTag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductType', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ShippingClass', id: string, name?: string | null, slug?: string | null } | { __typename?: 'Tag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'VisibleProduct', id: string, name?: string | null, slug?: string | null }> } | null } | { __typename?: 'LocalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, id: string, attributeId: number }> } | null } | { __typename?: 'VariableProduct', onSale?: boolean | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, stockStatus?: StockStatusEnum | null, stockQuantity?: number | null, soldIndividually?: boolean | null, id: string, databaseId: number, slug?: string | null, name?: string | null, type?: ProductTypesEnum | null, description?: string | null, shortDescription?: string | null, rawPrice?: string | null, largeImage?: { __typename?: 'MediaItem', altText?: string | null, largeSourceUrl?: string | null } | null, largeGalleryImages?: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', altText?: string | null, largeSourceUrl?: string | null }> } | null, productCategories?: { __typename?: 'ProductToProductCategoryConnection', nodes: Array<{ __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null, databaseId: number, count?: number | null, description?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null }> } | null, defaultAttributes?: { __typename?: 'VariableProductToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', id: string, attributeId?: number | null, label?: string | null, name?: string | null, value?: string | null }> } | null, variations?: { __typename?: 'VariableProductToProductVariationConnection', nodes: Array<{ __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, price?: string | null, regularPrice?: string | null, salePrice?: string | null, onSale?: boolean | null, rawPrice?: string | null, attributes?: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name?: string | null, label?: string | null, value?: string | null }> } | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null }> } | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null, galleryImages?: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null }> } | null, productTags?: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug?: string | null, name?: string | null }> } | null, attributes?: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, slug?: string | null, id: string, attributeId: number, terms?: { __typename?: 'GlobalProductAttributeToTermNodeConnection', nodes: Array<{ __typename?: 'Category', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PaColor', id: string, name?: string | null, slug?: string | null } | { __typename?: 'PostFormat', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductCategory', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductTag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ProductType', id: string, name?: string | null, slug?: string | null } | { __typename?: 'ShippingClass', id: string, name?: string | null, slug?: string | null } | { __typename?: 'Tag', id: string, name?: string | null, slug?: string | null } | { __typename?: 'VisibleProduct', id: string, name?: string | null, slug?: string | null }> } | null } | { __typename?: 'LocalProductAttribute', name?: string | null, label?: string | null, options?: Array<string | null> | null, variation?: boolean | null, id: string, attributeId: number }> } | null } | null };
 
 export type GetShopCategoriesQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -24345,7 +23825,7 @@ export type GetShopColorsQuery = { __typename?: 'RootQuery', allPaColor?: { __ty
 export type GetSessionQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetSessionQuery = { __typename?: 'RootQuery', cart?: { __typename?: 'Cart', needsShippingAddress?: boolean | null, subtotal?: string | null, subtotalTax?: string | null, shippingTax?: string | null, shippingTotal?: string | null, total?: string | null, totalTax?: string | null, feeTax?: string | null, feeTotal?: string | null, discountTax?: string | null, discountTotal?: string | null, contents?: { __typename?: 'CartToCartItemConnection', itemCount?: number | null, nodes: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null }> } | null, appliedCoupons?: Array<{ __typename?: 'AppliedCoupon', code: string, discountAmount: string, discountTax: string } | null> | null, availableShippingMethods?: Array<{ __typename?: 'ShippingPackage', packageDetails?: string | null, supportsShippingCalculator?: boolean | null, rates?: Array<{ __typename?: 'ShippingRate', id: string, instanceId?: number | null, methodId: string, label?: string | null, cost?: string | null } | null> | null } | null> | null } | null, customer?: { __typename?: 'Customer', id: string, sessionToken?: string | null, firstName?: string | null, shipping?: { __typename?: 'CustomerAddress', postcode?: string | null, state?: string | null, city?: string | null, country?: CountriesEnum | null } | null } | null };
+export type GetSessionQuery = { __typename?: 'RootQuery', cart?: { __typename?: 'Cart', needsShippingAddress?: boolean | null, subtotal?: string | null, subtotalTax?: string | null, shippingTax?: string | null, shippingTotal?: string | null, total?: string | null, totalTax?: string | null, feeTax?: string | null, feeTotal?: string | null, discountTax?: string | null, discountTotal?: string | null, contents?: { __typename?: 'CartToCartItemConnection', itemCount?: number | null, nodes: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null }> } | null, appliedCoupons?: Array<{ __typename?: 'AppliedCoupon', code: string, discountAmount: string, discountTax: string } | null> | null, availableShippingMethods?: Array<{ __typename?: 'ShippingPackage', packageDetails?: string | null, supportsShippingCalculator?: boolean | null, rates?: Array<{ __typename?: 'ShippingRate', id: string, instanceId?: number | null, methodId: string, label?: string | null, cost?: string | null } | null> | null } | null> | null } | null, customer?: { __typename?: 'Customer', id: string, sessionToken?: string | null, firstName?: string | null, shipping?: { __typename?: 'CustomerAddress', postcode?: string | null, state?: string | null, city?: string | null, country?: CountriesEnum | null } | null } | null };
 
 export type AddToCartMutationVariables = Exact<{
   productId: Scalars['Int']['input'];
@@ -24356,14 +23836,14 @@ export type AddToCartMutationVariables = Exact<{
 }>;
 
 
-export type AddToCartMutation = { __typename?: 'RootMutation', addToCart?: { __typename?: 'AddToCartPayload', cart?: { __typename?: 'Cart', needsShippingAddress?: boolean | null, subtotal?: string | null, subtotalTax?: string | null, shippingTax?: string | null, shippingTotal?: string | null, total?: string | null, totalTax?: string | null, feeTax?: string | null, feeTotal?: string | null, discountTax?: string | null, discountTotal?: string | null, contents?: { __typename?: 'CartToCartItemConnection', itemCount?: number | null, nodes: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null }> } | null, appliedCoupons?: Array<{ __typename?: 'AppliedCoupon', code: string, discountAmount: string, discountTax: string } | null> | null, availableShippingMethods?: Array<{ __typename?: 'ShippingPackage', packageDetails?: string | null, supportsShippingCalculator?: boolean | null, rates?: Array<{ __typename?: 'ShippingRate', id: string, instanceId?: number | null, methodId: string, label?: string | null, cost?: string | null } | null> | null } | null> | null } | null, cartItem?: { __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null } | null } | null };
+export type AddToCartMutation = { __typename?: 'RootMutation', addToCart?: { __typename?: 'AddToCartPayload', cart?: { __typename?: 'Cart', needsShippingAddress?: boolean | null, subtotal?: string | null, subtotalTax?: string | null, shippingTax?: string | null, shippingTotal?: string | null, total?: string | null, totalTax?: string | null, feeTax?: string | null, feeTotal?: string | null, discountTax?: string | null, discountTotal?: string | null, contents?: { __typename?: 'CartToCartItemConnection', itemCount?: number | null, nodes: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null }> } | null, appliedCoupons?: Array<{ __typename?: 'AppliedCoupon', code: string, discountAmount: string, discountTax: string } | null> | null, availableShippingMethods?: Array<{ __typename?: 'ShippingPackage', packageDetails?: string | null, supportsShippingCalculator?: boolean | null, rates?: Array<{ __typename?: 'ShippingRate', id: string, instanceId?: number | null, methodId: string, label?: string | null, cost?: string | null } | null> | null } | null> | null } | null, cartItem?: { __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null } | null } | null };
 
 export type UpdateCartItemQuantitiesMutationVariables = Exact<{
   items?: InputMaybe<Array<InputMaybe<CartItemQuantityInput>> | InputMaybe<CartItemQuantityInput>>;
 }>;
 
 
-export type UpdateCartItemQuantitiesMutation = { __typename?: 'RootMutation', updateItemQuantities?: { __typename?: 'UpdateItemQuantitiesPayload', cart?: { __typename?: 'Cart', needsShippingAddress?: boolean | null, subtotal?: string | null, subtotalTax?: string | null, shippingTax?: string | null, shippingTotal?: string | null, total?: string | null, totalTax?: string | null, feeTax?: string | null, feeTotal?: string | null, discountTax?: string | null, discountTotal?: string | null, contents?: { __typename?: 'CartToCartItemConnection', itemCount?: number | null, nodes: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null }> } | null, appliedCoupons?: Array<{ __typename?: 'AppliedCoupon', code: string, discountAmount: string, discountTax: string } | null> | null, availableShippingMethods?: Array<{ __typename?: 'ShippingPackage', packageDetails?: string | null, supportsShippingCalculator?: boolean | null, rates?: Array<{ __typename?: 'ShippingRate', id: string, instanceId?: number | null, methodId: string, label?: string | null, cost?: string | null } | null> | null } | null> | null } | null, items?: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null } | null> | null } | null };
+export type UpdateCartItemQuantitiesMutation = { __typename?: 'RootMutation', updateItemQuantities?: { __typename?: 'UpdateItemQuantitiesPayload', cart?: { __typename?: 'Cart', needsShippingAddress?: boolean | null, subtotal?: string | null, subtotalTax?: string | null, shippingTax?: string | null, shippingTotal?: string | null, total?: string | null, totalTax?: string | null, feeTax?: string | null, feeTotal?: string | null, discountTax?: string | null, discountTotal?: string | null, contents?: { __typename?: 'CartToCartItemConnection', itemCount?: number | null, nodes: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null }> } | null, appliedCoupons?: Array<{ __typename?: 'AppliedCoupon', code: string, discountAmount: string, discountTax: string } | null> | null, availableShippingMethods?: Array<{ __typename?: 'ShippingPackage', packageDetails?: string | null, supportsShippingCalculator?: boolean | null, rates?: Array<{ __typename?: 'ShippingRate', id: string, instanceId?: number | null, methodId: string, label?: string | null, cost?: string | null } | null> | null } | null> | null } | null, items?: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null } | null> | null } | null };
 
 export type RemoveItemsFromCartMutationVariables = Exact<{
   keys?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>> | InputMaybe<Scalars['ID']['input']>>;
@@ -24371,7 +23851,7 @@ export type RemoveItemsFromCartMutationVariables = Exact<{
 }>;
 
 
-export type RemoveItemsFromCartMutation = { __typename?: 'RootMutation', removeItemsFromCart?: { __typename?: 'RemoveItemsFromCartPayload', cart?: { __typename?: 'Cart', needsShippingAddress?: boolean | null, subtotal?: string | null, subtotalTax?: string | null, shippingTax?: string | null, shippingTotal?: string | null, total?: string | null, totalTax?: string | null, feeTax?: string | null, feeTotal?: string | null, discountTax?: string | null, discountTotal?: string | null, contents?: { __typename?: 'CartToCartItemConnection', itemCount?: number | null, nodes: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null }> } | null, appliedCoupons?: Array<{ __typename?: 'AppliedCoupon', code: string, discountAmount: string, discountTax: string } | null> | null, availableShippingMethods?: Array<{ __typename?: 'ShippingPackage', packageDetails?: string | null, supportsShippingCalculator?: boolean | null, rates?: Array<{ __typename?: 'ShippingRate', id: string, instanceId?: number | null, methodId: string, label?: string | null, cost?: string | null } | null> | null } | null> | null } | null, cartItems?: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null } | null> | null } | null };
+export type RemoveItemsFromCartMutation = { __typename?: 'RootMutation', removeItemsFromCart?: { __typename?: 'RemoveItemsFromCartPayload', cart?: { __typename?: 'Cart', needsShippingAddress?: boolean | null, subtotal?: string | null, subtotalTax?: string | null, shippingTax?: string | null, shippingTotal?: string | null, total?: string | null, totalTax?: string | null, feeTax?: string | null, feeTotal?: string | null, discountTax?: string | null, discountTotal?: string | null, contents?: { __typename?: 'CartToCartItemConnection', itemCount?: number | null, nodes: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null }> } | null, appliedCoupons?: Array<{ __typename?: 'AppliedCoupon', code: string, discountAmount: string, discountTax: string } | null> | null, availableShippingMethods?: Array<{ __typename?: 'ShippingPackage', packageDetails?: string | null, supportsShippingCalculator?: boolean | null, rates?: Array<{ __typename?: 'ShippingRate', id: string, instanceId?: number | null, methodId: string, label?: string | null, cost?: string | null } | null> | null } | null> | null } | null, cartItems?: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, subtotalTax?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, soldIndividually?: boolean | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', attributes?: Array<{ __typename?: 'VariationAttribute', id: string, label?: string | null, name?: string | null, value?: string | null } | null> | null, node: { __typename?: 'ProductVariation', id: string, databaseId: number, name?: string | null, slug?: string | null, price?: string | null, regularPrice?: string | null, image?: { __typename?: 'MediaItem', id: string, sourceUrl?: string | null, altText?: string | null } | null } } | null, extraData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null } | null> | null } | null };
 
 export type LoginMutationVariables = Exact<{
   username: Scalars['String']['input'];
@@ -24428,7 +23908,7 @@ export type UpdateOrderMutation = { __typename?: 'RootMutation', updateOrder?: {
 export type GetCartQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCartQuery = { __typename?: 'RootQuery', cart?: { __typename?: 'Cart', total?: string | null, subtotal?: string | null, discountTotal?: string | null, shippingTotal?: string | null, feeTotal?: string | null, contents?: { __typename?: 'CartToCartItemConnection', nodes: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, sku?: string | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, sku?: string | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, salePrice?: string | null, id: string, databaseId: number, name?: string | null, sku?: string | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, name?: string | null, sku?: string | null } | { __typename?: 'VariableProduct', id: string, databaseId: number, name?: string | null, sku?: string | null } } | null }> } | null } | null };
+export type GetCartQuery = { __typename?: 'RootQuery', cart?: { __typename?: 'Cart', total?: string | null, subtotal?: string | null, discountTotal?: string | null, shippingTotal?: string | null, feeTotal?: string | null, contents?: { __typename?: 'CartToCartItemConnection', nodes: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, total?: string | null, subtotal?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, sku?: string | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, sku?: string | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, salePrice?: string | null, id: string, databaseId: number, name?: string | null, sku?: string | null } | { __typename?: 'VariableProduct', id: string, databaseId: number, name?: string | null, sku?: string | null } } | null }> } | null } | null };
 
 export type EmptyCartMutationVariables = Exact<{
   input: EmptyCartInput;
@@ -24440,7 +23920,7 @@ export type EmptyCartMutation = { __typename?: 'RootMutation', emptyCart?: { __t
 export type GetCustomerOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCustomerOrdersQuery = { __typename?: 'RootQuery', customer?: { __typename?: 'Customer', orders?: { __typename?: 'CustomerToOrderConnection', nodes: Array<{ __typename?: 'Order', id: string, databaseId?: number | null, date?: string | null, status?: OrderStatusEnum | null, total?: string | null, metaData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null, lineItems?: { __typename?: 'OrderToLineItemConnection', nodes: Array<{ __typename?: 'LineItem', total?: string | null, quantity?: number | null, product?: { __typename?: 'LineItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', name?: string | null } | { __typename?: 'GroupProduct', name?: string | null } | { __typename?: 'SimpleProduct', name?: string | null } | { __typename?: 'UnsupportedProduct', name?: string | null } | { __typename?: 'VariableProduct', name?: string | null } } | null }> } | null, shipping?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null } | null }> } | null } | null };
+export type GetCustomerOrdersQuery = { __typename?: 'RootQuery', customer?: { __typename?: 'Customer', orders?: { __typename?: 'CustomerToOrderConnection', nodes: Array<{ __typename?: 'Order', id: string, databaseId?: number | null, date?: string | null, status?: OrderStatusEnum | null, total?: string | null, metaData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null, lineItems?: { __typename?: 'OrderToLineItemConnection', nodes: Array<{ __typename?: 'LineItem', total?: string | null, quantity?: number | null, product?: { __typename?: 'LineItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', name?: string | null } | { __typename?: 'GroupProduct', name?: string | null } | { __typename?: 'SimpleProduct', name?: string | null } | { __typename?: 'VariableProduct', name?: string | null } } | null }> } | null, shipping?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null } | null }> } | null } | null };
 
 export type GetCustomerDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -24457,7 +23937,7 @@ export type SearchProductsQueryVariables = Exact<{
 }>;
 
 
-export type SearchProductsQuery = { __typename?: 'RootQuery', products?: { __typename?: 'RootQueryToProductConnection', nodes: Array<{ __typename?: 'ExternalProduct', price?: string | null, regularPrice?: string | null, salePrice?: string | null, id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, salePrice?: string | null, id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, salePrice?: string | null, id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null }> } | null };
+export type SearchProductsQuery = { __typename?: 'RootQuery', products?: { __typename?: 'RootQueryToProductConnection', nodes: Array<{ __typename?: 'ExternalProduct', price?: string | null, regularPrice?: string | null, salePrice?: string | null, id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, salePrice?: string | null, id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', price?: string | null, regularPrice?: string | null, salePrice?: string | null, id: string, databaseId: number, name?: string | null, onSale?: boolean | null, slug?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null }> } | null };
 
 export type UpdateCustomerMutationVariables = Exact<{
   input: UpdateCustomerInput;
@@ -24485,7 +23965,7 @@ export type GetOrderByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetOrderByIdQuery = { __typename?: 'RootQuery', order?: { __typename?: 'Order', id: string, databaseId?: number | null, date?: string | null, status?: OrderStatusEnum | null, total?: string | null, subtotal?: string | null, shippingTotal?: string | null, lineItems?: { __typename?: 'OrderToLineItemConnection', nodes: Array<{ __typename?: 'LineItem', total?: string | null, quantity?: number | null, subtotal?: string | null, product?: { __typename?: 'LineItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null } | null } | { __typename?: 'GroupProduct', name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null } | null } | { __typename?: 'SimpleProduct', name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null } | null } | { __typename?: 'UnsupportedProduct', name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null } | null } | { __typename?: 'VariableProduct', name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null } | null } } | null }> } | null, shipping?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null } | null, billing?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null, email?: string | null, phone?: string | null } | null, metaData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null } | null };
+export type GetOrderByIdQuery = { __typename?: 'RootQuery', order?: { __typename?: 'Order', id: string, databaseId?: number | null, date?: string | null, status?: OrderStatusEnum | null, total?: string | null, subtotal?: string | null, shippingTotal?: string | null, lineItems?: { __typename?: 'OrderToLineItemConnection', nodes: Array<{ __typename?: 'LineItem', total?: string | null, quantity?: number | null, subtotal?: string | null, product?: { __typename?: 'LineItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null } | null } | { __typename?: 'GroupProduct', name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null } | null } | { __typename?: 'SimpleProduct', name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null } | null } | { __typename?: 'VariableProduct', name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null } | null } } | null }> } | null, shipping?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null } | null, billing?: { __typename?: 'CustomerAddress', firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, city?: string | null, state?: string | null, postcode?: string | null, country?: CountriesEnum | null, email?: string | null, phone?: string | null } | null, metaData?: Array<{ __typename?: 'MetaData', key: string, value?: string | null } | null> | null } | null };
 
 export type SendPasswordResetEmailMutationVariables = Exact<{
   input: SendPasswordResetEmailInput;
@@ -24508,7 +23988,7 @@ export type GetProductReviewsQueryVariables = Exact<{
 }>;
 
 
-export type GetProductReviewsQuery = { __typename?: 'RootQuery', product?: { __typename?: 'ExternalProduct', averageRating?: number | null, reviewCount?: number | null, reviews?: { __typename?: 'ProductToCommentConnection', edges: Array<{ __typename?: 'ProductToCommentConnectionEdge', rating?: number | null, node: { __typename?: 'Comment', id: string, content?: string | null, date?: string | null, author?: { __typename?: 'CommentToCommenterConnectionEdge', node: { __typename?: 'CommentAuthor', name?: string | null } | { __typename?: 'User', name?: string | null } } | null, reviewPhoto?: { __typename?: 'ReviewPhoto', id?: string | null, sourceUrl?: string | null, mediaDetails?: { __typename?: 'ReviewPhotoDetails', sizes?: Array<{ __typename?: 'ReviewPhotoSize', sourceUrl?: string | null, width?: number | null, height?: number | null } | null> | null } | null } | null } }>, pageInfo: { __typename?: 'ProductToCommentConnectionPageInfo', hasNextPage: boolean, endCursor?: string | null } } | null } | { __typename?: 'GroupProduct', averageRating?: number | null, reviewCount?: number | null, reviews?: { __typename?: 'ProductToCommentConnection', edges: Array<{ __typename?: 'ProductToCommentConnectionEdge', rating?: number | null, node: { __typename?: 'Comment', id: string, content?: string | null, date?: string | null, author?: { __typename?: 'CommentToCommenterConnectionEdge', node: { __typename?: 'CommentAuthor', name?: string | null } | { __typename?: 'User', name?: string | null } } | null, reviewPhoto?: { __typename?: 'ReviewPhoto', id?: string | null, sourceUrl?: string | null, mediaDetails?: { __typename?: 'ReviewPhotoDetails', sizes?: Array<{ __typename?: 'ReviewPhotoSize', sourceUrl?: string | null, width?: number | null, height?: number | null } | null> | null } | null } | null } }>, pageInfo: { __typename?: 'ProductToCommentConnectionPageInfo', hasNextPage: boolean, endCursor?: string | null } } | null } | { __typename?: 'SimpleProduct', averageRating?: number | null, reviewCount?: number | null, reviews?: { __typename?: 'ProductToCommentConnection', edges: Array<{ __typename?: 'ProductToCommentConnectionEdge', rating?: number | null, node: { __typename?: 'Comment', id: string, content?: string | null, date?: string | null, author?: { __typename?: 'CommentToCommenterConnectionEdge', node: { __typename?: 'CommentAuthor', name?: string | null } | { __typename?: 'User', name?: string | null } } | null, reviewPhoto?: { __typename?: 'ReviewPhoto', id?: string | null, sourceUrl?: string | null, mediaDetails?: { __typename?: 'ReviewPhotoDetails', sizes?: Array<{ __typename?: 'ReviewPhotoSize', sourceUrl?: string | null, width?: number | null, height?: number | null } | null> | null } | null } | null } }>, pageInfo: { __typename?: 'ProductToCommentConnectionPageInfo', hasNextPage: boolean, endCursor?: string | null } } | null } | { __typename?: 'UnsupportedProduct', averageRating?: number | null, reviewCount?: number | null, reviews?: { __typename?: 'ProductToCommentConnection', edges: Array<{ __typename?: 'ProductToCommentConnectionEdge', rating?: number | null, node: { __typename?: 'Comment', id: string, content?: string | null, date?: string | null, author?: { __typename?: 'CommentToCommenterConnectionEdge', node: { __typename?: 'CommentAuthor', name?: string | null } | { __typename?: 'User', name?: string | null } } | null, reviewPhoto?: { __typename?: 'ReviewPhoto', id?: string | null, sourceUrl?: string | null, mediaDetails?: { __typename?: 'ReviewPhotoDetails', sizes?: Array<{ __typename?: 'ReviewPhotoSize', sourceUrl?: string | null, width?: number | null, height?: number | null } | null> | null } | null } | null } }>, pageInfo: { __typename?: 'ProductToCommentConnectionPageInfo', hasNextPage: boolean, endCursor?: string | null } } | null } | { __typename?: 'VariableProduct', averageRating?: number | null, reviewCount?: number | null, reviews?: { __typename?: 'ProductToCommentConnection', edges: Array<{ __typename?: 'ProductToCommentConnectionEdge', rating?: number | null, node: { __typename?: 'Comment', id: string, content?: string | null, date?: string | null, author?: { __typename?: 'CommentToCommenterConnectionEdge', node: { __typename?: 'CommentAuthor', name?: string | null } | { __typename?: 'User', name?: string | null } } | null, reviewPhoto?: { __typename?: 'ReviewPhoto', id?: string | null, sourceUrl?: string | null, mediaDetails?: { __typename?: 'ReviewPhotoDetails', sizes?: Array<{ __typename?: 'ReviewPhotoSize', sourceUrl?: string | null, width?: number | null, height?: number | null } | null> | null } | null } | null } }>, pageInfo: { __typename?: 'ProductToCommentConnectionPageInfo', hasNextPage: boolean, endCursor?: string | null } } | null } | null };
+export type GetProductReviewsQuery = { __typename?: 'RootQuery', product?: { __typename?: 'ExternalProduct', averageRating?: number | null, reviewCount?: number | null, reviews?: { __typename?: 'ProductToCommentConnection', edges: Array<{ __typename?: 'ProductToCommentConnectionEdge', rating?: number | null, node: { __typename?: 'Comment', id: string, content?: string | null, date?: string | null, author?: { __typename?: 'CommentToCommenterConnectionEdge', node: { __typename?: 'CommentAuthor', name?: string | null } | { __typename?: 'User', name?: string | null } } | null, reviewPhoto?: { __typename?: 'ReviewPhoto', id?: string | null, sourceUrl?: string | null, mediaDetails?: { __typename?: 'ReviewPhotoDetails', sizes?: Array<{ __typename?: 'ReviewPhotoSize', sourceUrl?: string | null, width?: number | null, height?: number | null } | null> | null } | null } | null } }>, pageInfo: { __typename?: 'ProductToCommentConnectionPageInfo', hasNextPage: boolean, endCursor?: string | null } } | null } | { __typename?: 'GroupProduct', averageRating?: number | null, reviewCount?: number | null, reviews?: { __typename?: 'ProductToCommentConnection', edges: Array<{ __typename?: 'ProductToCommentConnectionEdge', rating?: number | null, node: { __typename?: 'Comment', id: string, content?: string | null, date?: string | null, author?: { __typename?: 'CommentToCommenterConnectionEdge', node: { __typename?: 'CommentAuthor', name?: string | null } | { __typename?: 'User', name?: string | null } } | null, reviewPhoto?: { __typename?: 'ReviewPhoto', id?: string | null, sourceUrl?: string | null, mediaDetails?: { __typename?: 'ReviewPhotoDetails', sizes?: Array<{ __typename?: 'ReviewPhotoSize', sourceUrl?: string | null, width?: number | null, height?: number | null } | null> | null } | null } | null } }>, pageInfo: { __typename?: 'ProductToCommentConnectionPageInfo', hasNextPage: boolean, endCursor?: string | null } } | null } | { __typename?: 'SimpleProduct', averageRating?: number | null, reviewCount?: number | null, reviews?: { __typename?: 'ProductToCommentConnection', edges: Array<{ __typename?: 'ProductToCommentConnectionEdge', rating?: number | null, node: { __typename?: 'Comment', id: string, content?: string | null, date?: string | null, author?: { __typename?: 'CommentToCommenterConnectionEdge', node: { __typename?: 'CommentAuthor', name?: string | null } | { __typename?: 'User', name?: string | null } } | null, reviewPhoto?: { __typename?: 'ReviewPhoto', id?: string | null, sourceUrl?: string | null, mediaDetails?: { __typename?: 'ReviewPhotoDetails', sizes?: Array<{ __typename?: 'ReviewPhotoSize', sourceUrl?: string | null, width?: number | null, height?: number | null } | null> | null } | null } | null } }>, pageInfo: { __typename?: 'ProductToCommentConnectionPageInfo', hasNextPage: boolean, endCursor?: string | null } } | null } | { __typename?: 'VariableProduct', averageRating?: number | null, reviewCount?: number | null, reviews?: { __typename?: 'ProductToCommentConnection', edges: Array<{ __typename?: 'ProductToCommentConnectionEdge', rating?: number | null, node: { __typename?: 'Comment', id: string, content?: string | null, date?: string | null, author?: { __typename?: 'CommentToCommenterConnectionEdge', node: { __typename?: 'CommentAuthor', name?: string | null } | { __typename?: 'User', name?: string | null } } | null, reviewPhoto?: { __typename?: 'ReviewPhoto', id?: string | null, sourceUrl?: string | null, mediaDetails?: { __typename?: 'ReviewPhotoDetails', sizes?: Array<{ __typename?: 'ReviewPhotoSize', sourceUrl?: string | null, width?: number | null, height?: number | null } | null> | null } | null } | null } }>, pageInfo: { __typename?: 'ProductToCommentConnectionPageInfo', hasNextPage: boolean, endCursor?: string | null } } | null } | null };
 
 export type GetRelatedProductsByCategoryQueryVariables = Exact<{
   categoryId: Scalars['Int']['input'];
@@ -24517,7 +23997,7 @@ export type GetRelatedProductsByCategoryQueryVariables = Exact<{
 }>;
 
 
-export type GetRelatedProductsByCategoryQuery = { __typename?: 'RootQuery', products?: { __typename?: 'RootQueryToProductConnection', nodes: Array<{ __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, salePrice?: string | null, stockStatus?: StockStatusEnum | null, stockQuantity?: number | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'UnsupportedProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null }> } | null };
+export type GetRelatedProductsByCategoryQuery = { __typename?: 'RootQuery', products?: { __typename?: 'RootQueryToProductConnection', nodes: Array<{ __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', price?: string | null, regularPrice?: string | null, salePrice?: string | null, stockStatus?: StockStatusEnum | null, stockQuantity?: number | null, id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', id: string, databaseId: number, name?: string | null, slug?: string | null, type?: ProductTypesEnum | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null }> } | null };
 
 export type GetOrderByIdTrackQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -24547,6 +24027,24 @@ export type RefreshJwtAuthTokenMutationVariables = Exact<{
 
 
 export type RefreshJwtAuthTokenMutation = { __typename?: 'RootMutation', refreshJwtAuthToken?: { __typename?: 'RefreshJwtAuthTokenPayload', authToken?: string | null, clientMutationId?: string | null } | null };
+
+export type ApplyCouponMutationVariables = Exact<{
+  input: ApplyCouponInput;
+}>;
+
+
+export type ApplyCouponMutation = { __typename?: 'RootMutation', applyCoupon?: { __typename?: 'ApplyCouponPayload', clientMutationId?: string | null, applied?: { __typename?: 'AppliedCoupon', code: string, discountAmount: string, description?: string | null } | null, cart?: { __typename?: 'Cart', isEmpty?: boolean | null, subtotal?: string | null, total?: string | null, shippingTotal?: string | null, appliedCoupons?: Array<{ __typename?: 'AppliedCoupon', code: string, discountAmount: string, description?: string | null } | null> | null, contents?: { __typename?: 'CartToCartItemConnection', nodes: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, subtotal?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', id: string, databaseId: number, name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', id: string, databaseId: number, name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'ProductVariation', id: string, databaseId: number }, attributes?: Array<{ __typename?: 'VariationAttribute', name?: string | null, value?: string | null } | null> | null } | null }> } | null } | null } | null };
+
+export type RemoveCouponsMutationVariables = Exact<{
+  input: RemoveCouponsInput;
+}>;
+
+
+export type RemoveCouponsMutation = { __typename?: 'RootMutation', removeCoupons?: { __typename?: 'RemoveCouponsPayload', clientMutationId?: string | null, cart?: { __typename?: 'Cart', isEmpty?: boolean | null, subtotal?: string | null, total?: string | null, shippingTotal?: string | null, appliedCoupons?: Array<{ __typename?: 'AppliedCoupon', code: string, discountAmount: string, description?: string | null } | null> | null, contents?: { __typename?: 'CartToCartItemConnection', nodes: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, subtotal?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', id: string, databaseId: number, name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', id: string, databaseId: number, name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'ProductVariation', id: string, databaseId: number }, attributes?: Array<{ __typename?: 'VariationAttribute', name?: string | null, value?: string | null } | null> | null } | null }> } | null } | null } | null };
+
+export type AppliedCouponFragmentFragment = { __typename?: 'AppliedCoupon', code: string, discountAmount: string, description?: string | null };
+
+export type CartFragmentFragment = { __typename?: 'Cart', isEmpty?: boolean | null, subtotal?: string | null, total?: string | null, shippingTotal?: string | null, appliedCoupons?: Array<{ __typename?: 'AppliedCoupon', code: string, discountAmount: string, description?: string | null } | null> | null, contents?: { __typename?: 'CartToCartItemConnection', nodes: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, subtotal?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', id: string, databaseId: number, name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', id: string, databaseId: number, name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'ProductVariation', id: string, databaseId: number }, attributes?: Array<{ __typename?: 'VariationAttribute', name?: string | null, value?: string | null } | null> | null } | null }> } | null };
 
 export const MenuItemContentFragmentDoc = gql`
     fragment MenuItemContent on MenuItem {
@@ -24918,6 +24416,52 @@ export const CommentFragmentFragmentDoc = gql`
   }
 }
     `;
+export const AppliedCouponFragmentFragmentDoc = gql`
+    fragment AppliedCouponFragment on AppliedCoupon {
+  code
+  discountAmount
+  description
+}
+    `;
+export const CartFragmentFragmentDoc = gql`
+    fragment CartFragment on Cart {
+  isEmpty
+  subtotal
+  total
+  shippingTotal
+  appliedCoupons {
+    ...AppliedCouponFragment
+  }
+  contents {
+    nodes {
+      key
+      quantity
+      subtotal
+      product {
+        node {
+          id
+          databaseId
+          name
+          image {
+            sourceUrl
+            altText
+          }
+        }
+      }
+      variation {
+        node {
+          id
+          databaseId
+        }
+        attributes {
+          name
+          value
+        }
+      }
+    }
+  }
+}
+    ${AppliedCouponFragmentFragmentDoc}`;
 export const GetTopNavDocument = gql`
     query GetTopNav {
   menu(id: "primary", idType: LOCATION) {
@@ -24948,6 +24492,16 @@ export const GetProductDocument = gql`
     query GetProduct($id: ID!, $idType: ProductIdTypeEnum) {
   product(id: $id, idType: $idType) {
     ...ProductContentFull
+    largeImage: image {
+      largeSourceUrl: sourceUrl(size: LARGE)
+      altText
+    }
+    largeGalleryImages: galleryImages {
+      nodes {
+        largeSourceUrl: sourceUrl(size: LARGE)
+        altText
+      }
+    }
     productCategories {
       nodes {
         id
@@ -25585,6 +25139,30 @@ export const RefreshJwtAuthTokenDocument = gql`
   }
 }
     `;
+export const ApplyCouponDocument = gql`
+    mutation ApplyCoupon($input: ApplyCouponInput!) {
+  applyCoupon(input: $input) {
+    applied {
+      ...AppliedCouponFragment
+    }
+    cart {
+      ...CartFragment
+    }
+    clientMutationId
+  }
+}
+    ${AppliedCouponFragmentFragmentDoc}
+${CartFragmentFragmentDoc}`;
+export const RemoveCouponsDocument = gql`
+    mutation RemoveCoupons($input: RemoveCouponsInput!) {
+  removeCoupons(input: $input) {
+    cart {
+      ...CartFragment
+    }
+    clientMutationId
+  }
+}
+    ${CartFragmentFragmentDoc}`;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -25697,6 +25275,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     RefreshJwtAuthToken(variables: RefreshJwtAuthTokenMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RefreshJwtAuthTokenMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<RefreshJwtAuthTokenMutation>(RefreshJwtAuthTokenDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'RefreshJwtAuthToken', 'mutation', variables);
+    },
+    ApplyCoupon(variables: ApplyCouponMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ApplyCouponMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ApplyCouponMutation>(ApplyCouponDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'ApplyCoupon', 'mutation', variables);
+    },
+    RemoveCoupons(variables: RemoveCouponsMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveCouponsMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<RemoveCouponsMutation>(RemoveCouponsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'RemoveCoupons', 'mutation', variables);
     }
   };
 }

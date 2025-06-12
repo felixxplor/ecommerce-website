@@ -4,7 +4,6 @@ import { useState, useEffect, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { useShopContext } from './shop-provider'
 import { X, Search } from 'lucide-react'
-import { useDebounce } from '@/hooks/use-debounce'
 import { MobileNavigation } from '@/components/ui/menu'
 
 export function SearchBar() {
@@ -12,20 +11,11 @@ export function SearchBar() {
   const { currentUrl, buildUrl, search } = useShopContext()
   const [searchInput, setSearchInput] = useState(search)
   const [mobileSearchVisible, setMobileSearchVisible] = useState(false)
-  const debouncedSearch = useDebounce(searchInput, 500)
 
-  // Handle search when debounced value changes
+  // Update search input when URL search changes (for back/forward navigation)
   useEffect(() => {
-    if (debouncedSearch !== search) {
-      const url = buildUrl({
-        search: debouncedSearch,
-        page: 1,
-      })
-      if (url !== currentUrl) {
-        push(url)
-      }
-    }
-  }, [debouncedSearch, search, buildUrl, currentUrl, push])
+    setSearchInput(search)
+  }, [search])
 
   // Auto-focus the input when mobile search becomes visible
   useEffect(() => {
@@ -37,27 +27,25 @@ export function SearchBar() {
     }
   }, [mobileSearchVisible])
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+  const performSearch = (searchTerm: string) => {
     const url = buildUrl({
-      search: searchInput,
+      search: searchTerm,
       page: 1,
     })
     if (url !== currentUrl) {
       push(url)
     }
+  }
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    performSearch(searchInput)
     setMobileSearchVisible(false)
   }
 
   const clearSearch = () => {
     setSearchInput('')
-    const url = buildUrl({
-      search: '',
-      page: 1,
-    })
-    if (url !== currentUrl) {
-      push(url)
-    }
+    performSearch('')
   }
 
   const toggleMobileSearch = () => {

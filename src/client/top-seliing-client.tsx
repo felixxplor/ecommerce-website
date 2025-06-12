@@ -37,18 +37,18 @@ interface ProductWithReviews extends Product {
   isLoadingReviews?: boolean
 }
 
-// Helper function to check if product belongs to 'hidden' category
+// Helper function to check if product belongs to 'misc' category
 const isProductHidden = (product: Product): boolean => {
   // Check if product has categories
   if (!product.productCategories?.nodes) {
     return false
   }
 
-  // Check if any category has name 'hidden' (case-insensitive)
+  // Check if any category has name 'misc' (case-insensitive)
   return product.productCategories.nodes.some((category) => {
     // Cast to the proper category type or check if it has the name property
     const categoryNode = category as any
-    return categoryNode?.name?.toLowerCase() === 'hidden'
+    return categoryNode?.name?.toLowerCase() === 'misc'
   })
 }
 
