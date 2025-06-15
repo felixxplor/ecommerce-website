@@ -62,6 +62,29 @@ interface Order {
   } | null
 }
 
+// Helper function to generate tracking URLs for Australia Post and Sendle
+const generateTrackingUrl = (trackingNumber: string, provider: string): string => {
+  const cleanTrackingNumber = trackingNumber.trim()
+  const cleanProvider = provider.toLowerCase().trim()
+
+  // Australia Post tracking URL
+  if (
+    cleanProvider.includes('australia post') ||
+    cleanProvider.includes('auspost') ||
+    cleanProvider.includes('australia_post')
+  ) {
+    return `https://auspost.com.au/mypost/track/#/details/${cleanTrackingNumber}`
+  }
+
+  // Sendle tracking URL
+  if (cleanProvider.includes('sendle')) {
+    return `https://track.sendle.com/${cleanTrackingNumber}`
+  }
+
+  // Fallback for other providers - return empty string to show alert instead
+  return ''
+}
+
 // Skeleton component for loading state
 function AccountPageSkeleton() {
   return (
@@ -323,17 +346,42 @@ function AccountPageContent() {
                               size="sm"
                               className="text-xs md:text-sm"
                               onClick={() => {
-                                if (order.tracking_items?.[0]?.tracking_link) {
-                                  window.open(order.tracking_items[0].tracking_link, '_blank')
-                                } else {
-                                  alert(
-                                    `Tracking Number: ${
-                                      order.tracking_items?.[0]?.tracking_number || 'Not available'
-                                    }\nCarrier: ${
-                                      order.tracking_items?.[0]?.tracking_provider ||
-                                      'Not available'
-                                    }`
+                                const trackingItem = order.tracking_items?.[0]
+                                if (!trackingItem) return
+
+                                // First try to use the existing tracking_link if it exists
+                                if (trackingItem.tracking_link) {
+                                  window.open(
+                                    trackingItem.tracking_link,
+                                    '_blank',
+                                    'noopener,noreferrer'
                                   )
+                                  return
+                                }
+
+                                // If no tracking_link, generate one based on provider and tracking number
+                                if (
+                                  trackingItem.tracking_number &&
+                                  trackingItem.tracking_provider
+                                ) {
+                                  const generatedUrl = generateTrackingUrl(
+                                    trackingItem.tracking_number,
+                                    trackingItem.tracking_provider
+                                  )
+
+                                  if (generatedUrl) {
+                                    window.open(generatedUrl, '_blank', 'noopener,noreferrer')
+                                  } else {
+                                    // Fallback alert for unsupported providers
+                                    alert(
+                                      `Tracking Number: ${trackingItem.tracking_number}\n` +
+                                        `Carrier: ${trackingItem.tracking_provider}\n\n` +
+                                        `Please visit your carrier's website to track this package.`
+                                    )
+                                  }
+                                } else {
+                                  // No tracking information available
+                                  alert('Tracking information is not available for this order.')
                                 }
                               }}
                             >
@@ -350,7 +398,7 @@ function AccountPageContent() {
                       <Badge className={`${getStatusColor(order.status)} text-xs`}>
                         {order.status}
                       </Badge>
-                      <p className="font-semibold text-sm md:text-base">{order.total}</p>
+                      <p className="font-semibold text-sm md:text-base">${order.total}</p>
                     </div>
                   </div>
 

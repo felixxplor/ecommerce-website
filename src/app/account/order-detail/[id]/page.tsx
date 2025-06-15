@@ -12,6 +12,7 @@ import Link from 'next/link'
 
 interface OrderDetail {
   id: string
+  coupon: string
   databaseId: number
   date: string
   status: string
@@ -239,7 +240,7 @@ export default function OrderDetailPage({ params }: PageProps) {
                     </div>
                   </div>
                   <div className="text-left sm:text-right mt-2 sm:mt-0">
-                    <p className="font-medium text-sm md:text-base">{item.total}</p>
+                    <p className="font-medium text-sm md:text-base">${item.total}</p>
                     <p className="text-xs md:text-sm text-gray-600">Unit price: ${item.subtotal}</p>
                   </div>
                 </li>
@@ -300,8 +301,12 @@ export default function OrderDetailPage({ params }: PageProps) {
                 <dd>{order.subtotal}</dd>
               </div>
               <div className="flex justify-between text-sm md:text-base">
+                <dt>Coupon</dt>
+                <dd>{order.coupon}</dd>
+              </div>
+              <div className="flex justify-between text-sm md:text-base">
                 <dt>Shipping</dt>
-                <dd>{order.shippingTotal}</dd>
+                <dd className="text-green-600 font-medium">Free</dd>
               </div>
               <div className="flex justify-between font-bold pt-2 border-t text-sm md:text-base">
                 <dt>Total</dt>

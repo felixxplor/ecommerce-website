@@ -81,6 +81,29 @@ interface OrderTracking {
   }
 }
 
+// Helper function to generate tracking URLs for Australia Post and Sendle
+const generateTrackingUrl = (trackingNumber: string, provider: string): string => {
+  const cleanTrackingNumber = trackingNumber.trim()
+  const cleanProvider = provider.toLowerCase().trim()
+
+  // Australia Post tracking URL
+  if (
+    cleanProvider.includes('australia post') ||
+    cleanProvider.includes('auspost') ||
+    cleanProvider.includes('australia_post')
+  ) {
+    return `https://auspost.com.au/mypost/track/#/details/${cleanTrackingNumber}`
+  }
+
+  // Sendle tracking URL
+  if (cleanProvider.includes('sendle')) {
+    return `https://track.sendle.com/${cleanTrackingNumber}`
+  }
+
+  // Fallback for other providers - return empty string to show alert instead
+  return ''
+}
+
 // Format the order status for display
 const getStatusBadgeColor = (status: string) => {
   switch (status) {
@@ -151,6 +174,10 @@ export default function OrderTrackingPage() {
   // Extract plain totals when order details change
   useEffect(() => {
     if (orderDetails) {
+      // Debug log to see what tracking data we receive
+      console.log('Order details received:', orderDetails)
+      console.log('Tracking items:', orderDetails.tracking_items)
+
       // Extract order total
       const totalText = getPlainTextFromHtml(orderDetails.total)
       setPlainTotal(formatTotal(totalText))
@@ -181,6 +208,9 @@ export default function OrderTrackingPage() {
 
       const response = await fetch(`/api/track-order?${queryParams}`)
       const responseData = await response.json()
+
+      // Debug log to see the API response
+      console.log('API Response:', responseData)
 
       if (!response.ok || (responseData.order && responseData.order.code === 'unauthorized')) {
         // Handle error responses
@@ -421,6 +451,19 @@ export default function OrderTrackingPage() {
                 Tracking Information
               </h3>
 
+              {/* Debug information - Remove this in production */}
+              {process.env.NODE_ENV === 'development' && (
+                <div className="mb-4 p-3 bg-gray-100 rounded text-xs">
+                  <strong>Debug Info:</strong>
+                  <br />
+                  Tracking items array: {orderDetails.tracking_items ? 'exists' : 'null/undefined'}
+                  <br />
+                  Tracking items length: {orderDetails.tracking_items?.length || 0}
+                  <br />
+                  Raw tracking data: {JSON.stringify(orderDetails.tracking_items, null, 2)}
+                </div>
+              )}
+
               {orderDetails.tracking_items && orderDetails.tracking_items.length > 0 ? (
                 <div className="space-y-4">
                   {orderDetails.tracking_items.map((item, index) => (
@@ -428,11 +471,11 @@ export default function OrderTrackingPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         <div>
                           <p className="text-sm text-gray-500">Tracking Provider</p>
-                          <p className="font-medium">{item.tracking_provider}</p>
+                          <p className="font-medium">{item.tracking_provider || 'Not specified'}</p>
                         </div>
                         <div>
                           <p className="text-sm text-gray-500">Tracking Number</p>
-                          <p className="font-medium">{item.tracking_number}</p>
+                          <p className="font-medium">{item.tracking_number || 'Not available'}</p>
                         </div>
                         {item.date_shipped && (
                           <div>
@@ -441,8 +484,10 @@ export default function OrderTrackingPage() {
                           </div>
                         )}
                       </div>
-                      {item.tracking_link && (
-                        <div className="mt-3">
+
+                      {/* Enhanced tracking link logic */}
+                      <div className="mt-3">
+                        {item.tracking_link ? (
                           <a
                             href={item.tracking_link}
                             target="_blank"
@@ -452,8 +497,37 @@ export default function OrderTrackingPage() {
                             Track Package
                             <ExternalLink className="ml-1 h-4 w-4" />
                           </a>
-                        </div>
-                      )}
+                        ) : item.tracking_number && item.tracking_provider ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const generatedUrl = generateTrackingUrl(
+                                item.tracking_number,
+                                item.tracking_provider
+                              )
+
+                              if (generatedUrl) {
+                                window.open(generatedUrl, '_blank', 'noopener,noreferrer')
+                              } else {
+                                alert(
+                                  `Tracking Number: ${item.tracking_number}\n` +
+                                    `Carrier: ${item.tracking_provider}\n\n` +
+                                    `Please visit your carrier's website to track this package.`
+                                )
+                              }
+                            }}
+                            className="inline-flex items-center"
+                          >
+                            Track Package
+                            <ExternalLink className="ml-1 h-4 w-4" />
+                          </Button>
+                        ) : (
+                          <p className="text-sm text-gray-500 italic">
+                            Tracking link not available
+                          </p>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>

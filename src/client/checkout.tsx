@@ -175,7 +175,7 @@ export function CheckoutClient() {
         <div className="max-w-2xl mx-auto">
           <h1 className="text-2xl font-bold text-center mb-8">Checkout Options</h1>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-2 gap-4 mb-8">
             {/* Sign In Option */}
             <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-6">
               <div className="flex flex-col h-full">
@@ -196,6 +196,17 @@ export function CheckoutClient() {
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
+
+                {/* Create Account Option moved here */}
+                <div className="text-center mt-4">
+                  <p className="text-gray-600 mb-2 text-sm">Don't have an account yet?</p>
+                  <Link
+                    href={`/register?returnUrl=${encodeURIComponent('/checkout')}`}
+                    className="text-blue-600 hover:text-blue-800 font-medium text-sm"
+                  >
+                    Create an account
+                  </Link>
+                </div>
               </div>
             </div>
 
@@ -220,17 +231,6 @@ export function CheckoutClient() {
                 </Button>
               </div>
             </div>
-          </div>
-
-          {/* Create Account Option */}
-          <div className="text-center mt-8">
-            <p className="text-gray-600 mb-3">Don't have an account yet?</p>
-            <Link
-              href={`/register?returnUrl=${encodeURIComponent('/checkout')}`}
-              className="text-blue-600 hover:text-blue-800 font-medium"
-            >
-              Create an account
-            </Link>
           </div>
         </div>
       )}

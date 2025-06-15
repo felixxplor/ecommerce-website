@@ -3,12 +3,14 @@ import { NextResponse } from 'next/server'
 import fetch from 'node-fetch'
 
 // PayPal API credentials
-const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID
-const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET
-const PAYPAL_BASE_URL =
-  process.env.PAYPAL_ENVIRONMENT === 'production'
-    ? 'https://api-m.paypal.com'
-    : 'https://api-m.sandbox.paypal.com'
+const PAYPAL_CLIENT_ID =
+  'BAAgaM6Yjs-cg1t1KVqZ8mQGpbMfzw9cbdctZ7cv4uwZdzt8_zLa-wLukFCsZe35QJ-DOjx6sA8v6Tj-Q4'
+const PAYPAL_CLIENT_SECRET =
+  'EATpExhpF5HYObWBYFIzOrR-NpxGZSbU5Qlu50BEH0mbilQRvo4kLl4MlA6cmaXF5AdPmDCQtwAW-2-Z'
+const PAYPAL_BASE_URL = 'https://api-m.paypal.com'
+// process.env.PAYPAL_ENVIRONMENT === 'production'
+//   ? 'https://api-m.paypal.com'
+//   : 'https://api-m.sandbox.paypal.com'
 
 // Get PayPal access token
 async function getPayPalAccessToken() {
@@ -89,7 +91,7 @@ export async function POST(request: Request) {
         application_context: {
           return_url: returnUrl,
           cancel_url: cancelUrl,
-          brand_name: process.env.STORE_NAME || 'Your Store',
+          brand_name: 'GIZMOOZ AUSTRALIA',
           landing_page: 'BILLING',
           user_action: 'PAY_NOW',
         },
