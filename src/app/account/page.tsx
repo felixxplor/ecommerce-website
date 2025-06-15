@@ -196,6 +196,12 @@ function AccountPageContent() {
         const customerData = await customerResponse.json()
         const ordersData = await ordersResponse.json()
 
+        // Debug: Log the orders data to see the tracking_items structure
+        console.log('Orders data from API:', ordersData.orders)
+        ordersData.orders.forEach((order: Order, index: number) => {
+          console.log(`Order ${index + 1} tracking items:`, order.tracking_items)
+        })
+
         setCustomer(customerData.customer)
         setOrders(ordersData.orders)
       } catch (error) {
@@ -349,6 +355,8 @@ function AccountPageContent() {
                                 const trackingItem = order.tracking_items?.[0]
                                 if (!trackingItem) return
 
+                                console.log('Tracking item clicked:', trackingItem)
+
                                 // First try to use the existing tracking_link if it exists
                                 if (trackingItem.tracking_link) {
                                   window.open(
@@ -371,17 +379,7 @@ function AccountPageContent() {
 
                                   if (generatedUrl) {
                                     window.open(generatedUrl, '_blank', 'noopener,noreferrer')
-                                  } else {
-                                    // Fallback alert for unsupported providers
-                                    alert(
-                                      `Tracking Number: ${trackingItem.tracking_number}\n` +
-                                        `Carrier: ${trackingItem.tracking_provider}\n\n` +
-                                        `Please visit your carrier's website to track this package.`
-                                    )
                                   }
-                                } else {
-                                  // No tracking information available
-                                  alert('Tracking information is not available for this order.')
                                 }
                               }}
                             >
@@ -390,6 +388,27 @@ function AccountPageContent() {
                           )}
                         </div>
                       </div>
+
+                      {/* Debug information - shows tracking data if available */}
+                      {process.env.NODE_ENV === 'development' &&
+                        order.tracking_items &&
+                        order.tracking_items.length > 0 && (
+                          <div className="text-xs bg-gray-100 p-2 rounded">
+                            <strong>Debug - Tracking Info:</strong>
+                            <br />
+                            {order.tracking_items.map((item, index) => (
+                              <div key={index}>
+                                Provider: {item.tracking_provider || 'N/A'}
+                                <br />
+                                Number: {item.tracking_number || 'N/A'}
+                                <br />
+                                Link: {item.tracking_link || 'N/A'}
+                                <br />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
                       <p className="text-xs md:text-sm text-gray-600">
                         {format(new Date(order.date), 'PPP')}
                       </p>

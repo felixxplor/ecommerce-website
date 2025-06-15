@@ -366,7 +366,7 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
             window.location.origin
           }/checkout?error=payment_failed&message=${encodeURIComponent(
             'PayPal checkout was cancelled'
-          )}&timestamp=${timestamp}`,
+          )}`,
           metadata: {
             pending_checkout: 'true',
             woo_session: wooSessionToken || '',
