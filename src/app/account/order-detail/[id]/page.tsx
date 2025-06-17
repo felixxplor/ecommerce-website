@@ -135,6 +135,7 @@ export default function OrderDetailPage({ params }: PageProps) {
 
     const fetchOrder = async () => {
       try {
+        // First, get the order details from GraphQL
         const response = await fetch(`/api/orders/${orderId}`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
@@ -147,7 +148,36 @@ export default function OrderDetailPage({ params }: PageProps) {
 
         const data = await response.json()
         console.log('Order data received:', data.order) // Debug log
-        setOrder(data.order)
+
+        let orderWithTracking = data.order
+
+        // If the order has billing email, also fetch tracking data from the working endpoint
+        if (data.order?.billing?.email) {
+          try {
+            const trackingResponse = await fetch(
+              `/api/track-order?id=${orderId}&email=${encodeURIComponent(data.order.billing.email)}`
+            )
+            if (trackingResponse.ok) {
+              const trackingData = await trackingResponse.json()
+              if (trackingData.order?.tracking_items) {
+                console.log(
+                  'Tracking data from track-order endpoint:',
+                  trackingData.order.tracking_items
+                )
+                // Merge tracking data into the order
+                orderWithTracking = {
+                  ...data.order,
+                  tracking_items: trackingData.order.tracking_items,
+                }
+              }
+            }
+          } catch (trackingError) {
+            console.log('Could not fetch tracking data:', trackingError)
+            // Continue without tracking data
+          }
+        }
+
+        setOrder(orderWithTracking)
       } catch (error) {
         console.error('Error fetching order:', error)
       } finally {
