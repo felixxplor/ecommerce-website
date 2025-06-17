@@ -153,28 +153,47 @@ export default function OrderDetailPage({ params }: PageProps) {
 
         // If the order has billing email, also fetch tracking data from the working endpoint
         if (data.order?.billing?.email) {
+          console.log(
+            'Attempting to fetch tracking for order:',
+            orderId,
+            'email:',
+            data.order.billing.email
+          )
           try {
-            const trackingResponse = await fetch(
-              `/api/track-order?id=${orderId}&email=${encodeURIComponent(data.order.billing.email)}`
-            )
+            const trackingUrl = `/api/track-order?id=${orderId}&email=${encodeURIComponent(
+              data.order.billing.email
+            )}`
+            console.log('Fetching tracking from URL:', trackingUrl)
+
+            const trackingResponse = await fetch(trackingUrl)
+            console.log('Tracking response status:', trackingResponse.status)
+
             if (trackingResponse.ok) {
               const trackingData = await trackingResponse.json()
+              console.log('Full tracking response:', trackingData)
+
               if (trackingData.order?.tracking_items) {
-                console.log(
-                  'Tracking data from track-order endpoint:',
-                  trackingData.order.tracking_items
-                )
+                console.log('Tracking data found:', trackingData.order.tracking_items)
                 // Merge tracking data into the order
                 orderWithTracking = {
                   ...data.order,
                   tracking_items: trackingData.order.tracking_items,
                 }
+                console.log('Order with tracking merged:', orderWithTracking)
+              } else {
+                console.log('No tracking_items in response:', trackingData.order)
               }
+            } else {
+              console.log('Tracking response not ok:', trackingResponse.status)
+              const errorText = await trackingResponse.text()
+              console.log('Tracking error response:', errorText)
             }
           } catch (trackingError) {
-            console.log('Could not fetch tracking data:', trackingError)
+            console.log('Error fetching tracking data:', trackingError)
             // Continue without tracking data
           }
+        } else {
+          console.log('No billing email found:', data.order?.billing)
         }
 
         setOrder(orderWithTracking)
