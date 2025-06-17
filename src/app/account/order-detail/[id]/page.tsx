@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import MaxWidthWrapper from '@/components/max-width-wrapper'
 import Link from 'next/link'
-// Remove Head import - use document.title instead for client components
+import { ExternalLink } from 'lucide-react'
 
 interface OrderDetail {
   id: string
@@ -22,7 +22,15 @@ interface OrderDetail {
   tracking_items?: Array<{
     tracking_number: string
     tracking_provider: string
-    tracking_link: string
+    tracking_link?: string
+    custom_tracking_link?: string
+    custom_tracking_provider?: string
+    date_shipped?: string
+    source?: string
+    status_shipped?: string
+    tracking_id?: string
+    tracking_product_code?: string
+    user_id?: number
   }>
   lineItems: {
     nodes: Array<{
@@ -61,6 +69,38 @@ interface OrderDetail {
     email: string
     phone: string
   }
+}
+
+// Helper function to generate tracking URLs for Australia Post and Sendle
+const generateTrackingUrl = (trackingNumber: string, provider: string): string => {
+  const cleanTrackingNumber = trackingNumber.trim()
+  const cleanProvider = provider.toLowerCase().trim()
+
+  console.log(
+    `Generating tracking URL for provider: "${cleanProvider}" with tracking number: "${cleanTrackingNumber}"`
+  )
+
+  // Australia Post tracking URL (handle both "australia-post" and "australia post" formats)
+  if (
+    cleanProvider.includes('australia-post') ||
+    cleanProvider.includes('australia post') ||
+    cleanProvider.includes('auspost') ||
+    cleanProvider.includes('australia_post')
+  ) {
+    const url = `https://auspost.com.au/mypost/track/#/details/${cleanTrackingNumber}`
+    console.log('Generated Australia Post URL:', url)
+    return url
+  }
+
+  // Sendle tracking URL (handle various Sendle formats)
+  if (cleanProvider.includes('sendle') || cleanProvider === 'sendle') {
+    const url = `https://track.sendle.com/${cleanTrackingNumber}`
+    console.log('Generated Sendle URL:', url)
+    return url
+  }
+
+  console.log('No matching provider found for:', cleanProvider)
+  return ''
 }
 
 // Updated interface for Next.js 15 - params is now a Promise
@@ -106,6 +146,7 @@ export default function OrderDetailPage({ params }: PageProps) {
         }
 
         const data = await response.json()
+        console.log('Order data received:', data.order) // Debug log
         setOrder(data.order)
       } catch (error) {
         console.error('Error fetching order:', error)
@@ -150,6 +191,22 @@ export default function OrderDetailPage({ params }: PageProps) {
       default:
         return 'bg-gray-100 text-gray-800'
     }
+  }
+
+  // Helper function to extract plain text and parse coupon amount
+  const parseCouponAmount = (couponString: string): string => {
+    if (!couponString) return ''
+
+    // Remove HTML tags
+    const plainText = couponString.replace(/<[^>]*>/g, '')
+
+    // Look for dollar amounts in the string
+    const dollarMatch = plainText.match(/\$[\d,]+\.?\d*/)
+    if (dollarMatch) {
+      return dollarMatch[0]
+    }
+
+    return plainText
   }
 
   if (loading) {
@@ -252,35 +309,104 @@ export default function OrderDetailPage({ params }: PageProps) {
           {order?.tracking_items && order.tracking_items.length > 0 && (
             <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm">
               <h2 className="text-lg md:text-xl font-semibold mb-4">Tracking Information</h2>
-              <dl className="space-y-2">
-                {order.tracking_items[0]?.tracking_number && (
-                  <div className="flex flex-col sm:flex-row sm:gap-2">
-                    <dt className="font-medium text-sm md:text-base">Tracking Number:</dt>
-                    <dd className="text-sm md:text-base">
-                      {order.tracking_items[0].tracking_number}
-                    </dd>
+              {order.tracking_items.map((trackingItem, index) => (
+                <div key={index} className="mb-4 last:mb-0">
+                  <dl className="space-y-2 mb-4">
+                    {trackingItem.tracking_number && (
+                      <div className="flex flex-col sm:flex-row sm:gap-2">
+                        <dt className="font-medium text-sm md:text-base">Tracking Number:</dt>
+                        <dd className="text-sm md:text-base font-mono">
+                          {trackingItem.tracking_number}
+                        </dd>
+                      </div>
+                    )}
+                    {trackingItem.tracking_provider && (
+                      <div className="flex flex-col sm:flex-row sm:gap-2">
+                        <dt className="font-medium text-sm md:text-base">Carrier:</dt>
+                        <dd className="text-sm md:text-base">{trackingItem.tracking_provider}</dd>
+                      </div>
+                    )}
+                    {trackingItem.date_shipped && (
+                      <div className="flex flex-col sm:flex-row sm:gap-2">
+                        <dt className="font-medium text-sm md:text-base">Date Shipped:</dt>
+                        <dd className="text-sm md:text-base">
+                          {new Date(
+                            parseInt(trackingItem.date_shipped) * 1000
+                          ).toLocaleDateString()}
+                        </dd>
+                      </div>
+                    )}
+                  </dl>
+
+                  {/* Enhanced tracking button logic */}
+                  <div className="flex gap-2">
+                    {/* First try custom tracking link */}
+                    {trackingItem.custom_tracking_link &&
+                    trackingItem.custom_tracking_link.trim() ? (
+                      <Button
+                        variant="outline"
+                        className="w-full sm:w-auto"
+                        onClick={() =>
+                          window.open(
+                            trackingItem.custom_tracking_link,
+                            '_blank',
+                            'noopener,noreferrer'
+                          )
+                        }
+                      >
+                        Track Package
+                        <ExternalLink className="ml-2 h-4 w-4" />
+                      </Button>
+                    ) : /* Then try standard tracking link */ trackingItem.tracking_link &&
+                      trackingItem.tracking_link.trim() ? (
+                      <Button
+                        variant="outline"
+                        className="w-full sm:w-auto"
+                        onClick={() =>
+                          window.open(trackingItem.tracking_link, '_blank', 'noopener,noreferrer')
+                        }
+                      >
+                        Track Package
+                        <ExternalLink className="ml-2 h-4 w-4" />
+                      </Button>
+                    ) : /* Finally, generate URL if we have provider and number */ trackingItem.tracking_number &&
+                      trackingItem.tracking_provider ? (
+                      <Button
+                        variant="outline"
+                        className="w-full sm:w-auto"
+                        onClick={() => {
+                          console.log('Tracking item clicked:', trackingItem)
+                          const generatedUrl = generateTrackingUrl(
+                            trackingItem.tracking_number,
+                            trackingItem.tracking_provider
+                          )
+
+                          if (generatedUrl) {
+                            window.open(generatedUrl, '_blank', 'noopener,noreferrer')
+                          } else {
+                            // Copy tracking number to clipboard as fallback
+                            navigator.clipboard
+                              .writeText(trackingItem.tracking_number)
+                              .then(() => {
+                                alert(
+                                  `Tracking number ${trackingItem.tracking_number} copied to clipboard!\n\nPlease visit ${trackingItem.tracking_provider} website to track your package.`
+                                )
+                              })
+                              .catch(() => {
+                                alert(
+                                  `Tracking Number: ${trackingItem.tracking_number}\nCarrier: ${trackingItem.tracking_provider}\n\nPlease visit your carrier's website to track this package.`
+                                )
+                              })
+                          }
+                        }}
+                      >
+                        Track Package
+                        <ExternalLink className="ml-2 h-4 w-4" />
+                      </Button>
+                    ) : null}
                   </div>
-                )}
-                {order.tracking_items[0]?.tracking_provider && (
-                  <div className="flex flex-col sm:flex-row sm:gap-2">
-                    <dt className="font-medium text-sm md:text-base">Carrier:</dt>
-                    <dd className="text-sm md:text-base">
-                      {order.tracking_items[0].tracking_provider}
-                    </dd>
-                  </div>
-                )}
-              </dl>
-              {order.tracking_items[0]?.tracking_link && (
-                <Button
-                  variant="outline"
-                  className="w-full sm:w-auto mt-4"
-                  onClick={() =>
-                    window.open(order.tracking_items?.[0]?.tracking_link ?? '#', '_blank')
-                  }
-                >
-                  Track Package
-                </Button>
-              )}
+                </div>
+              ))}
             </div>
           )}
         </section>
@@ -300,10 +426,14 @@ export default function OrderDetailPage({ params }: PageProps) {
                 <dt>Subtotal</dt>
                 <dd>{order.subtotal}</dd>
               </div>
-              <div className="flex justify-between text-sm md:text-base">
-                <dt>Coupon</dt>
-                <dd>{order.coupon}</dd>
-              </div>
+              {order.coupon && (
+                <div className="flex justify-between text-sm md:text-base">
+                  <dt>Coupon</dt>
+                  <dd className="text-green-600 font-medium">
+                    -{parseCouponAmount(order.coupon) || order.coupon}
+                  </dd>
+                </div>
+              )}
               <div className="flex justify-between text-sm md:text-base">
                 <dt>Shipping</dt>
                 <dd className="text-green-600 font-medium">Free</dd>

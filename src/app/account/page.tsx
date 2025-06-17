@@ -37,7 +37,15 @@ interface Order {
   tracking_items?: {
     tracking_number: string
     tracking_provider: string
-    tracking_link: string
+    tracking_link?: string
+    custom_tracking_link?: string
+    custom_tracking_provider?: string
+    date_shipped?: string
+    source?: string
+    status_shipped?: string
+    tracking_id?: string
+    tracking_product_code?: string
+    user_id?: number
   }[]
   lineItems: {
     nodes: Array<{
@@ -67,21 +75,30 @@ const generateTrackingUrl = (trackingNumber: string, provider: string): string =
   const cleanTrackingNumber = trackingNumber.trim()
   const cleanProvider = provider.toLowerCase().trim()
 
-  // Australia Post tracking URL
+  console.log(
+    `Generating tracking URL for provider: "${cleanProvider}" with tracking number: "${cleanTrackingNumber}"`
+  )
+
+  // Australia Post tracking URL (handle both "australia-post" and "australia post" formats)
   if (
+    cleanProvider.includes('australia-post') ||
     cleanProvider.includes('australia post') ||
     cleanProvider.includes('auspost') ||
     cleanProvider.includes('australia_post')
   ) {
-    return `https://auspost.com.au/mypost/track/#/details/${cleanTrackingNumber}`
+    const url = `https://auspost.com.au/mypost/track/#/details/${cleanTrackingNumber}`
+    console.log('Generated Australia Post URL:', url)
+    return url
   }
 
-  // Sendle tracking URL
-  if (cleanProvider.includes('sendle')) {
-    return `https://track.sendle.com/${cleanTrackingNumber}`
+  // Sendle tracking URL (handle various Sendle formats)
+  if (cleanProvider.includes('sendle') || cleanProvider === 'sendle') {
+    const url = `https://track.sendle.com/${cleanTrackingNumber}`
+    console.log('Generated Sendle URL:', url)
+    return url
   }
 
-  // Fallback for other providers - return empty string to show alert instead
+  console.log('No matching provider found for:', cleanProvider)
   return ''
 }
 
@@ -357,8 +374,24 @@ function AccountPageContent() {
 
                                 console.log('Tracking item clicked:', trackingItem)
 
-                                // First try to use the existing tracking_link if it exists
-                                if (trackingItem.tracking_link) {
+                                // First try custom tracking link if available
+                                if (
+                                  trackingItem.custom_tracking_link &&
+                                  trackingItem.custom_tracking_link.trim()
+                                ) {
+                                  window.open(
+                                    trackingItem.custom_tracking_link,
+                                    '_blank',
+                                    'noopener,noreferrer'
+                                  )
+                                  return
+                                }
+
+                                // Then try the standard tracking_link if it exists
+                                if (
+                                  trackingItem.tracking_link &&
+                                  trackingItem.tracking_link.trim()
+                                ) {
                                   window.open(
                                     trackingItem.tracking_link,
                                     '_blank',
@@ -367,7 +400,7 @@ function AccountPageContent() {
                                   return
                                 }
 
-                                // If no tracking_link, generate one based on provider and tracking number
+                                // Generate URL based on provider and tracking number
                                 if (
                                   trackingItem.tracking_number &&
                                   trackingItem.tracking_provider
@@ -379,6 +412,20 @@ function AccountPageContent() {
 
                                   if (generatedUrl) {
                                     window.open(generatedUrl, '_blank', 'noopener,noreferrer')
+                                  } else {
+                                    // If no URL can be generated, copy tracking number to clipboard
+                                    navigator.clipboard
+                                      .writeText(trackingItem.tracking_number)
+                                      .then(() => {
+                                        // You could show a toast notification here instead
+                                        console.log(
+                                          'Tracking number copied to clipboard:',
+                                          trackingItem.tracking_number
+                                        )
+                                      })
+                                      .catch(() => {
+                                        console.log('Could not copy tracking number')
+                                      })
                                   }
                                 }
                               }}
@@ -404,6 +451,10 @@ function AccountPageContent() {
                                 <br />
                                 Link: {item.tracking_link || 'N/A'}
                                 <br />
+                                Custom Link: {item.custom_tracking_link || 'N/A'}
+                                <br />
+                                Date Shipped: {item.date_shipped || 'N/A'}
+                                <br />
                               </div>
                             ))}
                           </div>
@@ -417,7 +468,7 @@ function AccountPageContent() {
                       <Badge className={`${getStatusColor(order.status)} text-xs`}>
                         {order.status}
                       </Badge>
-                      <p className="font-semibold text-sm md:text-base">${order.total}</p>
+                      <p className="font-semibold text-sm md:text-base">{order.total}</p>
                     </div>
                   </div>
 
@@ -429,7 +480,7 @@ function AccountPageContent() {
                           <span className="truncate mr-2">
                             {item.quantity}x {item.product.node.name}
                           </span>
-                          <span className="font-medium whitespace-nowrap">{item.total}</span>
+                          <span className="font-medium whitespace-nowrap">${item.total}</span>
                         </li>
                       ))}
                     </ul>
