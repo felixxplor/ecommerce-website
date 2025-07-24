@@ -29,7 +29,7 @@ const TrackingSchema = z.object({
 
 type TrackingFormValues = z.infer<typeof TrackingSchema>
 
-// Updated Order interface to match your actual data structure
+// Order interface for TypeScript typing
 interface OrderTracking {
   id: number
   order_number: string
@@ -48,17 +48,11 @@ interface OrderTracking {
   }[]
   tracking_items:
     | {
-        tracking_number: string
+        tracking_id: string
         tracking_provider: string
-        tracking_link?: string
-        custom_tracking_link?: string
-        custom_tracking_provider?: string
-        date_shipped?: string
-        source?: string
-        status_shipped?: string
-        tracking_id?: string
-        tracking_product_code?: string
-        user_id?: number
+        tracking_number: string
+        tracking_link: string
+        date_shipped: string
       }[]
     | null
   shipping: {
@@ -85,38 +79,6 @@ interface OrderTracking {
     email: string
     phone: string
   }
-}
-
-// Helper function to generate tracking URLs for Australia Post and Sendle
-const generateTrackingUrl = (trackingNumber: string, provider: string): string => {
-  const cleanTrackingNumber = trackingNumber.trim()
-  const cleanProvider = provider.toLowerCase().trim()
-
-  console.log(
-    `Generating tracking URL for provider: "${cleanProvider}" with tracking number: "${cleanTrackingNumber}"`
-  )
-
-  // Australia Post tracking URL (handle both "australia-post" and "australia post" formats)
-  if (
-    cleanProvider.includes('australia-post') ||
-    cleanProvider.includes('australia post') ||
-    cleanProvider.includes('auspost') ||
-    cleanProvider.includes('australia_post')
-  ) {
-    const url = `https://auspost.com.au/mypost/track/#/details/${cleanTrackingNumber}`
-    console.log('Generated Australia Post URL:', url)
-    return url
-  }
-
-  // Sendle tracking URL (handle various Sendle formats)
-  if (cleanProvider.includes('sendle') || cleanProvider === 'sendle') {
-    const url = `https://track.sendle.com/${cleanTrackingNumber}`
-    console.log('Generated Sendle URL:', url)
-    return url
-  }
-
-  console.log('No matching provider found for:', cleanProvider)
-  return ''
 }
 
 // Format the order status for display
@@ -189,10 +151,6 @@ export default function OrderTrackingPage() {
   // Extract plain totals when order details change
   useEffect(() => {
     if (orderDetails) {
-      // Debug log to see what tracking data we receive
-      console.log('Order details received:', orderDetails)
-      console.log('Tracking items:', orderDetails.tracking_items)
-
       // Extract order total
       const totalText = getPlainTextFromHtml(orderDetails.total)
       setPlainTotal(formatTotal(totalText))
@@ -224,9 +182,6 @@ export default function OrderTrackingPage() {
       const response = await fetch(`/api/track-order?${queryParams}`)
       const responseData = await response.json()
 
-      // Debug log to see the API response
-      console.log('API Response:', responseData)
-
       if (!response.ok || (responseData.order && responseData.order.code === 'unauthorized')) {
         // Handle error responses
         if (responseData.order && responseData.order.code === 'unauthorized') {
@@ -244,7 +199,6 @@ export default function OrderTrackingPage() {
         setError(
           'No order found with the provided ID and email combination. Please check your details and try again.'
         )
-        setShowForm(true) // Keep the form visible when no order is found
       } else {
         setOrderDetails(responseData.order)
         setShowForm(false) // Hide the form on successful search
@@ -438,7 +392,7 @@ export default function OrderTrackingPage() {
           )}
         </AnimatePresence>
 
-        {orderDetails ? (
+        {orderDetails && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -467,19 +421,6 @@ export default function OrderTrackingPage() {
                 Tracking Information
               </h3>
 
-              {/* Debug information - Remove this in production */}
-              {process.env.NODE_ENV === 'development' && (
-                <div className="mb-4 p-3 bg-gray-100 rounded text-xs">
-                  <strong>Debug Info:</strong>
-                  <br />
-                  Tracking items array: {orderDetails.tracking_items ? 'exists' : 'null/undefined'}
-                  <br />
-                  Tracking items length: {orderDetails.tracking_items?.length || 0}
-                  <br />
-                  Raw tracking data: {JSON.stringify(orderDetails.tracking_items, null, 2)}
-                </div>
-              )}
-
               {orderDetails.tracking_items && orderDetails.tracking_items.length > 0 ? (
                 <div className="space-y-4">
                   {orderDetails.tracking_items.map((item, index) => (
@@ -487,11 +428,11 @@ export default function OrderTrackingPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         <div>
                           <p className="text-sm text-gray-500">Tracking Provider</p>
-                          <p className="font-medium">{item.tracking_provider || 'Not specified'}</p>
+                          <p className="font-medium">{item.tracking_provider}</p>
                         </div>
                         <div>
                           <p className="text-sm text-gray-500">Tracking Number</p>
-                          <p className="font-medium">{item.tracking_number || 'Not available'}</p>
+                          <p className="font-medium">{item.tracking_number}</p>
                         </div>
                         {item.date_shipped && (
                           <div>
@@ -500,22 +441,8 @@ export default function OrderTrackingPage() {
                           </div>
                         )}
                       </div>
-
-                      {/* Enhanced tracking link logic */}
-                      <div className="mt-3">
-                        {/* First try custom tracking link */}
-                        {item.custom_tracking_link && item.custom_tracking_link.trim() ? (
-                          <a
-                            href={item.custom_tracking_link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-                          >
-                            Track Package
-                            <ExternalLink className="ml-1 h-4 w-4" />
-                          </a>
-                        ) : /* Then try standard tracking link */ item.tracking_link &&
-                          item.tracking_link.trim() ? (
+                      {item.tracking_link && (
+                        <div className="mt-3">
                           <a
                             href={item.tracking_link}
                             target="_blank"
@@ -525,47 +452,8 @@ export default function OrderTrackingPage() {
                             Track Package
                             <ExternalLink className="ml-1 h-4 w-4" />
                           </a>
-                        ) : /* Finally, generate URL if we have provider and number */ item.tracking_number &&
-                          item.tracking_provider ? (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              console.log('Tracking item clicked:', item)
-                              const generatedUrl = generateTrackingUrl(
-                                item.tracking_number,
-                                item.tracking_provider
-                              )
-
-                              if (generatedUrl) {
-                                window.open(generatedUrl, '_blank', 'noopener,noreferrer')
-                              } else {
-                                // Copy tracking number to clipboard as fallback
-                                navigator.clipboard
-                                  .writeText(item.tracking_number)
-                                  .then(() => {
-                                    alert(
-                                      `Tracking number ${item.tracking_number} copied to clipboard!\n\nPlease visit ${item.tracking_provider} website to track your package.`
-                                    )
-                                  })
-                                  .catch(() => {
-                                    alert(
-                                      `Tracking Number: ${item.tracking_number}\nCarrier: ${item.tracking_provider}\n\nPlease visit your carrier's website to track this package.`
-                                    )
-                                  })
-                              }
-                            }}
-                            className="inline-flex items-center"
-                          >
-                            Track Package
-                            <ExternalLink className="ml-1 h-4 w-4" />
-                          </Button>
-                        ) : (
-                          <p className="text-sm text-gray-500 italic">
-                            Tracking link not available
-                          </p>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -650,32 +538,7 @@ export default function OrderTrackingPage() {
               </div>
             )}
           </motion.div>
-        ) : !showForm && !orderDetails ? (
-          /* Show a message when no order is found after search */
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-            className="bg-white rounded-lg shadow-sm p-8 text-center"
-          >
-            <div className="mb-4">
-              <Package className="h-12 w-12 text-gray-400 mx-auto" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Order Not Found</h3>
-            <p className="text-gray-600 mb-4">
-              We couldn't find an order with the provided details. Please check your order ID and
-              email address and try again.
-            </p>
-            <Button
-              onClick={handleTrackAnother}
-              variant="outline"
-              className="flex items-center gap-2 mx-auto"
-            >
-              <Search className="h-4 w-4" />
-              Try Again
-            </Button>
-          </motion.div>
-        ) : null}
+        )}
       </div>
     </MaxWidthWrapper>
   )
