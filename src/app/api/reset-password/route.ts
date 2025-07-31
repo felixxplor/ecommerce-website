@@ -1,4 +1,4 @@
-// app/api/auth/reset-password/route.ts
+// app/api/reset-password/route.ts
 import { NextResponse } from 'next/server'
 import { getClient } from '@/graphql'
 import { SendPasswordResetEmailDocument, SendPasswordResetEmailMutation } from '@/graphql/generated'

@@ -244,6 +244,66 @@ export default function OrderTrackingPage() {
     form.reset()
   }
 
+  // Generate tracking URL based on provider and tracking number
+  const generateTrackingUrl = (trackingNumber: string, provider: string): string => {
+    const cleanTrackingNumber = trackingNumber.trim()
+    const cleanProvider = provider.toLowerCase().trim()
+
+    console.log(
+      `Generating tracking URL for provider: "${cleanProvider}" with tracking number: "${cleanTrackingNumber}"`
+    )
+
+    // Australia Post tracking URL (handle both "australia-post" and "australia post" formats)
+    if (
+      cleanProvider.includes('australia-post') ||
+      cleanProvider.includes('australia post') ||
+      cleanProvider.includes('auspost') ||
+      cleanProvider.includes('australia_post')
+    ) {
+      const url = `https://auspost.com.au/mypost/track/#/details/${cleanTrackingNumber}`
+      console.log('Generated Australia Post URL:', url)
+      return url
+    }
+
+    // Sendle tracking URL (handle various Sendle formats)
+    if (cleanProvider.includes('sendle') || cleanProvider === 'sendle') {
+      const url = `https://track.sendle.com/${cleanTrackingNumber}`
+      console.log('Generated Sendle URL:', url)
+      return url
+    }
+
+    // DHL tracking URL
+    if (cleanProvider.includes('dhl')) {
+      const url = `https://www.dhl.com/en/express/tracking.html?AWB=${cleanTrackingNumber}`
+      console.log('Generated DHL URL:', url)
+      return url
+    }
+
+    // FedEx tracking URL
+    if (cleanProvider.includes('fedex')) {
+      const url = `https://www.fedex.com/fedextrack/?trknbr=${cleanTrackingNumber}`
+      console.log('Generated FedEx URL:', url)
+      return url
+    }
+
+    // UPS tracking URL
+    if (cleanProvider.includes('ups')) {
+      const url = `https://www.ups.com/track?loc=en_US&tracknum=${cleanTrackingNumber}`
+      console.log('Generated UPS URL:', url)
+      return url
+    }
+
+    // TNT tracking URL
+    if (cleanProvider.includes('tnt')) {
+      const url = `https://www.tnt.com/express/en_us/site/shipping-tools/tracking.html?searchType=con&cons=${cleanTrackingNumber}`
+      console.log('Generated TNT URL:', url)
+      return url
+    }
+
+    console.log('No matching provider found for:', cleanProvider)
+    return ''
+  }
+
   // Format date for better display
   const formatDate = (dateValue: string | number) => {
     if (!dateValue) return ''
@@ -477,19 +537,63 @@ export default function OrderTrackingPage() {
                           </div>
                         )}
                       </div>
-                      {item.custom_tracking_link && (
-                        <div className="mt-3">
+
+                      {/* Tracking Links Section */}
+                      <div className="mt-4 flex flex-wrap gap-3">
+                        {/* Custom tracking link from plugin (if available) */}
+                        {item.custom_tracking_link && (
                           <a
                             href={item.custom_tracking_link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
+                            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
                           >
-                            Track Package
-                            <ExternalLink className="ml-1 h-4 w-4" />
+                            <Truck className="mr-2 h-4 w-4" />
+                            Track Package (Official)
+                            <ExternalLink className="ml-2 h-4 w-4" />
                           </a>
-                        </div>
-                      )}
+                        )}
+
+                        {/* Generated tracking link based on provider */}
+                        {(() => {
+                          const generatedUrl = generateTrackingUrl(
+                            item.tracking_number,
+                            item.tracking_provider
+                          )
+                          return generatedUrl ? (
+                            <a
+                              href={generatedUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                                item.custom_tracking_link
+                                  ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'
+                                  : 'bg-blue-600 text-white hover:bg-blue-700'
+                              }`}
+                            >
+                              <Package className="mr-2 h-4 w-4" />
+                              Track on {item.tracking_provider.replace('-', ' ').replace(/_/g, ' ')}
+                              <ExternalLink className="ml-2 h-4 w-4" />
+                            </a>
+                          ) : null
+                        })()}
+
+                        {/* If no tracking links are available, show the tracking number as copyable text */}
+                        {!item.custom_tracking_link &&
+                          !generateTrackingUrl(item.tracking_number, item.tracking_provider) && (
+                            <div className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md border border-gray-300">
+                              <Package className="mr-2 h-4 w-4" />
+                              Tracking: {item.tracking_number}
+                              <button
+                                onClick={() => navigator.clipboard.writeText(item.tracking_number)}
+                                className="ml-2 p-1 hover:bg-gray-200 rounded"
+                                title="Copy tracking number"
+                              >
+                                📋
+                              </button>
+                            </div>
+                          )}
+                      </div>
                     </div>
                   ))}
                 </div>
