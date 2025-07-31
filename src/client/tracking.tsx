@@ -48,11 +48,17 @@ interface OrderTracking {
   }[]
   tracking_items:
     | {
-        tracking_id: string
         tracking_provider: string
+        custom_tracking_provider: string
+        custom_tracking_link: string
         tracking_number: string
-        tracking_link: string
+        tracking_product_code: string
         date_shipped: string
+        products_list: string
+        status_shipped: string
+        tracking_id: string
+        user_id?: number
+        source?: string
       }[]
     | null
   shipping: {
@@ -110,7 +116,9 @@ export default function OrderTrackingPage() {
   const [plainTotal, setPlainTotal] = useState<string>('')
   const [plainLineItemTotals, setPlainLineItemTotals] = useState<Record<number, string>>({})
   const [showForm, setShowForm] = useState(true)
-  const [noOrderFound, setNoOrderFound] = useState(false)
+  const [errorType, setErrorType] = useState<'not_found' | 'email_mismatch' | 'general' | null>(
+    null
+  )
 
   const form = useForm<TrackingFormValues>({
     resolver: zodResolver(TrackingSchema),
@@ -167,13 +175,13 @@ export default function OrderTrackingPage() {
   const onSubmit = async (data: TrackingFormValues) => {
     setIsLoading(true)
     setError('')
+    setErrorType(null)
     setOrderDetails(null)
     setPlainTotal('')
     setPlainLineItemTotals({})
-    setNoOrderFound(false)
 
     try {
-      // Use GET request with query parameters instead of POST
+      // Use GET request with query parameters
       const queryParams = new URLSearchParams({
         id: data.orderId,
         email: data.email,
@@ -182,30 +190,47 @@ export default function OrderTrackingPage() {
       const response = await fetch(`/api/track-order?${queryParams}`)
       const responseData = await response.json()
 
-      if (!response.ok || (responseData.order && responseData.order.code === 'unauthorized')) {
-        // Handle error responses
-        if (responseData.order && responseData.order.code === 'unauthorized') {
-          setNoOrderFound(true)
-          setError(responseData.order.message || 'Email does not match order records')
+      // Handle different error scenarios
+      if (!response.ok) {
+        if (response.status === 404) {
+          // Order not found
+          setErrorType('not_found')
+          setError(
+            `No order found with ID "${data.orderId}". Please check your order ID and try again.`
+          )
+        } else if (response.status === 401) {
+          // Email doesn't match
+          setErrorType('email_mismatch')
+          setError(
+            'The email address does not match our records for this order. Please check your email and try again.'
+          )
         } else {
+          // Other errors
+          setErrorType('general')
           setError(responseData.errors?.message || 'Failed to track order')
         }
         return
       }
 
+      // Check if we have valid order data
       if (!responseData.order) {
-        // No order found case
-        setNoOrderFound(true)
+        setErrorType('not_found')
         setError(
-          'No order found with the provided ID and email combination. Please check your details and try again.'
+          `No order found with ID "${data.orderId}". Please check your order ID and try again.`
         )
-      } else {
-        setOrderDetails(responseData.order)
-        setShowForm(false) // Hide the form on successful search
+        return
       }
+
+      // Success - we have order data
+      setOrderDetails(responseData.order)
+      setShowForm(false) // Hide the form on successful search
+      setErrorType(null)
     } catch (error) {
       console.error('Error:', error)
-      setError(error instanceof Error ? error.message : 'An error occurred')
+      setErrorType('general')
+      setError(
+        error instanceof Error ? error.message : 'An error occurred while tracking your order'
+      )
     } finally {
       setIsLoading(false)
     }
@@ -215,7 +240,7 @@ export default function OrderTrackingPage() {
     setOrderDetails(null)
     setShowForm(true)
     setError('')
-    setNoOrderFound(false)
+    setErrorType(null)
     form.reset()
   }
 
@@ -306,10 +331,19 @@ export default function OrderTrackingPage() {
                       <Alert
                         variant="destructive"
                         className={
-                          noOrderFound ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : ''
+                          errorType === 'not_found'
+                            ? 'bg-orange-50 border-orange-200 text-orange-800'
+                            : errorType === 'email_mismatch'
+                            ? 'bg-yellow-50 border-yellow-200 text-yellow-800'
+                            : ''
                         }
                       >
-                        {noOrderFound && <AlertTriangle className="h-4 w-4 mr-2" />}
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle className="font-semibold">
+                          {errorType === 'not_found' && 'Order Not Found'}
+                          {errorType === 'email_mismatch' && 'Email Mismatch'}
+                          {errorType === 'general' && 'Error'}
+                        </AlertTitle>
                         <AlertDescription>{error}</AlertDescription>
                       </Alert>
                     )}
@@ -428,7 +462,9 @@ export default function OrderTrackingPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         <div>
                           <p className="text-sm text-gray-500">Tracking Provider</p>
-                          <p className="font-medium">{item.tracking_provider}</p>
+                          <p className="font-medium capitalize">
+                            {item.tracking_provider.replace('-', ' ')}
+                          </p>
                         </div>
                         <div>
                           <p className="text-sm text-gray-500">Tracking Number</p>
@@ -441,10 +477,10 @@ export default function OrderTrackingPage() {
                           </div>
                         )}
                       </div>
-                      {item.tracking_link && (
+                      {item.custom_tracking_link && (
                         <div className="mt-3">
                           <a
-                            href={item.tracking_link}
+                            href={item.custom_tracking_link}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
@@ -486,7 +522,6 @@ export default function OrderTrackingPage() {
                       <p className="text-gray-600">Quantity: {item.quantity}</p>
                     </div>
                     <div className="text-right">
-                      {/* Show plain text total */}
                       <p className="font-medium">
                         {plainLineItemTotals[item.id] || getPlainTextFromHtml(item.total)}
                       </p>
@@ -498,7 +533,6 @@ export default function OrderTrackingPage() {
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <div className="flex justify-between">
                   <p className="font-bold">Total</p>
-                  {/* Show formatted total without the $0.00 */}
                   <p className="font-bold">
                     {plainTotal || formatTotal(getPlainTextFromHtml(orderDetails.total))}
                   </p>
