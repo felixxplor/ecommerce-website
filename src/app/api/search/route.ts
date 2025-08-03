@@ -24,7 +24,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ products: data.products.nodes })
   } catch (error) {
-    console.error('Search error:', error)
+    // console.error('Search error:', error)
     return NextResponse.json({ error: 'Failed to search products' }, { status: 500 })
   }
 }

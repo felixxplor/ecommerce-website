@@ -74,7 +74,7 @@ export default function ProfilePage() {
         const data = await response.json()
         setCustomer(data.customer)
       } catch (error) {
-        console.error('Error fetching customer:', error)
+        // console.error('Error fetching customer:', error)
         toast({
           variant: 'destructive',
           title: 'Error',
@@ -121,7 +121,7 @@ export default function ProfilePage() {
         description: 'Profile updated successfully',
       })
     } catch (error) {
-      console.error('Error updating profile:', error)
+      // console.error('Error updating profile:', error)
       toast({
         variant: 'destructive',
         title: 'Error',
@@ -168,7 +168,7 @@ export default function ProfilePage() {
         })
       }
     } catch (error) {
-      console.error('Error changing password:', error)
+      // console.error('Error changing password:', error)
       toast({
         variant: 'destructive',
         title: 'Error',
@@ -210,7 +210,7 @@ export default function ProfilePage() {
         description: 'Shipping address updated successfully',
       })
     } catch (error) {
-      console.error('Error updating shipping:', error)
+      // console.error('Error updating shipping:', error)
       toast({
         variant: 'destructive',
         title: 'Error',

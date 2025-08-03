@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         })
       }
     } catch (primaryError) {
-      console.log('Primary refresh token format failed, trying alternative', primaryError)
+      // console.log('Primary refresh token format failed, trying alternative', primaryError)
 
       // If first approach fails, try alternative approach
       try {
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
           })
         }
       } catch (alternativeError) {
-        console.error('Alternative refresh token format also failed', alternativeError)
+        // console.error('Alternative refresh token format also failed', alternativeError)
         throw alternativeError
       }
     }
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     // If we get here, neither approach worked but didn't throw errors
     throw new Error('Could not refresh token - unknown response format')
   } catch (error) {
-    console.error('Token refresh error:', error)
+    // console.error('Token refresh error:', error)
     return NextResponse.json(
       {
         error: 'Failed to refresh token',

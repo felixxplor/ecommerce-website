@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ checkout: response.checkout })
   } catch (err: any) {
-    console.error('Order creation failed:', err)
+    // console.error('Order creation failed:', err)
     return NextResponse.json(
       { error: 'Failed to create order', details: err.message },
       { status: 500 }

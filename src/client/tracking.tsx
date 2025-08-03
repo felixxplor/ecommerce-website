@@ -226,7 +226,7 @@ export default function OrderTrackingPage() {
       setShowForm(false) // Hide the form on successful search
       setErrorType(null)
     } catch (error) {
-      console.error('Error:', error)
+      // console.error('Error:', error)
       setErrorType('general')
       setError(
         error instanceof Error ? error.message : 'An error occurred while tracking your order'
@@ -249,9 +249,9 @@ export default function OrderTrackingPage() {
     const cleanTrackingNumber = trackingNumber.trim()
     const cleanProvider = provider.toLowerCase().trim()
 
-    console.log(
-      `Generating tracking URL for provider: "${cleanProvider}" with tracking number: "${cleanTrackingNumber}"`
-    )
+    // console.log(
+    //   `Generating tracking URL for provider: "${cleanProvider}" with tracking number: "${cleanTrackingNumber}"`
+    // )
 
     // Australia Post tracking URL (handle both "australia-post" and "australia post" formats)
     if (
@@ -261,46 +261,46 @@ export default function OrderTrackingPage() {
       cleanProvider.includes('australia_post')
     ) {
       const url = `https://auspost.com.au/mypost/track/#/details/${cleanTrackingNumber}`
-      console.log('Generated Australia Post URL:', url)
+      // console.log('Generated Australia Post URL:', url)
       return url
     }
 
     // Sendle tracking URL (handle various Sendle formats)
     if (cleanProvider.includes('sendle') || cleanProvider === 'sendle') {
       const url = `https://track.sendle.com/${cleanTrackingNumber}`
-      console.log('Generated Sendle URL:', url)
+      // console.log('Generated Sendle URL:', url)
       return url
     }
 
     // DHL tracking URL
     if (cleanProvider.includes('dhl')) {
       const url = `https://www.dhl.com/en/express/tracking.html?AWB=${cleanTrackingNumber}`
-      console.log('Generated DHL URL:', url)
+      // console.log('Generated DHL URL:', url)
       return url
     }
 
     // FedEx tracking URL
     if (cleanProvider.includes('fedex')) {
       const url = `https://www.fedex.com/fedextrack/?trknbr=${cleanTrackingNumber}`
-      console.log('Generated FedEx URL:', url)
+      // console.log('Generated FedEx URL:', url)
       return url
     }
 
     // UPS tracking URL
     if (cleanProvider.includes('ups')) {
       const url = `https://www.ups.com/track?loc=en_US&tracknum=${cleanTrackingNumber}`
-      console.log('Generated UPS URL:', url)
+      // console.log('Generated UPS URL:', url)
       return url
     }
 
     // TNT tracking URL
     if (cleanProvider.includes('tnt')) {
       const url = `https://www.tnt.com/express/en_us/site/shipping-tools/tracking.html?searchType=con&cons=${cleanTrackingNumber}`
-      console.log('Generated TNT URL:', url)
+      // console.log('Generated TNT URL:', url)
       return url
     }
 
-    console.log('No matching provider found for:', cleanProvider)
+    // console.log('No matching provider found for:', cleanProvider)
     return ''
   }
 
@@ -359,7 +359,7 @@ export default function OrderTrackingPage() {
         minute: '2-digit',
       }).format(date)
     } catch (error) {
-      console.error('Error formatting date:', error, 'Value:', dateValue)
+      // console.error('Error formatting date:', error, 'Value:', dateValue)
       return String(dateValue) // Return the original string if formatting fails
     }
   }

@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     graphQLClient.setHeader('woocommerce-session', `Session ${wooSession}`)
 
     // Simply log that we want to preserve the cart for this session
-    console.log('Cart preserved for session:', wooSession)
+    // console.log('Cart preserved for session:', wooSession)
 
     // Store this in localStorage as well to be double-sure
     if (typeof localStorage !== 'undefined') {
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, cartPreserved: true })
   } catch (error) {
-    console.error('Error preserving cart:', error)
+    // console.error('Error preserving cart:', error)
     return NextResponse.json(
       {
         error: 'Failed to preserve cart',

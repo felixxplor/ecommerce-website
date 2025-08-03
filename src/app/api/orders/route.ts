@@ -22,7 +22,7 @@ function extractAndValidateToken(request: Request): {
   const authHeader = request.headers.get('Authorization')
 
   if (!authHeader) {
-    console.log('No Authorization header found')
+    // console.log('No Authorization header found')
     return {
       token: null,
       error: NextResponse.json({ errors: { message: 'No authorization header' } }, { status: 401 }),
@@ -30,7 +30,7 @@ function extractAndValidateToken(request: Request): {
   }
 
   if (!authHeader.startsWith('Bearer ')) {
-    console.log('Authorization header does not start with Bearer:', authHeader)
+    // console.log('Authorization header does not start with Bearer:', authHeader)
     return {
       token: null,
       error: NextResponse.json(
@@ -43,7 +43,7 @@ function extractAndValidateToken(request: Request): {
   const token = authHeader.replace('Bearer ', '')
 
   if (!token) {
-    console.log('No token found after Bearer')
+    // console.log('No token found after Bearer')
     return {
       token: null,
       error: NextResponse.json({ errors: { message: 'No token provided' } }, { status: 401 }),
@@ -53,19 +53,19 @@ function extractAndValidateToken(request: Request): {
   // Validate JWT format (should have 3 segments separated by dots)
   const segments = token.split('.')
   if (segments.length !== 3) {
-    console.log(
-      'Invalid token format - segments:',
-      segments.length,
-      'token:',
-      token.substring(0, 50) + '...'
-    )
+    // console.log(
+    //   'Invalid token format - segments:',
+    //   segments.length,
+    //   'token:',
+    //   token.substring(0, 50) + '...'
+    // )
     return {
       token: null,
       error: NextResponse.json({ errors: { message: 'Invalid token format' } }, { status: 401 }),
     }
   }
 
-  console.log('Valid token extracted, length:', token.length)
+  // console.log('Valid token extracted, length:', token.length)
   return { token, error: null }
 }
 
@@ -82,11 +82,11 @@ export async function GET(request: Request) {
       client.setHeader('woocommerce-session', wooSession)
     }
 
-    console.log('Making GraphQL request for customer orders...')
+    // console.log('Making GraphQL request for customer orders...')
     const data = await client.request<GetCustomerOrdersQuery>(print(GetCustomerOrdersDocument))
 
     if (!data.customer?.orders?.nodes) {
-      console.log('No orders data returned')
+      // console.log('No orders data returned')
       return NextResponse.json(
         { errors: { message: 'Failed to retrieve orders.' } },
         { status: 500 }
@@ -105,15 +105,15 @@ export async function GET(request: Request) {
       }
     })
 
-    console.log('Orders retrieved successfully, count:', processedOrders.length)
+    // console.log('Orders retrieved successfully, count:', processedOrders.length)
     return NextResponse.json({ orders: processedOrders })
   } catch (err) {
     const error = err as GraphQLError
-    console.error('Error fetching orders:', {
-      message: error.message,
-      response: error.response,
-      stack: error.stack,
-    })
+    // console.error('Error fetching orders:', {
+    //   message: error.message,
+    //   response: error.response,
+    //   stack: error.stack,
+    // })
 
     // Handle specific authentication errors
     if (error.response?.errors?.[0]?.message) {

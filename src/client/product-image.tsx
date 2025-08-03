@@ -162,7 +162,7 @@ export function ProductImage({ product }: ProductImageProps) {
           loading="eager"
           style={isMobile && isZoomed ? { transformOrigin: 'center center' } : undefined}
           onError={(e) => {
-            console.error('Image failed to load:', activeImage)
+            // console.error('Image failed to load:', activeImage)
           }}
         />
 
@@ -249,7 +249,7 @@ export function ProductImage({ product }: ProductImageProps) {
                   onClick={() => handleThumbnailClick(imageData.sourceUrl)}
                   loading="lazy"
                   onError={(e) => {
-                    console.error('Thumbnail failed to load:', imageData.sourceUrl)
+                    // console.error('Thumbnail failed to load:', imageData.sourceUrl)
                     e.currentTarget.style.display = 'none'
                   }}
                 />

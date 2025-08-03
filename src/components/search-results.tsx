@@ -29,7 +29,7 @@ export function SearchResults({ query }: { query: string }) {
         setProducts(data.products)
       } catch (error) {
         setError('Failed to search products')
-        console.error('Search error:', error)
+        // console.error('Search error:', error)
       } finally {
         setLoading(false)
       }

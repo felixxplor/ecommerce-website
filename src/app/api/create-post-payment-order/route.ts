@@ -50,7 +50,7 @@ async function getPayPalOrderDetails(token: string) {
 
     return await response.json()
   } catch (error) {
-    console.error('Error getting PayPal order details:', error)
+    // console.error('Error getting PayPal order details:', error)
     throw error
   }
 }
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       paypalDetails,
     } = await request.json()
 
-    console.log('Creating post-payment order:', { paymentIntentId, transactionId, timestamp })
+    // console.log('Creating post-payment order:', { paymentIntentId, transactionId, timestamp })
 
     // Determine if this is a PayPal payment
     const isPayPal =
@@ -84,12 +84,12 @@ export async function POST(request: NextRequest) {
     const requestAuthHeader = request.headers.get('authorization')
     const effectiveAuthToken = requestAuthHeader ? requestAuthHeader.replace('Bearer ', '') : ''
 
-    console.log('Auth token status:', {
-      hasAuthHeader: !!requestAuthHeader,
-      hasBodyAuth: !!bodyAuthToken,
-      hasPayPalDetailsAuth: !!(paypalDetails && paypalDetails.authToken),
-      hasEffectiveAuth: !!effectiveAuthToken,
-    })
+    // console.log('Auth token status:', {
+    //   hasAuthHeader: !!requestAuthHeader,
+    //   hasBodyAuth: !!bodyAuthToken,
+    //   hasPayPalDetailsAuth: !!(paypalDetails && paypalDetails.authToken),
+    //   hasEffectiveAuth: !!effectiveAuthToken,
+    // })
 
     // Get WooSession from different sources
     let wooSession = request.headers.get('woocommerce-session')?.replace('Session ', '')
@@ -118,17 +118,17 @@ export async function POST(request: NextRequest) {
 
     // Handle different payment processing based on payment method
     if (isPayPal) {
-      console.log('Processing PayPal payment data', {
-        paymentIntentId,
-        hasDetails: !!paypalDetails,
-        captureId: paypalDetails?.captureId,
-        transactionId: paypalDetails?.paypalTransactionId,
-      })
+      // console.log('Processing PayPal payment data', {
+      //   paymentIntentId,
+      //   hasDetails: !!paypalDetails,
+      //   captureId: paypalDetails?.captureId,
+      //   transactionId: paypalDetails?.paypalTransactionId,
+      // })
       paymentMethodType = 'paypal'
 
       // If we have capture details from previous API call, use those
       if (paypalDetails?.captureId) {
-        console.log('Using pre-captured PayPal payment:', paypalDetails.captureId)
+        // console.log('Using pre-captured PayPal payment:', paypalDetails.captureId)
         paymentState = 'succeeded'
         paymentMetadata = {
           paypal_order_id: paypalDetails.paypalOrderId || paymentIntentId,
@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
 
           if (paypalDetails?.token || paymentIntentId.includes('EC-')) {
             const paypalToken = paypalDetails?.token || paymentIntentId
-            console.log('Fetching PayPal order details for token:', paypalToken)
+            // console.log('Fetching PayPal order details for token:', paypalToken)
             paypalOrderDetails = await getPayPalOrderDetails(paypalToken)
 
             // Extract payment status
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
               if (['COMPLETED', 'APPROVED', 'CAPTURED'].includes(paypalOrderDetails.status)) {
                 paymentState = 'succeeded'
               } else {
-                console.warn('PayPal payment not completed:', paypalOrderDetails.status)
+                // console.warn('PayPal payment not completed:', paypalOrderDetails.status)
                 paymentState = 'processing'
               }
             }
@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
             }
           }
         } catch (paypalError: any) {
-          console.error('Error verifying PayPal payment:', paypalError)
+          // console.error('Error verifying PayPal payment:', paypalError)
           // Continue anyway - we'll trust the client data
           paymentState = 'processing'
 
@@ -196,9 +196,9 @@ export async function POST(request: NextRequest) {
           expand: ['payment_method'],
         })
 
-        console.log('Payment intent status:', paymentIntent.status)
-        console.log('Payment intent payment_method_types:', paymentIntent.payment_method_types)
-        console.log('Actual payment method:', paymentIntent.payment_method)
+        // console.log('Payment intent status:', paymentIntent.status)
+        // console.log('Payment intent payment_method_types:', paymentIntent.payment_method_types)
+        // console.log('Actual payment method:', paymentIntent.payment_method)
 
         // Verify payment status
         const validStatus = ['succeeded', 'processing']
@@ -217,26 +217,26 @@ export async function POST(request: NextRequest) {
         if (paymentIntent.payment_method && typeof paymentIntent.payment_method === 'object') {
           // Use the actual payment method type - this is the TRUTH
           paymentMethodType = paymentIntent.payment_method.type
-          console.log('Using ACTUAL payment method from Stripe:', paymentMethodType)
+          // console.log('Using ACTUAL payment method from Stripe:', paymentMethodType)
         } else if (requestPaymentMethodType) {
           // Fallback to request parameter only if we can't get it from Stripe
           paymentMethodType = requestPaymentMethodType
-          console.log('Using payment method from request (fallback):', paymentMethodType)
+          // console.log('Using payment method from request (fallback):', paymentMethodType)
         } else {
           // Last resort fallback
           paymentMethodType = paymentIntent.payment_method_types?.[0] || 'card'
-          console.log(
-            'Using payment method from payment_method_types (last resort):',
-            paymentMethodType
-          )
+          // console.log(
+          //   'Using payment method from payment_method_types (last resort):',
+          //   paymentMethodType
+          // )
         }
 
-        console.log('Final confirmed payment method type:', paymentMethodType)
+        // console.log('Final confirmed payment method type:', paymentMethodType)
 
         // Prevent duplicate order creation
         const existingOrderId = paymentIntent.metadata?.order_id
         if (existingOrderId) {
-          console.log('Order already exists:', existingOrderId)
+          // console.log('Order already exists:', existingOrderId)
           return NextResponse.json({
             success: true,
             message: 'Order already exists',
@@ -244,7 +244,7 @@ export async function POST(request: NextRequest) {
           })
         }
       } catch (stripeError: any) {
-        console.error('Error retrieving Stripe payment intent:', stripeError)
+        // console.error('Error retrieving Stripe payment intent:', stripeError)
         return NextResponse.json(
           { error: 'Failed to verify payment: ' + (stripeError.message || 'Unknown error') },
           { status: 400 }
@@ -260,7 +260,7 @@ export async function POST(request: NextRequest) {
     if (bodyWooSession) graphQLClient.setHeader('woocommerce-session', `Session ${bodyWooSession}`)
     if (effectiveAuthToken) {
       graphQLClient.setHeader('Authorization', `Bearer ${effectiveAuthToken}`)
-      console.log('Setting auth token from metadata or request:', !!effectiveAuthToken)
+      // console.log('Setting auth token from metadata or request:', !!effectiveAuthToken)
     }
 
     // Set headers for GraphQL client - using your baseHeaders approach
@@ -277,7 +277,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    console.log('Using headers for GraphQL client:', baseHeaders)
+    // console.log('Using headers for GraphQL client:', baseHeaders)
 
     // Extract customer data from various sources
     let customerInfo: any = {}
@@ -294,7 +294,7 @@ export async function POST(request: NextRequest) {
       if (!metadata.customer_email && !metadata.customer_name) {
         // For PayPal, use fallback values if needed
         if (isPayPal) {
-          console.warn('Missing customer info for PayPal payment, using fallbacks')
+          // console.warn('Missing customer info for PayPal payment, using fallbacks')
           customerInfo = {
             name: 'PayPal Customer',
             email: 'customer@example.com',
@@ -310,7 +310,7 @@ export async function POST(request: NextRequest) {
             differentBillingAddress: false,
           }
         } else {
-          console.error('Missing customer info in metadata:', metadata)
+          // console.error('Missing customer info in metadata:', metadata)
           return NextResponse.json(
             { error: 'Customer information not found in payment metadata' },
             { status: 400 }
@@ -343,13 +343,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log('Customer info for order:', {
-      name: customerInfo.name,
-      email: customerInfo.email,
-      hasPhone: !!customerInfo.phone,
-      hasAddress: !!customerInfo.address,
-      differentBillingAddress: customerInfo.differentBillingAddress,
-    })
+    // console.log('Customer info for order:', {
+    //   name: customerInfo.name,
+    //   email: customerInfo.email,
+    //   hasPhone: !!customerInfo.phone,
+    //   hasAddress: !!customerInfo.address,
+    //   differentBillingAddress: customerInfo.differentBillingAddress,
+    // })
 
     // Extract name and address data
     const { name, email, phone, address, billingAddress } = customerInfo
@@ -390,11 +390,11 @@ export async function POST(request: NextRequest) {
 
     const wooPaymentMethod = getWooCommercePaymentMethod(paymentMethodType)
 
-    console.log('Payment method mapping:', {
-      stripeType: paymentMethodType,
-      wooGateway: wooPaymentMethod,
-      isFromStripe: !isPayPal,
-    })
+    // console.log('Payment method mapping:', {
+    //   stripeType: paymentMethodType,
+    //   wooGateway: wooPaymentMethod,
+    //   isFromStripe: !isPayPal,
+    // })
 
     // Prepare order metadata
     const orderMetaData = [
@@ -464,7 +464,7 @@ export async function POST(request: NextRequest) {
       shipToDifferentAddress: useDifferentBillingAddress,
     }
 
-    console.log('Sending checkout mutation...')
+    // console.log('Sending checkout mutation...')
 
     // Execute checkout mutation to create the order
     const response = await graphQLClient.request<CheckoutMutation>(CheckoutDocument, {
@@ -473,13 +473,13 @@ export async function POST(request: NextRequest) {
 
     // Check if order was created successfully
     if (!response.checkout?.order?.databaseId) {
-      console.error('WooCommerce order creation failed:', response)
+      // console.error('WooCommerce order creation failed:', response)
       throw new Error('WooCommerce order creation failed')
     }
 
     const orderId = response.checkout.order.databaseId
 
-    console.log('Order created successfully:', orderId)
+    // console.log('Order created successfully:', orderId)
 
     // Update payment metadata with order ID if possible
     if (!isPayPal) {
@@ -493,18 +493,18 @@ export async function POST(request: NextRequest) {
           },
         })
       } catch (updateError) {
-        console.error('Error updating payment intent metadata:', updateError)
+        // console.error('Error updating payment intent metadata:', updateError)
         // Continue despite metadata error - order is already created
       }
     } else if (isPayPal && PAYPAL_CLIENT_ID && PAYPAL_CLIENT_SECRET && paymentIntentId) {
       // For PayPal, try to add an invoice number or reference to the PayPal order
       // This is optional but helps with reconciliation
       try {
-        console.log('Updating PayPal order with order ID references:', orderId)
+        // console.log('Updating PayPal order with order ID references:', orderId)
         // PayPal doesn't directly support updating order metadata after capture
         // Instead, add a note to the order via the WooCommerce API if needed
       } catch (updateError) {
-        console.warn('Error updating PayPal order with order ID:', updateError)
+        // console.warn('Error updating PayPal order with order ID:', updateError)
         // Non-critical - continue with order creation
       }
     }
@@ -517,9 +517,9 @@ export async function POST(request: NextRequest) {
           clearPersistentCart: true,
         },
       })
-      console.log('Cart emptied successfully')
+      // console.log('Cart emptied successfully')
     } catch (cartError) {
-      console.error('Error emptying cart:', cartError)
+      // console.error('Error emptying cart:', cartError)
       // Non-critical error, continue with order creation response
     }
 
@@ -529,7 +529,7 @@ export async function POST(request: NextRequest) {
       orderId,
     })
   } catch (error: any) {
-    console.error('Post-payment order creation failed:', error)
+    // console.error('Post-payment order creation failed:', error)
     return NextResponse.json(
       {
         error: 'Failed to create order',

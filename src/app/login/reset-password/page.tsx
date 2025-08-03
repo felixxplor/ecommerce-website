@@ -67,7 +67,7 @@ const PasswordResetForm = () => {
       form.reset()
     } catch (error) {
       setResetError(error instanceof Error ? error.message : 'An error occurred. Please try again.')
-      console.error('Password reset failed:', error)
+      // console.error('Password reset failed:', error)
     }
   }
 

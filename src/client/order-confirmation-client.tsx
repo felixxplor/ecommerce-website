@@ -50,7 +50,7 @@ function OrderConfirmationContent() {
     if (isSuccess) {
       localStorage.removeItem('pending-bnpl-checkout')
       localStorage.removeItem('checkout-billing-email')
-      console.log('Checkout data cleaned up after successful payment')
+      // console.log('Checkout data cleaned up after successful payment')
     }
   }, [searchParams])
 

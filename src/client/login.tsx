@@ -122,7 +122,7 @@ function LoginContent() {
       }
     } catch (error) {
       setLoginError('An error occurred during login. Please try again.')
-      console.error('Login failed:', error)
+      // console.error('Login failed:', error)
     }
   }
 

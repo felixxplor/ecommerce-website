@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       metadata: updatedPaymentIntent.metadata,
     })
   } catch (error) {
-    console.error('Error updating payment metadata:', error)
+    // console.error('Error updating payment metadata:', error)
     return NextResponse.json(
       {
         error: 'Failed to update payment metadata',

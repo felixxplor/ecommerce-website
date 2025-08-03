@@ -38,7 +38,7 @@ export async function POST(request: Request) {
       paymentIntentId: paymentIntent.id,
     })
   } catch (error) {
-    console.error('Payment intent creation error:', error)
+    // console.error('Payment intent creation error:', error)
     return NextResponse.json(
       {
         error: 'Failed to create payment intent',

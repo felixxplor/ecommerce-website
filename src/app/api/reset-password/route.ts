@@ -67,7 +67,7 @@ export async function POST(request: Request) {
       success: true,
     })
   } catch (err) {
-    console.error('Error sending password reset email:', err)
+    // console.error('Error sending password reset email:', err)
     // Check if error is a GraphQL error
     if (err instanceof Error && err.message.includes('<!DOCTYPE')) {
       return NextResponse.json(

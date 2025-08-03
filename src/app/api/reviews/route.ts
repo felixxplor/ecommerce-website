@@ -123,7 +123,7 @@ export async function POST(request: Request) {
       },
     })
   } catch (err: unknown) {
-    console.error('Full error:', err)
+    // console.error('Full error:', err)
     return NextResponse.json(
       {
         errors: {

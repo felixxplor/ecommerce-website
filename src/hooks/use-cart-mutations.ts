@@ -91,7 +91,7 @@ const useCartMutations = (
         }
       }
     } catch (error) {
-      console.error('Cart mutation error:', error)
+      // console.error('Cart mutation error:', error)
       throw error
     }
   }

@@ -82,7 +82,7 @@ ${message}
     // Return success response
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error processing contact form:', error)
+    // console.error('Error processing contact form:', error)
     return NextResponse.json({ error: 'Failed to send message' }, { status: 500 })
   }
 }

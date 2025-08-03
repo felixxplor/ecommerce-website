@@ -40,23 +40,23 @@ async function apiCall<T>(url: string, input: globalThis.RequestInit) {
 
     if (json?.errors || response.status !== 200) {
       if (isDev()) {
-        console.error('API Error:', {
-          status: response.status,
-          statusText: response.statusText,
-          errors: json?.errors,
-          url,
-        })
+        // console.error('API Error:', {
+        //   status: response.status,
+        //   statusText: response.statusText,
+        //   errors: json?.errors,
+        //   url,
+        // })
       }
       throw new Error(json.errors?.message || `Failed to fetch: ${url}`)
     }
 
     return json
   } catch (error) {
-    console.error('API Call Error:', {
-      url,
-      error,
-      input,
-    })
+    // console.error('API Call Error:', {
+    //   url,
+    //   error,
+    //   input,
+    // })
     throw error
   }
 }
@@ -165,7 +165,7 @@ export async function login(username: string, password: string): Promise<boolean
       localStorage.setItem('woo-session-token', sessionData.sessionToken)
     }
   } catch (error) {
-    console.error('Failed to get new session:', error)
+    // console.error('Failed to get new session:', error)
   }
 
   let json: LoginResponse

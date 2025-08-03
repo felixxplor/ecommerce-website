@@ -92,7 +92,7 @@ export default function ContactUs() {
 
       setFormSubmitted(true)
     } catch (error) {
-      console.error('Error submitting contact form:', error)
+      // console.error('Error submitting contact form:', error)
       setFormError('There was a problem sending your message. Please try again later.')
     } finally {
       setIsSubmitting(false)

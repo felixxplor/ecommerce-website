@@ -113,16 +113,16 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
     const paymentElement = elements.getElement('payment')
     if (paymentElement) {
       paymentElement.on('change', (event) => {
-        console.log('Payment element change event:', event)
+        // console.log('Payment element change event:', event)
         if (event.value && event.value.type) {
-          console.log('Payment method type detected:', event.value.type)
+          // console.log('Payment method type detected:', event.value.type)
           setPaymentMethodType(event.value.type)
         }
       })
 
       // Also listen for ready event to get initial payment method
       paymentElement.on('ready', () => {
-        console.log('Payment element ready')
+        // console.log('Payment element ready')
       })
     }
   }, [elements])
@@ -178,7 +178,7 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
     // If returning from a failed payment, restore form data
     if (isPaymentFailed) {
       try {
-        console.log('Detected payment failure, attempting to restore data')
+        // console.log('Detected payment failure, attempting to restore data')
 
         // Check for both BNPL and PayPal checkout data
         const bnplCheckoutData = localStorage.getItem('pending-bnpl-checkout')
@@ -190,23 +190,23 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
         if (bnplCheckoutData) {
           checkoutInfo = JSON.parse(bnplCheckoutData)
           dataSource = 'BNPL'
-          console.log('Found stored BNPL checkout data:', bnplCheckoutData)
+          // console.log('Found stored BNPL checkout data:', bnplCheckoutData)
         } else if (paypalCheckoutData) {
           checkoutInfo = JSON.parse(paypalCheckoutData)
           dataSource = 'PayPal'
-          console.log('Found stored PayPal checkout data:', paypalCheckoutData)
+          // console.log('Found stored PayPal checkout data:', paypalCheckoutData)
         }
 
         if (checkoutInfo && checkoutInfo.customerInfo) {
-          console.log(`Restoring ${dataSource} checkout data`)
+          // console.log(`Restoring ${dataSource} checkout data`)
           const { customerInfo } = checkoutInfo
 
           // CRITICAL: First update the UI state for the billing address checkbox
           // This needs to happen BEFORE form reset
           const hasDifferentBillingAddress = customerInfo.differentBillingAddress === true
 
-          console.log('Different billing address detected:', hasDifferentBillingAddress)
-          console.log('Billing address data:', customerInfo.billingAddress)
+          // console.log('Different billing address detected:', hasDifferentBillingAddress)
+          // console.log('Billing address data:', customerInfo.billingAddress)
 
           // Immediately update the UI state
           setDifferentBillingAddress(hasDifferentBillingAddress)
@@ -238,7 +238,7 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
 
             // If using different billing address, set those fields too
             if (hasDifferentBillingAddress && customerInfo.billingAddress) {
-              console.log('Setting billing address fields:', customerInfo.billingAddress)
+              // console.log('Setting billing address fields:', customerInfo.billingAddress)
               form.setValue('billingAddress.line1', customerInfo.billingAddress.line1 || '')
               form.setValue('billingAddress.line2', customerInfo.billingAddress.line2 || '')
               form.setValue('billingAddress.city', customerInfo.billingAddress.city || '')
@@ -251,7 +251,7 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
             }
 
             // Log the form values after setting
-            console.log('Form values after restoration:', form.getValues())
+            // console.log('Form values after restoration:', form.getValues())
 
             // Force a re-render to ensure the UI updates
             // This is important to make the billing address form appear
@@ -273,10 +273,10 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
             setPaymentError(errorMessage)
           }
         } else {
-          console.log('No stored checkout data found to restore')
+          // console.log('No stored checkout data found to restore')
         }
       } catch (error) {
-        console.error('Error restoring checkout data:', error)
+        // console.error('Error restoring checkout data:', error)
       }
     }
   }, [form, toast])
@@ -409,7 +409,7 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
         throw new Error('No PayPal approval URL returned')
       }
     } catch (error) {
-      console.error('PayPal checkout error:', error)
+      // console.error('PayPal checkout error:', error)
       toast({
         title: 'PayPal Checkout Error',
         description: error instanceof Error ? error.message : 'Failed to initiate PayPal checkout',
@@ -426,7 +426,7 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
       const refreshToken = localStorage.getItem('woo-refresh-token')
 
       if (!refreshToken) {
-        console.warn('No refresh token available')
+        // console.warn('No refresh token available')
         return false
       }
 
@@ -441,7 +441,7 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
 
       if (!response.ok) {
         const errorData = await response.json()
-        console.error('Token refresh failed:', errorData)
+        // console.error('Token refresh failed:', errorData)
         return false
       }
 
@@ -455,13 +455,13 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
         const authTimeout = Math.floor(Date.now() / 1000) + 15 * 60 // 15 minutes
         sessionStorage.setItem(process.env.AUTH_TOKEN_EXPIRY_SS_KEY as string, `${authTimeout}`)
 
-        console.log('Auth token refreshed successfully')
+        // console.log('Auth token refreshed successfully')
         return true
       }
 
       return false
     } catch (error) {
-      console.error('Failed to refresh auth token:', error)
+      // console.error('Failed to refresh auth token:', error)
       return false
     }
   }
@@ -478,7 +478,7 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
       const tokenRefreshed = await refreshAuthToken()
 
       if (!tokenRefreshed) {
-        console.warn('Could not refresh auth token, continuing with payment anyway')
+        // console.warn('Could not refresh auth token, continuing with payment anyway')
       }
 
       // 1) Refresh / grab a valid JWT
@@ -624,7 +624,7 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
               credentials: 'include',
             })
           } catch (metadataError) {
-            console.warn('Failed to update payment metadata:', metadataError)
+            // console.warn('Failed to update payment metadata:', metadataError)
             // Continue despite metadata error
           }
 
@@ -684,7 +684,7 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
             )}&transaction_id=${encodeURIComponent(transactionId)}&timestamp=${timestamp}`
           )
         } catch (err) {
-          console.error('BNPL payment error:', err)
+          // console.error('BNPL payment error:', err)
           const errorMessage = err instanceof Error ? err.message : 'Payment processing failed'
           setPaymentError(errorMessage)
           toast({
@@ -778,7 +778,7 @@ export function CheckoutForm({ clientSecret }: CheckoutFormProps) {
         }
       }
     } catch (err) {
-      console.error('Payment error:', err)
+      // console.error('Payment error:', err)
       const msg = err instanceof Error ? err.message : 'Payment processing failed'
       setPaymentError(msg)
       toast({

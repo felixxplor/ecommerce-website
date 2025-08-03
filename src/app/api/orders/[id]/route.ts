@@ -25,7 +25,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
     // Convert string ID to number for WooCommerce, but keep as string for GraphQL
     const orderId = parseInt(id, 10)
-    console.log('Fetching order with ID:', orderId)
+    // console.log('Fetching order with ID:', orderId)
 
     const data = await client.request<GetOrderByIdQuery>(print(GetOrderByIdDocument), {
       id: id, // Pass as string, not number - GraphQL ID! type expects string
@@ -36,14 +36,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     }
 
     // Debug: Log all metadata to see what's available
-    console.log('Order metadata:', data.order.metaData)
+    // console.log('Order metadata:', data.order.metaData)
 
     // Log all metadata keys to help identify the correct tracking key
     if (data.order.metaData) {
-      console.log(
-        'Available metadata keys:',
-        data.order.metaData.map((meta) => meta?.key)
-      )
+      // console.log(
+      //   'Available metadata keys:',
+      //   data.order.metaData.map((meta) => meta?.key)
+      // )
     }
 
     // Process order to include tracking information
@@ -51,7 +51,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       (meta) => meta?.key === '_wc_shipment_tracking_items'
     )?.value
 
-    console.log('Tracking metadata found:', trackingMeta)
+    // console.log('Tracking metadata found:', trackingMeta)
 
     // Also check for alternative tracking metadata keys
     const alternativeTrackingKeys = [
@@ -65,12 +65,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     for (const key of alternativeTrackingKeys) {
       const meta = data.order.metaData?.find((meta) => meta?.key === key)
       if (meta?.value) {
-        console.log(`Found tracking data with key: ${key}`, meta.value)
+        // console.log(`Found tracking data with key: ${key}`, meta.value)
         try {
           trackingData = JSON.parse(meta.value)
           break
         } catch (parseError) {
-          console.log(`Failed to parse tracking data for key ${key}:`, parseError)
+          // console.log(`Failed to parse tracking data for key ${key}:`, parseError)
           // If it's not JSON, use the raw value
           trackingData = meta.value
         }
@@ -82,11 +82,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       tracking_items: trackingData,
     }
 
-    console.log('Final processed order tracking_items:', processedOrder.tracking_items)
+    // console.log('Final processed order tracking_items:', processedOrder.tracking_items)
 
     return NextResponse.json({ order: processedOrder })
   } catch (err) {
-    console.error('Error fetching order:', err)
+    // console.error('Error fetching order:', err)
     if (err instanceof Error && err.message.includes('auth')) {
       return NextResponse.json({ errors: { message: 'Authentication failed' } }, { status: 401 })
     }

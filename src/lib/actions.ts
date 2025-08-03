@@ -32,7 +32,7 @@ export async function resetPassword({
       return { success: false, message: 'Failed to reset password' }
     }
   } catch (err) {
-    console.error('Reset password error:', err)
+    // console.error('Reset password error:', err)
     return { success: false, message: 'Something went wrong' }
   }
 }

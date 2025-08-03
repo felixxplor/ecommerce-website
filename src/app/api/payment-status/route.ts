@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(response)
   } catch (error) {
-    console.error('Error checking payment status:', error)
+    // console.error('Error checking payment status:', error)
 
     // Determine if it's a Stripe error
     let errorMessage = 'Failed to check payment status'

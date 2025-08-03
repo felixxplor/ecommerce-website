@@ -100,7 +100,7 @@ function RegisterContent() {
       router.replace(returnUrl)
     } catch (error) {
       // Handle registration error if needed
-      console.error('Registration failed:', error)
+      // console.error('Registration failed:', error)
     }
   }
 

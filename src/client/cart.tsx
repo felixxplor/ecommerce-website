@@ -178,7 +178,7 @@ function CartSummary({ cart, onCouponApplied }: CartSummaryProps) {
         throw new Error('Coupon could not be applied')
       }
     } catch (error) {
-      console.error('Error applying coupon:', error)
+      // console.error('Error applying coupon:', error)
       const errorMessage = error instanceof Error ? error.message : 'Failed to apply coupon'
       setCouponError(errorMessage.includes('does not exist') ? 'Invalid coupon code' : errorMessage)
       toast({
@@ -221,7 +221,7 @@ function CartSummary({ cart, onCouponApplied }: CartSummaryProps) {
       }
       onCouponApplied()
     } catch (error) {
-      console.error('Error removing coupon:', error)
+      // console.error('Error removing coupon:', error)
       toast({
         title: 'Error',
         description: 'Failed to remove coupon',

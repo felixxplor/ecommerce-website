@@ -128,7 +128,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       },
     }
   } catch (error) {
-    console.error('Error generating metadata:', error)
+    // console.error('Error generating metadata:', error)
     return {
       title: 'Product | Gizmooz',
       description: 'Explore our tech products at Gizmooz',

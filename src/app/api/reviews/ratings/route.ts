@@ -45,7 +45,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ rating: ratingMeta?.value || '5' })
   } catch (err) {
-    console.error('Error fetching comment rating:', err)
+    // console.error('Error fetching comment rating:', err)
     return NextResponse.json({ errors: { message: 'Failed to fetch rating' } }, { status: 500 })
   }
 }

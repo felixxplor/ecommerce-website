@@ -56,7 +56,7 @@ function decodeId(globalId: string): { type: string; id: number } {
     }
     return { type, id }
   } catch (error) {
-    console.error('Error decoding ID:', error)
+    // console.error('Error decoding ID:', error)
     return { type: '', id: 0 }
   }
 }
@@ -238,7 +238,7 @@ export function ReviewsSection({ product }: { product: Product }) {
           setReviewCount(processed.reviewCount)
         }
       } catch (error) {
-        console.error('Error loading reviews:', error)
+        // console.error('Error loading reviews:', error)
       } finally {
         setIsLoading(false)
       }
@@ -292,7 +292,7 @@ export function ReviewsSection({ product }: { product: Product }) {
         setReviewCount(processed.reviewCount)
       }
     } catch (error) {
-      console.error('Error submitting review:', error)
+      // console.error('Error submitting review:', error)
       throw error
     }
   }

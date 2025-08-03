@@ -76,9 +76,9 @@ const generateTrackingUrl = (trackingNumber: string, provider: string): string =
   const cleanTrackingNumber = trackingNumber.trim()
   const cleanProvider = provider.toLowerCase().trim()
 
-  console.log(
-    `Generating tracking URL for provider: "${cleanProvider}" with tracking number: "${cleanTrackingNumber}"`
-  )
+  // console.log(
+  //   `Generating tracking URL for provider: "${cleanProvider}" with tracking number: "${cleanTrackingNumber}"`
+  // )
 
   // Australia Post tracking URL (handle both "australia-post" and "australia post" formats)
   if (
@@ -88,18 +88,18 @@ const generateTrackingUrl = (trackingNumber: string, provider: string): string =
     cleanProvider.includes('australia_post')
   ) {
     const url = `https://auspost.com.au/mypost/track/#/details/${cleanTrackingNumber}`
-    console.log('Generated Australia Post URL:', url)
+    // console.log('Generated Australia Post URL:', url)
     return url
   }
 
   // Sendle tracking URL (handle various Sendle formats)
   if (cleanProvider.includes('sendle') || cleanProvider === 'sendle') {
     const url = `https://track.sendle.com/${cleanTrackingNumber}`
-    console.log('Generated Sendle URL:', url)
+    // console.log('Generated Sendle URL:', url)
     return url
   }
 
-  console.log('No matching provider found for:', cleanProvider)
+  // console.log('No matching provider found for:', cleanProvider)
   return ''
 }
 
@@ -147,58 +147,58 @@ export default function OrderDetailPage({ params }: PageProps) {
         }
 
         const data = await response.json()
-        console.log('Order data received:', data.order) // Debug log
+        // console.log('Order data received:', data.order) // Debug log
 
         let orderWithTracking = data.order
 
         // If the order has billing email, also fetch tracking data from the working endpoint
         if (data.order?.billing?.email) {
-          console.log(
-            'Attempting to fetch tracking for order:',
-            orderId,
-            'email:',
-            data.order.billing.email
-          )
+          // console.log(
+          //   'Attempting to fetch tracking for order:',
+          //   orderId,
+          //   'email:',
+          //   data.order.billing.email
+          // )
           try {
             const trackingUrl = `/api/track-order?id=${orderId}&email=${encodeURIComponent(
               data.order.billing.email
             )}`
-            console.log('Fetching tracking from URL:', trackingUrl)
+            // console.log('Fetching tracking from URL:', trackingUrl)
 
             const trackingResponse = await fetch(trackingUrl)
-            console.log('Tracking response status:', trackingResponse.status)
+            // console.log('Tracking response status:', trackingResponse.status)
 
             if (trackingResponse.ok) {
               const trackingData = await trackingResponse.json()
-              console.log('Full tracking response:', trackingData)
+              // console.log('Full tracking response:', trackingData)
 
               if (trackingData.order?.tracking_items) {
-                console.log('Tracking data found:', trackingData.order.tracking_items)
+                // console.log('Tracking data found:', trackingData.order.tracking_items)
                 // Merge tracking data into the order
                 orderWithTracking = {
                   ...data.order,
                   tracking_items: trackingData.order.tracking_items,
                 }
-                console.log('Order with tracking merged:', orderWithTracking)
+                // console.log('Order with tracking merged:', orderWithTracking)
               } else {
-                console.log('No tracking_items in response:', trackingData.order)
+                // console.log('No tracking_items in response:', trackingData.order)
               }
             } else {
-              console.log('Tracking response not ok:', trackingResponse.status)
+              // console.log('Tracking response not ok:', trackingResponse.status)
               const errorText = await trackingResponse.text()
-              console.log('Tracking error response:', errorText)
+              // console.log('Tracking error response:', errorText)
             }
           } catch (trackingError) {
-            console.log('Error fetching tracking data:', trackingError)
+            // console.log('Error fetching tracking data:', trackingError)
             // Continue without tracking data
           }
         } else {
-          console.log('No billing email found:', data.order?.billing)
+          // console.log('No billing email found:', data.order?.billing)
         }
 
         setOrder(orderWithTracking)
       } catch (error) {
-        console.error('Error fetching order:', error)
+        // console.error('Error fetching order:', error)
       } finally {
         setLoading(false)
       }
@@ -424,7 +424,7 @@ export default function OrderDetailPage({ params }: PageProps) {
                         variant="outline"
                         className="w-full sm:w-auto"
                         onClick={() => {
-                          console.log('Tracking item clicked:', trackingItem)
+                          // console.log('Tracking item clicked:', trackingItem)
                           const generatedUrl = generateTrackingUrl(
                             trackingItem.tracking_number,
                             trackingItem.tracking_provider

@@ -76,7 +76,7 @@ function decodeId(globalId: string): { type: string; id: number } {
     }
     return { type, id }
   } catch (error) {
-    console.error('Error decoding ID:', error)
+    // console.error('Error decoding ID:', error)
     return { type: '', id: 0 }
   }
 }
@@ -152,7 +152,7 @@ async function fetchAndProcessReviews(
       ratingCounts: counts,
     }
   } catch (error) {
-    console.error('Error fetching reviews:', error)
+    // console.error('Error fetching reviews:', error)
     return null
   }
 }

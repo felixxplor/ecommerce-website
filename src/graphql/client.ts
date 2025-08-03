@@ -15,7 +15,7 @@ import {
 let client: GraphQLClient
 export function getClient() {
   const endpoint = process.env.NEXT_PUBLIC_API_ENDPOINT
-  console.log('👉 getClient(): NEXT_PUBLIC_API_ENDPOINT =', endpoint)
+  // console.log('👉 getClient(): NEXT_PUBLIC_API_ENDPOINT =', endpoint)
   if (!endpoint) {
     throw new Error('NEXT_PUBLIC_API_ENDPOINT is not defined')
   }
@@ -64,7 +64,7 @@ export async function fetchProducts(
 
     return data.products.nodes as Product[]
   } catch (err) {
-    console.error(err || 'Failed to fetch product listing!!!')
+    // console.error(err || 'Failed to fetch product listing!!!')
   }
 }
 
@@ -92,7 +92,7 @@ export async function fetchCategories(
 
     return data.productCategories.nodes as ProductCategory[]
   } catch (err) {
-    console.error(err || 'Failed to fetch product categories!!!')
+    // console.error(err || 'Failed to fetch product categories!!!')
   }
 }
 
@@ -120,7 +120,7 @@ export async function fetchColors(
 
     return data.allPaColor.nodes as PaColor[]
   } catch (err) {
-    console.error(err || 'Failed to fetch product color attributes!!!')
+    // console.error(err || 'Failed to fetch product color attributes!!!')
   }
 }
 
@@ -138,6 +138,6 @@ export async function fetchProductBy(slug: string, idType: ProductIdTypeEnum) {
 
     return data.product as Product
   } catch (err) {
-    console.error(err || 'Failed to fetch product data!!!')
+    // console.error(err || 'Failed to fetch product data!!!')
   }
 }

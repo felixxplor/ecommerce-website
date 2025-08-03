@@ -75,9 +75,9 @@ const generateTrackingUrl = (trackingNumber: string, provider: string): string =
   const cleanTrackingNumber = trackingNumber.trim()
   const cleanProvider = provider.toLowerCase().trim()
 
-  console.log(
-    `Generating tracking URL for provider: "${cleanProvider}" with tracking number: "${cleanTrackingNumber}"`
-  )
+  // console.log(
+  //   `Generating tracking URL for provider: "${cleanProvider}" with tracking number: "${cleanTrackingNumber}"`
+  // )
 
   // Australia Post tracking URL (handle both "australia-post" and "australia post" formats)
   if (
@@ -87,18 +87,18 @@ const generateTrackingUrl = (trackingNumber: string, provider: string): string =
     cleanProvider.includes('australia_post')
   ) {
     const url = `https://auspost.com.au/mypost/track/#/details/${cleanTrackingNumber}`
-    console.log('Generated Australia Post URL:', url)
+    // console.log('Generated Australia Post URL:', url)
     return url
   }
 
   // Sendle tracking URL (handle various Sendle formats)
   if (cleanProvider.includes('sendle') || cleanProvider === 'sendle') {
     const url = `https://track.sendle.com/${cleanTrackingNumber}`
-    console.log('Generated Sendle URL:', url)
+    // console.log('Generated Sendle URL:', url)
     return url
   }
 
-  console.log('No matching provider found for:', cleanProvider)
+  // console.log('No matching provider found for:', cleanProvider)
   return ''
 }
 
@@ -214,15 +214,15 @@ function AccountPageContent() {
         const ordersData = await ordersResponse.json()
 
         // Debug: Log the orders data to see the tracking_items structure
-        console.log('Orders data from API:', ordersData.orders)
+        // console.log('Orders data from API:', ordersData.orders)
         ordersData.orders.forEach((order: Order, index: number) => {
-          console.log(`Order ${index + 1} tracking items:`, order.tracking_items)
+          // console.log(`Order ${index + 1} tracking items:`, order.tracking_items)
         })
 
         setCustomer(customerData.customer)
         setOrders(ordersData.orders)
       } catch (error) {
-        console.error('Error fetching data:', error)
+        // console.error('Error fetching data:', error)
       } finally {
         setIsLoading(false)
       }
@@ -372,7 +372,7 @@ function AccountPageContent() {
                                 const trackingItem = order.tracking_items?.[0]
                                 if (!trackingItem) return
 
-                                console.log('Tracking item clicked:', trackingItem)
+                                // console.log('Tracking item clicked:', trackingItem)
 
                                 // First try custom tracking link if available
                                 if (
@@ -418,13 +418,13 @@ function AccountPageContent() {
                                       .writeText(trackingItem.tracking_number)
                                       .then(() => {
                                         // You could show a toast notification here instead
-                                        console.log(
-                                          'Tracking number copied to clipboard:',
-                                          trackingItem.tracking_number
-                                        )
+                                        // console.log(
+                                        //   'Tracking number copied to clipboard:',
+                                        //   trackingItem.tracking_number
+                                        // )
                                       })
                                       .catch(() => {
-                                        console.log('Could not copy tracking number')
+                                        // console.log('Could not copy tracking number')
                                       })
                                   }
                                 }

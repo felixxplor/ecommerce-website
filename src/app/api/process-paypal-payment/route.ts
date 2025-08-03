@@ -25,7 +25,7 @@ async function getPayPalAccessToken() {
     })
 
     if (!response.ok) {
-      console.error('Error getting PayPal token, status:', response.status)
+      // console.error('Error getting PayPal token, status:', response.status)
       const errorText = await response.text()
       throw new Error(`Failed to get PayPal token: ${errorText}`)
     }
@@ -33,7 +33,7 @@ async function getPayPalAccessToken() {
     const data = await response.json()
     return data.access_token
   } catch (error) {
-    console.error('Error getting PayPal access token:', error)
+    // console.error('Error getting PayPal access token:', error)
     throw error
   }
 }
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'PayPal order ID is required' }, { status: 400 })
     }
 
-    console.log(`Capturing PayPal payment for order ID: ${paypalOrderId}`)
+    // console.log(`Capturing PayPal payment for order ID: ${paypalOrderId}`)
 
     // Get PayPal access token
     const accessToken = await getPayPalAccessToken()
@@ -71,19 +71,19 @@ export async function POST(request: Request) {
     )
 
     if (!checkOrderResponse.ok) {
-      console.error('Error checking PayPal order, status:', checkOrderResponse.status)
+      // console.error('Error checking PayPal order, status:', checkOrderResponse.status)
       const errorText = await checkOrderResponse.text()
       throw new Error(`Failed to check PayPal order: ${errorText}`)
     }
 
     const orderData = await checkOrderResponse.json()
-    console.log(`PayPal order status: ${orderData.status}`)
+    // console.log(`PayPal order status: ${orderData.status}`)
 
     // If already captured, return the details
     if (orderData.status === 'COMPLETED') {
       const captureId = orderData.purchase_units?.[0]?.payments?.captures?.[0]?.id
       if (captureId) {
-        console.log(`Order already captured with ID: ${captureId}`)
+        // console.log(`Order already captured with ID: ${captureId}`)
         return NextResponse.json({
           success: true,
           captureId,
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
     }
 
     // Capture the PayPal payment
-    console.log('Attempting to capture payment...')
+    // console.log('Attempting to capture payment...')
     const captureResponse = await fetch(
       `${PAYPAL_BASE_URL}/v2/checkout/orders/${paypalOrderId}/capture`,
       {
@@ -113,11 +113,11 @@ export async function POST(request: Request) {
     )
 
     // Log full response for debugging
-    console.log('Capture response status:', captureResponse.status)
+    // console.log('Capture response status:', captureResponse.status)
 
     if (!captureResponse.ok) {
       let errorText = await captureResponse.text()
-      console.error('PayPal capture error:', errorText)
+      // console.error('PayPal capture error:', errorText)
       try {
         // Try to parse as JSON if possible
         const errorData = JSON.parse(errorText)
@@ -142,7 +142,7 @@ export async function POST(request: Request) {
 
     // Parse the capture data
     const captureData = await captureResponse.json()
-    console.log('PayPal capture successful. Status:', captureData.status)
+    // console.log('PayPal capture successful. Status:', captureData.status)
 
     // Extract capture information
     let captureId = null
@@ -172,7 +172,7 @@ export async function POST(request: Request) {
       authToken: effectiveAuthToken,
     })
   } catch (error) {
-    console.error('Error processing PayPal payment:', error)
+    // console.error('Error processing PayPal payment:', error)
     return NextResponse.json(
       {
         error: 'Failed to process PayPal payment',

@@ -82,7 +82,7 @@ export async function PUT(request: Request) {
     })
   } catch (error) {
     const graphqlError = error as GraphQLError
-    console.error('Error updating shipping:', graphqlError)
+    // console.error('Error updating shipping:', graphqlError)
     return NextResponse.json({ error: 'Failed to update shipping address' }, { status: 500 })
   }
 }
@@ -118,7 +118,7 @@ export async function GET(request: Request) {
       },
     })
   } catch (err) {
-    console.error('Error fetching addresses:', err)
+    // console.error('Error fetching addresses:', err)
     return NextResponse.json({ errors: { message: 'Failed to fetch addresses' } }, { status: 500 })
   }
 }

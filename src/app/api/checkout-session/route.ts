@@ -39,7 +39,7 @@ export async function GET(request: Request) {
       currency: session.currency,
     })
   } catch (error) {
-    console.error('Error fetching checkout session:', error)
+    // console.error('Error fetching checkout session:', error)
     return NextResponse.json(
       {
         error: 'Failed to retrieve checkout session',

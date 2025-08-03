@@ -78,7 +78,7 @@ async function getProductReviews(productId: string) {
       averageRating: 0,
     }
   } catch (error) {
-    console.error('Error fetching reviews:', error)
+    // console.error('Error fetching reviews:', error)
     return {
       reviewCount: 0,
       averageRating: 0,
@@ -125,7 +125,7 @@ async function getRelatedProducts(
 
     // If we still don't have a valid ID, return empty array
     if (isNaN(productDatabaseId)) {
-      console.error('Could not determine product database ID for related products')
+      // console.error('Could not determine product database ID for related products')
       return []
     }
 
@@ -166,7 +166,7 @@ async function getRelatedProducts(
 
     return uniqueProducts
   } catch (error) {
-    console.error('Error fetching related products:', error)
+    // console.error('Error fetching related products:', error)
     return []
   }
 }

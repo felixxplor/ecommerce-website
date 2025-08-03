@@ -66,7 +66,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ authToken, refreshToken, sessionToken })
   } catch (err) {
-    console.error(err)
+    // console.error(err)
     return NextResponse.json(
       { errors: { message: 'Registration failed. Please try again.' } },
       { status: 500 }

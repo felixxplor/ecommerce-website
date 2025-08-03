@@ -81,7 +81,7 @@ export async function POST(request: Request) {
       sessionToken: sessionToken || loginData.login.authToken,
     })
   } catch (err) {
-    console.error('Login error:', err)
+    // console.error('Login error:', err)
     return NextResponse.json({ errors: { message: 'Login credentials invalid.' } }, { status: 500 })
   }
 }

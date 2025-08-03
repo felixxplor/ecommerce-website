@@ -57,7 +57,7 @@ export default function PasswordChangeForm() {
         }))
       }
     } catch (error) {
-      console.error('Error changing password:', error)
+      // console.error('Error changing password:', error)
       setErrors((prev) => ({
         ...prev,
         currentPassword: 'Failed to change password',

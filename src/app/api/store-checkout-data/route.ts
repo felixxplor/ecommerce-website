@@ -31,19 +31,19 @@ export async function POST(request: NextRequest) {
       stored_at: new Date().toISOString(),
     }
 
-    console.log(`Stored checkout data for ${key}:`, checkoutDataStore[key])
+    // console.log(`Stored checkout data for ${key}:`, checkoutDataStore[key])
 
     // Set up a cleanup timer (5 minutes)
     setTimeout(() => {
       if (checkoutDataStore[key]) {
-        console.log(`Cleaning up checkout data for ${key}`)
+        // console.log(`Cleaning up checkout data for ${key}`)
         delete checkoutDataStore[key]
       }
     }, 5 * 60 * 1000)
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error('Error storing checkout data:', error)
+    // console.error('Error storing checkout data:', error)
     return NextResponse.json(
       { error: error.message || 'Failed to store checkout data' },
       { status: 500 }
@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, data })
   } catch (error: any) {
-    console.error('Error retrieving checkout data:', error)
+    // console.error('Error retrieving checkout data:', error)
     return NextResponse.json(
       { error: error.message || 'Failed to retrieve checkout data' },
       { status: 500 }

@@ -101,7 +101,7 @@ export async function POST(request: Request) {
     const paypalOrderData = await paypalOrderResponse.json()
 
     if (paypalOrderData.error) {
-      console.error('PayPal API error:', paypalOrderData.error)
+      // console.error('PayPal API error:', paypalOrderData.error)
       return NextResponse.json(
         {
           error: 'Failed to create PayPal order',
@@ -131,15 +131,15 @@ export async function POST(request: Request) {
     try {
       // Store metadata in a more persistent way - this is just a placeholder
       // In a real implementation, you would use a database or Redis
-      console.log('Storing PayPal metadata:', {
-        paypalOrderId: paypalOrderData.id,
-        ...metadata,
-        wooSession,
-        timestamp: Date.now(),
-      })
+      // console.log('Storing PayPal metadata:', {
+      //   paypalOrderId: paypalOrderData.id,
+      //   ...metadata,
+      //   wooSession,
+      //   timestamp: Date.now(),
+      // })
     } catch (metaError) {
       // Log the error but don't fail the request
-      console.warn('Failed to store PayPal metadata:', metaError)
+      // console.warn('Failed to store PayPal metadata:', metaError)
     }
 
     return NextResponse.json({
@@ -149,7 +149,7 @@ export async function POST(request: Request) {
       approvalUrl,
     })
   } catch (error) {
-    console.error('Error creating PayPal session:', error)
+    // console.error('Error creating PayPal session:', error)
     return NextResponse.json(
       {
         error: 'Failed to create PayPal session',

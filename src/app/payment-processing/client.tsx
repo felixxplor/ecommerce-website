@@ -46,14 +46,14 @@ function PaymentProcessingContent() {
         const token = searchParams.get('token') // For PayPal
         const payerId = searchParams.get('PayerID') // For PayPal
 
-        console.log('Processing payment with params:', {
-          paymentMethod,
-          paymentIntent,
-          token,
-          payerId,
-          transactionId,
-          uniqueId,
-        })
+        // console.log('Processing payment with params:', {
+        //   paymentMethod,
+        //   paymentIntent,
+        //   token,
+        //   payerId,
+        //   transactionId,
+        //   uniqueId,
+        // })
 
         // Validate required parameters based on payment method
         if (!paymentMethod) {
@@ -75,7 +75,7 @@ function PaymentProcessingContent() {
         // Check if this payment has already been processed
         const processedKey = `processed_${paymentIntent || token}_${transactionId || uniqueId}`
         if (sessionStorage.getItem(processedKey)) {
-          console.log('Payment already processed, skipping...')
+          // console.log('Payment already processed, skipping...')
           setIsProcessing(false)
           return
         }
@@ -84,20 +84,20 @@ function PaymentProcessingContent() {
         const authToken = sessionStorage.getItem('woo-auth-token')
         const wooSession = localStorage.getItem('woo-session-token')
 
-        console.log('Client processing payment:', {
-          paymentMethod,
-          paymentIntent,
-          token,
-          hasAuthToken: !!authToken,
-          hasWooSession: !!wooSession,
-          transactionId,
-        })
+        // console.log('Client processing payment:', {
+        //   paymentMethod,
+        //   paymentIntent,
+        //   token,
+        //   hasAuthToken: !!authToken,
+        //   hasWooSession: !!wooSession,
+        //   transactionId,
+        // })
 
         // --- PayPal Flow ---
         if (paymentMethod === 'paypal' && (token || payerId)) {
           setProcessingStage('Capturing PayPal payment')
 
-          console.log('Processing PayPal payment with auth token:', !!authToken)
+          // console.log('Processing PayPal payment with auth token:', !!authToken)
 
           // 1) Capture PayPal payment
           const captureRes = await fetch('/api/process-paypal-payment', {
@@ -154,7 +154,7 @@ function PaymentProcessingContent() {
           const orderData = await orderRes.json()
           const orderId = orderData.orderId || orderData.checkout?.order?.databaseId
 
-          console.log('PayPal order created successfully:', orderId)
+          // console.log('PayPal order created successfully:', orderId)
 
           // Mark payment as processed to prevent duplicate calls
           sessionStorage.setItem(processedKey, 'true')
@@ -180,7 +180,7 @@ function PaymentProcessingContent() {
         if (isBNPL && paymentIntent) {
           setProcessingStage('Creating order (BNPL)')
 
-          console.log('Processing BNPL payment with auth token:', !!authToken)
+          // console.log('Processing BNPL payment with auth token:', !!authToken)
 
           const res = await fetch('/api/create-post-payment-order', {
             method: 'POST',
@@ -209,7 +209,7 @@ function PaymentProcessingContent() {
 
           if (!orderId) throw new Error('No order ID returned')
 
-          console.log('BNPL order created successfully:', orderId)
+          // console.log('BNPL order created successfully:', orderId)
 
           // Mark payment as processed to prevent duplicate calls
           sessionStorage.setItem(processedKey, 'true')
@@ -230,15 +230,15 @@ function PaymentProcessingContent() {
         }
 
         // If we get here, no payment method was handled
-        console.error('No payment method matched or missing required parameters:', {
-          paymentMethod,
-          paymentIntent,
-          token,
-          payerId,
-        })
+        // console.error('No payment method matched or missing required parameters:', {
+        //   paymentMethod,
+        //   paymentIntent,
+        //   token,
+        //   payerId,
+        // })
         throw new Error('Unsupported payment method or missing payment data')
       } catch (e) {
-        console.error('Payment processing error:', e)
+        // console.error('Payment processing error:', e)
         const msg = e instanceof Error ? e.message : 'Unexpected error'
         setError(msg)
         setIsProcessing(false)
@@ -264,14 +264,14 @@ function PaymentProcessingContent() {
     if (hasRequiredParams) {
       processPayment()
     } else {
-      console.error('Missing required parameters:', {
-        paymentMethod,
-        paymentIntent,
-        token,
-        hasPaymentMethod: !!paymentMethod,
-        hasPaymentIntent: !!paymentIntent,
-        hasToken: !!token,
-      })
+      // console.error('Missing required parameters:', {
+      //   paymentMethod,
+      //   paymentIntent,
+      //   token,
+      //   hasPaymentMethod: !!paymentMethod,
+      //   hasPaymentIntent: !!paymentIntent,
+      //   hasToken: !!token,
+      // })
       setError('Missing required payment parameters for the selected payment method')
       setIsProcessing(false)
     }

@@ -7,9 +7,9 @@ export async function GET(request: Request) {
     const id = url.searchParams.get('id')
     const email = url.searchParams.get('email')
 
-    console.log('=== Track Order API Debug ===')
-    console.log('Order ID:', id)
-    console.log('Email:', email)
+    // console.log('=== Track Order API Debug ===')
+    // console.log('Order ID:', id)
+    // console.log('Email:', email)
 
     if (!id || !email) {
       return NextResponse.json(
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
           id
         )}&email=${encodeURIComponent(email)}`
 
-        console.log('Trying endpoint:', endpoint)
+        // console.log('Trying endpoint:', endpoint)
 
         const response = await fetch(endpoint, {
           method: 'GET',
@@ -45,18 +45,18 @@ export async function GET(request: Request) {
           signal: AbortSignal.timeout(15000),
         })
 
-        console.log('WordPress Response:', {
-          status: response.status,
-          statusText: response.statusText,
-          ok: response.ok,
-        })
+        // console.log('WordPress Response:', {
+        //   status: response.status,
+        //   statusText: response.statusText,
+        //   ok: response.ok,
+        // })
 
         const contentType = response.headers.get('content-type')
         const responseText = await response.text()
 
         // Check if response is HTML (error page)
         if (!contentType || !contentType.includes('application/json')) {
-          console.error(`Non-JSON response from ${wpApiUrl}:`, responseText.substring(0, 500))
+          // console.error(`Non-JSON response from ${wpApiUrl}:`, responseText.substring(0, 500))
           continue
         }
 
@@ -64,16 +64,16 @@ export async function GET(request: Request) {
         try {
           data = JSON.parse(responseText)
         } catch (parseError) {
-          console.error(`JSON parse error from ${wpApiUrl}:`, parseError)
+          // console.error(`JSON parse error from ${wpApiUrl}:`, parseError)
           continue
         }
 
-        console.log('Parsed response data:', {
-          hasData: !!data,
-          dataKeys: data ? Object.keys(data) : [],
-          isError: !!(data?.code || data?.errors),
-          status: response.status,
-        })
+        // console.log('Parsed response data:', {
+        //   hasData: !!data,
+        //   dataKeys: data ? Object.keys(data) : [],
+        //   isError: !!(data?.code || data?.errors),
+        //   status: response.status,
+        // })
 
         // Handle WordPress error responses properly
         if (!response.ok) {
@@ -90,11 +90,11 @@ export async function GET(request: Request) {
             errorMessage = 'Email does not match order records'
           }
 
-          console.log('WordPress error response:', {
-            status: response.status,
-            errorMessage,
-            data,
-          })
+          // console.log('WordPress error response:', {
+          //   status: response.status,
+          //   errorMessage,
+          //   data,
+          // })
 
           // Forward the exact same status code from WordPress
           return NextResponse.json(
@@ -106,7 +106,7 @@ export async function GET(request: Request) {
         // Handle successful response but check if it's actually an error disguised as 200
         if (data?.code) {
           // WordPress sometimes returns 200 but with error codes
-          console.log('WordPress returned 200 but with error code:', data.code)
+          // console.log('WordPress returned 200 but with error code:', data.code)
 
           if (data.code === 'order_not_found') {
             return NextResponse.json(
@@ -123,19 +123,19 @@ export async function GET(request: Request) {
 
         // Check if we have actual order data
         if (!data || (typeof data === 'object' && !data.id && !data.order_number)) {
-          console.log('No valid order data found')
+          // console.log('No valid order data found')
           return NextResponse.json({ errors: { message: 'Order not found' } }, { status: 404 })
         }
 
-        console.log('Success! Order found:', {
-          orderId: data.id,
-          orderNumber: data.order_number,
-          hasTrackingItems: !!data.tracking_items,
-        })
+        // console.log('Success! Order found:', {
+        //   orderId: data.id,
+        //   orderNumber: data.order_number,
+        //   hasTrackingItems: !!data.tracking_items,
+        // })
 
         return NextResponse.json({ order: data })
       } catch (error) {
-        console.error(`Error with URL ${wpApiUrl}:`, error)
+        // console.error(`Error with URL ${wpApiUrl}:`, error)
         lastError = error
         continue
       }
@@ -144,7 +144,7 @@ export async function GET(request: Request) {
     // If we get here, all URLs failed
     throw lastError || new Error('All WordPress URLs failed')
   } catch (err) {
-    console.error('Final error in track-order:', err)
+    // console.error('Final error in track-order:', err)
 
     return NextResponse.json(
       {

@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
   if (delayMs > 0) {
     // Wait for specified milliseconds
     await new Promise((resolve) => setTimeout(resolve, Math.min(delayMs, 5000))) // Max 5 seconds
-    console.log(`Delayed empty cart operation by ${delayMs}ms`)
+    // console.log(`Delayed empty cart operation by ${delayMs}ms`)
   }
 
   // Try to get wooSession from multiple locations for secure operation
@@ -93,11 +93,11 @@ export async function POST(request: NextRequest) {
 
     graphQLClient.setHeader('woocommerce-session', formattedSession)
 
-    console.log(
-      'Attempting to empty cart with session:',
-      wooSession.substring(0, 10) + '...',
-      transactionId ? `transaction ID: ${transactionId}` : ''
-    )
+    // console.log(
+    //   'Attempting to empty cart with session:',
+    //   wooSession.substring(0, 10) + '...',
+    //   transactionId ? `transaction ID: ${transactionId}` : ''
+    // )
 
     // Generate a unique client mutation ID with transaction ID if available
     const clientMutationId = `empty-cart-${transactionId || Date.now()}-${Math.random()
@@ -114,11 +114,11 @@ export async function POST(request: NextRequest) {
 
     // Log the result
     const itemCount = result.emptyCart?.cart?.contents?.itemCount || 0
-    console.log(
-      `Cart emptied successfully. New item count: ${itemCount}, ${
-        transactionId ? `transaction ID: ${transactionId}` : ''
-      }`
-    )
+    // console.log(
+    //   `Cart emptied successfully. New item count: ${itemCount}, ${
+    //     transactionId ? `transaction ID: ${transactionId}` : ''
+    //   }`
+    // )
 
     return NextResponse.json({
       success: true,
@@ -128,11 +128,11 @@ export async function POST(request: NextRequest) {
       transactionId: transactionId || null,
     })
   } catch (error) {
-    console.error('Error emptying cart:', error)
+    // console.error('Error emptying cart:', error)
 
     // Attempt with a different approach if GraphQL fails
     try {
-      console.log('Trying alternative method to empty cart...')
+      // console.log('Trying alternative method to empty cart...')
       const restEndpoint = `${process.env.NEXT_PUBLIC_WORDPRESS_URL}/wp-json/wc/store/v1/cart/items`
 
       // Get all cart items first
@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
         itemsRemoved: cartItems.length,
       })
     } catch (fallbackError) {
-      console.error('Fallback cart clearing also failed:', fallbackError)
+      // console.error('Fallback cart clearing also failed:', fallbackError)
 
       return NextResponse.json(
         {

@@ -89,7 +89,7 @@ export function CheckoutClient() {
       const data = await response.json()
       setClientSecret(data.clientSecret)
     } catch (err) {
-      console.error('Checkout error:', err)
+      // console.error('Checkout error:', err)
       const errorMessage = err instanceof Error ? err.message : 'Checkout failed'
       setError(errorMessage)
       toast({

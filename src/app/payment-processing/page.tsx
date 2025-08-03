@@ -69,7 +69,7 @@ export default async function PaymentProcessingPage(props: PaymentProcessingPage
     redirect('/checkout?error=missing_payment_intent')
   }
 
-  console.log('Processing Stripe payment for intent:', paymentIntent)
+  // console.log('Processing Stripe payment for intent:', paymentIntent)
 
   // For Stripe payments, retrieve and verify the payment intent
   let stripePaymentIntent
@@ -78,9 +78,9 @@ export default async function PaymentProcessingPage(props: PaymentProcessingPage
     stripePaymentIntent = await stripe.paymentIntents.retrieve(paymentIntent, {
       expand: ['payment_method'],
     })
-    console.log('Stripe payment intent status:', stripePaymentIntent.status)
+    // console.log('Stripe payment intent status:', stripePaymentIntent.status)
   } catch (error) {
-    console.error('Error retrieving payment intent:', error)
+    // console.error('Error retrieving payment intent:', error)
     redirect(
       `/checkout?error=payment_retrieval_error&message=${encodeURIComponent(
         'Could not retrieve payment information'
@@ -110,7 +110,7 @@ export default async function PaymentProcessingPage(props: PaymentProcessingPage
     headers['woocommerce-session'] = `Session ${wooSession}`
   }
 
-  console.log('Creating order with Stripe payment intent:', paymentIntent)
+  // console.log('Creating order with Stripe payment intent:', paymentIntent)
 
   // Get the actual payment method from Stripe (most reliable)
   let detectedPaymentMethod = paymentMethod
@@ -121,7 +121,7 @@ export default async function PaymentProcessingPage(props: PaymentProcessingPage
   ) {
     // ALWAYS prioritize the actual payment method from Stripe
     detectedPaymentMethod = stripePaymentIntent.payment_method.type
-    console.log('Using ACTUAL payment method from Stripe payment intent:', detectedPaymentMethod)
+    // console.log('Using ACTUAL payment method from Stripe payment intent:', detectedPaymentMethod)
   } else if (
     stripePaymentIntent.payment_method_types &&
     stripePaymentIntent.payment_method_types.length > 0
@@ -132,14 +132,14 @@ export default async function PaymentProcessingPage(props: PaymentProcessingPage
       bnplMethods.includes(type)
     )
     detectedPaymentMethod = bnplMethod || stripePaymentIntent.payment_method_types[0]
-    console.log('Using payment method from payment_method_types:', detectedPaymentMethod)
+    // console.log('Using payment method from payment_method_types:', detectedPaymentMethod)
   } else if (paymentMethod) {
     // Use URL parameter as last resort
     detectedPaymentMethod = paymentMethod
-    console.log('Using payment method from URL parameter:', detectedPaymentMethod)
+    // console.log('Using payment method from URL parameter:', detectedPaymentMethod)
   }
 
-  console.log('Final detected payment method for order creation:', detectedPaymentMethod)
+  // console.log('Final detected payment method for order creation:', detectedPaymentMethod)
 
   // Call the create-post-payment-order API
   let createOrderResponse
@@ -160,7 +160,7 @@ export default async function PaymentProcessingPage(props: PaymentProcessingPage
       }
     )
   } catch (error) {
-    console.error('Error creating order:', error)
+    // console.error('Error creating order:', error)
     redirect(
       `/checkout?error=order_creation_error&message=${encodeURIComponent('Failed to create order')}`
     )
@@ -181,7 +181,7 @@ export default async function PaymentProcessingPage(props: PaymentProcessingPage
   try {
     orderData = await createOrderResponse.json()
   } catch (error) {
-    console.error('Error parsing order response:', error)
+    // console.error('Error parsing order response:', error)
     redirect(
       `/checkout?error=order_data_error&message=${encodeURIComponent('Could not parse order data')}`
     )
