@@ -74,10 +74,10 @@ export function MobileNavigation() {
                             <li>
                               <SheetClose asChild>
                                 <Link
-                                  href="/collections/new-releases"
+                                  href="/collections/new-arrivals"
                                   className="block px-4 py-2 text-sm hover:bg-gray-100"
                                 >
-                                  New Releases
+                                  New Arrivals
                                 </Link>
                               </SheetClose>
                             </li>

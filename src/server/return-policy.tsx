@@ -35,14 +35,29 @@ export default function ReturnPolicy() {
                 </svg>
               </div>
               <div>
-                <h2 className="text-2xl font-serif font-medium mb-4">Our Promise</h2>
-                <p className="text-lg text-gray-700 mb-4">
-                  If you have any issues with your order, we want to make it right.
+                <h2 className="text-2xl font-serif font-medium mb-4">Return Policy</h2>
+                <p className="text-lg text-gray-700 mb-6">
+                  We stand behind our products and want you to be completely satisfied with your
+                  purchase.
                 </p>
-                <p className="text-gray-700">
-                  We have a <span className="font-medium">30-day return policy</span>, which means
-                  you have 30 days after receiving your item to request a return.
-                </p>
+
+                <div className="mb-4">
+                  <h3 className="font-medium text-gray-900 mb-2">30-Day Return Window</h3>
+                  <p className="text-gray-700">
+                    You have 30 days from the date you receive your item to initiate a return.
+                  </p>
+                </div>
+
+                <div className="mb-4">
+                  <h3 className="font-medium text-gray-900 mb-2">Change of Mind Returns</h3>
+                  <p className="text-gray-700 mb-2">
+                    Items must be unused and in their original packaging to be eligible for return.
+                  </p>
+                  <p className="text-gray-700">
+                    Customers are responsible for return shipping costs. A restocking fee may apply
+                    if items are returned in a condition unfit for resale.
+                  </p>
+                </div>
               </div>
             </div>
           </section>
@@ -107,14 +122,14 @@ export default function ReturnPolicy() {
                   >
                     info@gizmooz.com
                   </a>{' '}
-                  or by calling{' '}
+                  {/* or by calling{' '}
                   <a
                     href="tel:1300123456"
                     className="text-blue-600 hover:text-blue-800 transition-colors"
                   >
                     1300 123 456
                   </a>{' '}
-                  (During business hours AEST).
+                  (During business hours AEST). */}
                 </p>
               </div>
             </div>

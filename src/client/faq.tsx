@@ -54,7 +54,7 @@ export default function FAQ() {
       category: 'shipping',
       question: 'How long will it take to receive my order?',
       answer:
-        'Standard shipping typically takes 3-5 business days within Australia. Express shipping orders placed before 12:30pm AEST on weekdays are dispatched the same day and usually arrive faster, but delivery times can vary depending on your location.',
+        'Standard shipping typically takes 2-7 business days within Australia. Express shipping orders placed before 12:30pm AEST on weekdays are dispatched the same day and usually arrive faster, but delivery times can vary depending on your location.',
     },
     {
       id: 5,

@@ -115,7 +115,7 @@ export default function ContactUs() {
 
         <div className="grid md:grid-cols-3 gap-8 mb-16">
           {/* Contact Information Cards */}
-          <Card className="overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+          {/* <Card className="overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
             <div className="bg-blue-50 p-4 flex items-center justify-center">
               <Phone className="h-8 w-8 text-blue-600" />
             </div>
@@ -129,7 +129,7 @@ export default function ContactUs() {
                 1300 123 456
               </a>
             </CardContent>
-          </Card>
+          </Card> */}
 
           <Card className="overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
             <div className="bg-purple-50 p-4 flex items-center justify-center">
@@ -147,7 +147,7 @@ export default function ContactUs() {
             </CardContent>
           </Card>
 
-          <Card className="overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+          {/* <Card className="overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
             <div className="bg-green-50 p-4 flex items-center justify-center">
               <MapPin className="h-8 w-8 text-green-600" />
             </div>
@@ -162,12 +162,12 @@ export default function ContactUs() {
                 Australia
               </address>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
           {/* Contact Form */}
-          <div>
+          {/* <div>
             <h2 className="text-2xl font-serif font-medium mb-6">Send Us a Message</h2>
 
             {formSubmitted ? (
@@ -284,7 +284,7 @@ export default function ContactUs() {
                 </Button>
               </form>
             )}
-          </div>
+          </div> */}
 
           {/* FAQ Section */}
           <div>
@@ -301,7 +301,7 @@ export default function ContactUs() {
               <div className="border-b border-gray-100 pb-4">
                 <h3 className="font-medium text-lg mb-2">How long does shipping take?</h3>
                 <p className="text-gray-600">
-                  We offer free standard shipping on all orders, which typically takes 3-5 business
+                  We offer free standard shipping on all orders, which typically takes 2-7 business
                   days. Express shipping is available at checkout for an additional fee.
                 </p>
               </div>

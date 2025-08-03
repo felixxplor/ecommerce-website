@@ -195,46 +195,60 @@ export default function ResponsiveHomePage() {
         </div>
 
         {/* Featured Double Banner - Side by side on all screens */}
-        <div className="relative w-full py-10 sm:py-14 text-xl sm:text-2xl font-extrabold text-balance leading-normal">
+        <div className="relative w-full py-6 sm:py-10 lg:py-14">
           <div>
-            <div className="grid grid-cols-2 gap-3 sm:gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
               {featureBanners.map((banner, index) => (
-                <div key={index} className="relative col-span-1">
-                  {/* Make the aspect ratio shorter to make photos smaller vertically while taking full width */}
-                  <div className="w-full aspect-[16/13] sm:aspect-[16/14] md:aspect-[16/12] relative">
+                <div
+                  key={index}
+                  className={cn(
+                    'relative col-span-1',
+                    // Hide second banner (index 1) on small screens
+                    index === 1 && 'hidden sm:block'
+                  )}
+                >
+                  {/* Responsive aspect ratios - taller on mobile, shorter on desktop */}
+                  <div className="w-full aspect-[4/5] sm:aspect-[16/14] md:aspect-[16/12] relative overflow-hidden rounded-lg sm:rounded-xl">
                     <Image
                       alt={banner.title}
                       src={banner.image}
                       fill
-                      sizes="(max-width: 768px) 50vw, 50vw"
+                      sizes="(max-width: 640px) 100vw, 50vw"
                       className="object-cover"
                     />
-                    <div className="absolute inset-0 py-4 sm:py-8 md:py-12 px-2 sm:px-4 md:px-5">
+                    {/* Gradient overlay for better text readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+
+                    <div className="absolute inset-0 p-4 sm:p-6 md:p-8">
                       <div className="flex flex-col justify-between items-center text-white text-center h-full">
-                        <div className="flex-grow flex flex-col justify-center">
-                          <div className="text-sm sm:text-3xl md:text-4xl lg:text-5xl font-normal max-w-[500px]">
+                        <div className="flex-grow flex flex-col justify-center space-y-2 sm:space-y-4">
+                          {/* Responsive title sizing */}
+                          <h3 className="text-lg leading-tight font-bold sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl sm:font-normal max-w-[280px] sm:max-w-[400px] md:max-w-[500px]">
                             {banner.title}
-                          </div>
-                          <div className="text-xs sm:text-base md:text-lg font-normal max-w-[400px] mx-auto mt-2 sm:mt-6 md:mt-10 hidden sm:block">
+                          </h3>
+
+                          {/* Description - show on mobile but smaller, hide on very small screens */}
+                          <p className="text-xs leading-relaxed sm:text-sm md:text-base lg:text-lg font-normal max-w-[250px] sm:max-w-[350px] md:max-w-[400px] mx-auto opacity-90 hidden xs:block">
                             {banner.description}
-                          </div>
+                          </p>
                         </div>
+
+                        {/* Improved button styling */}
                         <Link
                           className={cn(
-                            buttonVariants({
-                              size: 'sm', // Default size for mobile
-                              className:
-                                'mx-auto !w-auto !min-w-0 bg-transparent !border-0 sm:!border sm:!border-white !rounded-full !mt-auto !font-bold sm:hover:!bg-white sm:hover:!text-black !transition-colors !duration-300 !whitespace-nowrap !shadow-none',
-                            }),
-                            '!text-xs !px-2 !py-0.5', // Mobile (default)
-                            'sm:!text-sm sm:!px-3 sm:!py-1.5 sm:!shadow-sm', // Small screens - add shadow back
-                            'md:!text-base md:!px-6 md:!py-3', // Medium screens
-                            'lg:!text-lg lg:!px-8 lg:!py-4 lg:!h-12' // Large screens (xl size)
+                            'inline-flex items-center justify-center gap-1.5 font-semibold transition-all duration-300 rounded-full',
+                            // Mobile styles
+                            'text-xs px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/30 hover:bg-white hover:text-black',
+                            // Desktop styles
+                            'sm:text-sm sm:px-5 sm:py-2.5 sm:bg-transparent sm:border-white sm:hover:bg-white sm:hover:text-black',
+                            'md:text-base md:px-6 md:py-3',
+                            'lg:text-lg lg:px-8 lg:py-4',
+                            'whitespace-nowrap shadow-lg sm:shadow-sm'
                           )}
                           href={banner.link}
                         >
-                          {banner.linkText}{' '}
-                          <ArrowRight className="!h-2.5 !w-2.5 sm:!h-3.5 sm:!w-3.5 md:!h-4 md:!w-4 !ml-1 md:!ml-1.5" />
+                          {banner.linkText}
+                          <ArrowRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 transition-transform group-hover:translate-x-0.5" />
                         </Link>
                       </div>
                     </div>

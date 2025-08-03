@@ -137,8 +137,8 @@ export default function ShippingPolicy() {
                   <div>
                     <h3 className="text-lg font-medium mb-1">Standard Shipping</h3>
                     <p className="text-gray-700">
-                      Orders placed on a weekday are dispatched the next business day and shipped
-                      with Australia Post. Please allow 3-5 business days for delivery.
+                      We offer free standard shipping on all orders, which typically takes 2-7
+                      business days. Please allow 2-7 business days for delivery.
                     </p>
                   </div>
                 </div>
@@ -338,7 +338,7 @@ export default function ShippingPolicy() {
             about shipping and delivery.
           </p>
           <div className="flex flex-col md:flex-row justify-center gap-6">
-            <a
+            {/* <a
               href="tel:1300123456"
               className="flex items-center justify-center gap-3 px-6 py-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors shadow-sm"
             >
@@ -357,7 +357,7 @@ export default function ShippingPolicy() {
                 />
               </svg>
               <span className="font-medium">Call us at 1300 123 456</span>
-            </a>
+            </a> */}
             <a
               href="mailto:info@gizmooz.com"
               className="flex items-center justify-center gap-3 px-6 py-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors shadow-sm"

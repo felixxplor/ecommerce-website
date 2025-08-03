@@ -90,10 +90,10 @@ const Navbar = ({ menu, categories, products }: NavBarProps) => {
                             <li className="">
                               <NavigationMenuLink
                                 className="focus:shadow-md text-sm"
-                                href="/collections/new-releases"
+                                href="/collections/new-arrivals"
                                 tabIndex={-1}
                               >
-                                New Releases
+                                New Arrivals
                               </NavigationMenuLink>
                             </li>
                             <li className="">

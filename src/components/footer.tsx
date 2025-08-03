@@ -68,11 +68,11 @@ const Footer = () => {
                   FAQs
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/news" className="hover:text-blue-600 transition-colors">
                   News
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
           <div className="col-span-1">
@@ -93,7 +93,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/collections/best-selling"
+                  href="/collections/best-sellers"
                   className="hover:text-blue-600 transition-colors"
                 >
                   Best Selling

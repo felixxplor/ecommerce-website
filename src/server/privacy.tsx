@@ -265,7 +265,7 @@ export default function PrivacyPolicy() {
                     <p className="text-gray-700">www.gizmooz.com/contact</p>
                   </div>
 
-                  <div className="bg-blue-50 p-4 rounded-lg">
+                  {/* <div className="bg-blue-50 p-4 rounded-lg">
                     <div className="flex items-center mb-3">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -278,7 +278,7 @@ export default function PrivacyPolicy() {
                       <span className="font-medium">Phone</span>
                     </div>
                     <p className="text-gray-700">(02) 1234 5678</p>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </section>
