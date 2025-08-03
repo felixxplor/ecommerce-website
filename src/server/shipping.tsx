@@ -247,7 +247,7 @@ export default function ShippingPolicy() {
                   </p>
 
                   <div className="mt-4 flex flex-wrap gap-4">
-                    <a
+                    {/* <a
                       href="tel:1300123456"
                       className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
                     >
@@ -266,7 +266,7 @@ export default function ShippingPolicy() {
                         />
                       </svg>
                       1300 123 456
-                    </a>
+                    </a> */}
                     <a
                       href="mailto:info@gizmooz.com"
                       className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"

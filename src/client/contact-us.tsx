@@ -115,21 +115,21 @@ export default function ContactUs() {
 
         <div className="grid md:grid-cols-3 gap-8 mb-16">
           {/* Contact Information Cards */}
-          {/* <Card className="overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+          <Card className="overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
             <div className="bg-blue-50 p-4 flex items-center justify-center">
               <Phone className="h-8 w-8 text-blue-600" />
             </div>
             <CardContent className="p-6 text-center">
               <h3 className="font-medium text-lg mb-2">Phone</h3>
               <p className="text-gray-600 mb-4">Call us during business hours</p>
-              <a
+              {/* <a
                 href="tel:1300123456"
                 className="text-blue-600 hover:text-blue-800 transition-colors font-medium"
               >
                 1300 123 456
-              </a>
+              </a> */}
             </CardContent>
-          </Card> */}
+          </Card>
 
           <Card className="overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
             <div className="bg-purple-50 p-4 flex items-center justify-center">
@@ -147,22 +147,22 @@ export default function ContactUs() {
             </CardContent>
           </Card>
 
-          {/* <Card className="overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+          <Card className="overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
             <div className="bg-green-50 p-4 flex items-center justify-center">
               <MapPin className="h-8 w-8 text-green-600" />
             </div>
             <CardContent className="p-6 text-center">
               <h3 className="font-medium text-lg mb-2">Office</h3>
-              <p className="text-gray-600 mb-4">Visit our headquarters</p>
+              {/* <p className="text-gray-600 mb-4">Visit our headquarters</p> */}
               <address className="text-green-600 not-italic">
-                123 Tech Avenue
+                {/* 123 Tech Avenue */}
                 <br />
                 Sydney, NSW 2000
                 <br />
                 Australia
               </address>
             </CardContent>
-          </Card> */}
+          </Card>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
