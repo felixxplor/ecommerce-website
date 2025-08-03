@@ -218,7 +218,7 @@ export default function ResponsiveHomePage() {
                           <div className="text-sm sm:text-3xl md:text-4xl lg:text-5xl font-normal max-w-[500px]">
                             {banner.title}
                           </div>
-                          <div className="text-xs sm:text-base md:text-lg font-normal max-w-[400px] mx-auto mt-2 sm:mt-6 md:mt-10 hidden sm:block">
+                          <div className="text-xs sm:text-base md:text-lg font-normal max-w-[400px] mx-auto mt-2 sm:mt-6 md:mt-10 sm:block">
                             {banner.description}
                           </div>
                         </div>
@@ -227,7 +227,7 @@ export default function ResponsiveHomePage() {
                             buttonVariants({
                               size: 'sm', // Default size for mobile
                               className:
-                                'mx-auto !w-auto !min-w-0 bg-transparent !border-0 sm:!border sm:!border-white !rounded-full !mt-auto !font-bold sm:hover:!bg-white sm:hover:!text-black !transition-colors !duration-300 !whitespace-nowrap !shadow-none',
+                                'mx-auto !w-auto !min-w-0 bg-transparent sm:!border sm:!border-white !rounded-full !mt-auto !font-bold sm:hover:!bg-white sm:hover:!text-black !transition-colors !duration-300 !whitespace-nowrap !shadow-none',
                             }),
                             '!text-xs !px-2 !py-0.5', // Mobile (default)
                             'sm:!text-sm sm:!px-3 sm:!py-1.5 sm:!shadow-sm', // Small screens - add shadow back

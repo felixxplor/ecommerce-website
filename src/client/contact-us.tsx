@@ -121,7 +121,7 @@ export default function ContactUs() {
             </div>
             <CardContent className="p-6 text-center">
               <h3 className="font-medium text-lg mb-2">Phone</h3>
-              <p className="text-gray-600 mb-4">Call us during business hours</p>
+              {/* <p className="text-gray-600 mb-4">Call us during business hours</p> */}
               {/* <a
                 href="tel:1300123456"
                 className="text-blue-600 hover:text-blue-800 transition-colors font-medium"
@@ -153,7 +153,7 @@ export default function ContactUs() {
             </div>
             <CardContent className="p-6 text-center">
               <h3 className="font-medium text-lg mb-2">Office</h3>
-              {/* <p className="text-gray-600 mb-4">Visit our headquarters</p> */}
+              <p className="text-gray-600 mb-4">Visit our headquarters</p>
               <address className="text-green-600 not-italic">
                 {/* 123 Tech Avenue */}
                 <br />
