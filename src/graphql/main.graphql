@@ -1076,3 +1076,12 @@ fragment CartFragment on Cart {
     }
   }
 }
+
+mutation ResetUserPassword($input: ResetUserPasswordInput!) {
+  resetUserPassword(input: $input) {
+    user {
+      id
+      username
+    }
+  }
+}

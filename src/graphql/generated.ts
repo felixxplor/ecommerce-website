@@ -24046,6 +24046,13 @@ export type AppliedCouponFragmentFragment = { __typename?: 'AppliedCoupon', code
 
 export type CartFragmentFragment = { __typename?: 'Cart', isEmpty?: boolean | null, subtotal?: string | null, total?: string | null, shippingTotal?: string | null, appliedCoupons?: Array<{ __typename?: 'AppliedCoupon', code: string, discountAmount: string, description?: string | null } | null> | null, contents?: { __typename?: 'CartToCartItemConnection', nodes: Array<{ __typename?: 'CartItem', key: string, quantity?: number | null, subtotal?: string | null, product?: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'SimpleProduct', id: string, databaseId: number, name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } | { __typename?: 'VariableProduct', id: string, databaseId: number, name?: string | null, image?: { __typename?: 'MediaItem', sourceUrl?: string | null, altText?: string | null } | null } } | null, variation?: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'ProductVariation', id: string, databaseId: number }, attributes?: Array<{ __typename?: 'VariationAttribute', name?: string | null, value?: string | null } | null> | null } | null }> } | null };
 
+export type ResetUserPasswordMutationVariables = Exact<{
+  input: ResetUserPasswordInput;
+}>;
+
+
+export type ResetUserPasswordMutation = { __typename?: 'RootMutation', resetUserPassword?: { __typename?: 'ResetUserPasswordPayload', user?: { __typename?: 'User', id: string, username?: string | null } | null } | null };
+
 export const MenuItemContentFragmentDoc = gql`
     fragment MenuItemContent on MenuItem {
   id
@@ -25163,6 +25170,16 @@ export const RemoveCouponsDocument = gql`
   }
 }
     ${CartFragmentFragmentDoc}`;
+export const ResetUserPasswordDocument = gql`
+    mutation ResetUserPassword($input: ResetUserPasswordInput!) {
+  resetUserPassword(input: $input) {
+    user {
+      id
+      username
+    }
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -25281,6 +25298,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     RemoveCoupons(variables: RemoveCouponsMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveCouponsMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<RemoveCouponsMutation>(RemoveCouponsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'RemoveCoupons', 'mutation', variables);
+    },
+    ResetUserPassword(variables: ResetUserPasswordMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ResetUserPasswordMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ResetUserPasswordMutation>(ResetUserPasswordDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'ResetUserPassword', 'mutation', variables);
     }
   };
 }
