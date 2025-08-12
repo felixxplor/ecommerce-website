@@ -7,7 +7,7 @@ export default async function TopSellingProducts({
   title?: string
 }) {
   // Fetch products from your existing function on the server
-  const products = await fetchProducts(20, 0)
+  const products = await fetchProducts(20, 5)
 
   if (!products || products.length === 0) {
     return null
