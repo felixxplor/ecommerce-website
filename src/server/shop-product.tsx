@@ -598,10 +598,10 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                       <Link
                         href={`/products/${relatedProduct.slug}`}
                         key={relatedProduct.id}
-                        className="group"
+                        className="group border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-300"
                         aria-label={`View ${relatedProduct.name} product details`}
                       >
-                        <div className="relative aspect-square mb-2 overflow-hidden rounded-md bg-gray-100">
+                        <div className="relative aspect-square mb-2 overflow-hidden rounded-t-lg bg-gray-100">
                           {sourceUrl && (
                             <div className="h-full w-full relative">
                               <img
@@ -615,7 +615,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                             </div>
                           )}
                         </div>
-                        <div className="space-y-1 px-1">
+                        <div className="space-y-1 p-3">
                           <h3 className="text-xs sm:text-sm font-medium line-clamp-2">
                             {relatedProduct.name}
                           </h3>

@@ -157,7 +157,7 @@ async function fetchAndProcessReviews(
   }
 }
 
-// Individual product card component
+// Individual product card component with border
 function ProductCard({ product }: { product: ProductWithReviews }) {
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
   const { toast } = useToast()
@@ -225,7 +225,7 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
   }
 
   return (
-    <div className="flex-shrink-0 w-full sm:w-[calc(100%-8px)]">
+    <div className="flex-shrink-0 w-full sm:w-[calc(100%-8px)] border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-300">
       {/* Product Image with Sale Badge */}
       <Link href={`/products/${product.slug}`} className="block group">
         <div className="relative">
@@ -237,7 +237,7 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
             </div>
           )}
 
-          <div className="aspect-square overflow-hidden relative">
+          <div className="aspect-square overflow-hidden relative rounded-t-lg">
             {product.image?.sourceUrl && (
               <>
                 <Image
