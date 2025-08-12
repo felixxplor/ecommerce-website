@@ -50,7 +50,14 @@ export async function fetchProducts(
     let data = { products: initialConnectionResults }
     let after = ''
     let count = 0
-    while (data.products.pageInfo.hasNextPage && (pageLimit === 0 || count < pageLimit)) {
+
+    const shouldContinue = () => {
+      if (!data.products.pageInfo.hasNextPage) return false
+      if (pageLimit === 0) return true // No limit, continue until no more pages
+      return count < pageLimit // Limited pages
+    }
+
+    while (shouldContinue()) {
       const next = await client.GetProducts({
         first: pageSize,
         after,
@@ -60,6 +67,11 @@ export async function fetchProducts(
       data = deepmerge(data, next)
       after = next.products?.pageInfo.endCursor || ''
       count++
+
+      // Safety break for pageLimit = 0 to prevent infinite loop
+      if (pageLimit === 0 && count > 50) {
+        break
+      }
     }
 
     return data.products.nodes as Product[]
