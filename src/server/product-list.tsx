@@ -36,6 +36,11 @@ export function Shop(props: ShopProps) {
             </p>
           </div>
           <div className="mt-4 sm:mt-6 md:mt-10 text-xs sm:text-sm md:text-lg font-medium flex flex-wrap gap-2 sm:gap-3 md:gap-6">
+            <Link href="/collections">
+              <button className="border border-black rounded-full px-4 sm:px-6 md:px-12 py-1.5 sm:py-2 md:py-3 mb-1 sm:mb-2">
+                All
+              </button>
+            </Link>
             <Link href="/collections/best-sellers">
               <button className="border border-black rounded-full px-4 sm:px-6 md:px-12 py-1.5 sm:py-2 md:py-3 mb-1 sm:mb-2">
                 Best Sellers
@@ -50,7 +55,7 @@ export function Shop(props: ShopProps) {
             <Link href="/collections/sales">
               {' '}
               <button className="border border-black rounded-full px-4 sm:px-6 md:px-12 py-1.5 sm:py-2 md:py-3 mb-1 sm:mb-2">
-                Sale
+                Sales
               </button>
             </Link>
           </div>
