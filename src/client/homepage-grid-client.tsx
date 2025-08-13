@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Star, Loader2, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react'
-import { Product, ProductTypesEnum, SimpleProduct } from '@/graphql'
+import { Star, Loader2, AlertTriangle, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
+import { Product, ProductCategory, ProductTypesEnum, SimpleProduct } from '@/graphql'
 import { getClient } from '@/graphql'
 import { print } from 'graphql'
 import {
@@ -39,22 +39,30 @@ interface ProductWithReviews extends Product {
 
 // Helper function to check if product belongs to 'misc' category
 const isProductHidden = (product: Product): boolean => {
-  // Check if product has categories
   if (!product.productCategories?.nodes) {
     return false
   }
 
-  // Check if any category has name 'misc' (case-insensitive)
   return product.productCategories.nodes.some((category) => {
-    // Cast to the proper category type or check if it has the name property
     const categoryNode = category as any
     return categoryNode?.name?.toLowerCase() === 'misc'
   })
 }
 
-// Helper function to filter out hidden products
-const filterVisibleProducts = (products: Product[]): Product[] => {
-  return products.filter((product) => !isProductHidden(product))
+// Helper function to filter products by category
+const filterProductsByCategory = (products: Product[], categorySlug: string): Product[] => {
+  if (categorySlug === 'all') {
+    return products.filter((product) => !isProductHidden(product))
+  }
+
+  return products.filter((product) => {
+    if (isProductHidden(product)) return false
+
+    return product.productCategories?.nodes?.some((category) => {
+      const categoryNode = category as any
+      return categoryNode?.slug === categorySlug
+    })
+  })
 }
 
 // Helper to encode/decode IDs
@@ -76,14 +84,12 @@ function decodeId(globalId: string): { type: string; id: number } {
     }
     return { type, id }
   } catch (error) {
-    // console.error('Error decoding ID:', error)
     return { type: '', id: 0 }
   }
 }
 
 // Helper function to get purchase count
 const getProductPurchases = (product: Product): number => {
-  // If the product has the purchaseCount field directly (from GraphQL)
   if (
     'purchaseCount' in product &&
     typeof (product as ProductWithPurchases).purchaseCount === 'number'
@@ -91,7 +97,6 @@ const getProductPurchases = (product: Product): number => {
     return (product as ProductWithPurchases).purchaseCount || 0
   }
 
-  // Fallback to check in metaData if direct field is not available
   if (Array.isArray(product.metaData)) {
     const purchasesMeta = product.metaData.find((meta) => meta?.key === '_purchase_count')
     if (purchasesMeta && purchasesMeta.value) {
@@ -133,7 +138,6 @@ async function fetchAndProcessReviews(
       return null
     }
 
-    // Calculate rating counts
     const counts = [0, 0, 0, 0, 0] // [5★, 4★, 3★, 2★, 1★]
 
     const edges = response.product.reviews.edges || []
@@ -152,14 +156,12 @@ async function fetchAndProcessReviews(
       ratingCounts: counts,
     }
   } catch (error) {
-    // console.error('Error fetching reviews:', error)
     return null
   }
 }
 
-// Individual product card component with border
+// Individual product card component
 function ProductCard({ product }: { product: ProductWithReviews }) {
-  const [selectedRating, setSelectedRating] = useState<number | null>(null)
   const { toast } = useToast()
   const [executing, setExecuting] = useState<boolean>(false)
   const { rawPrice, databaseId, soldIndividually, stockStatus, stockQuantity } =
@@ -167,12 +169,10 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
   const { fetching, mutate } = useCartMutations(databaseId)
   const { onOpen } = useDrawerStore()
 
-  // Check if product is out of stock
   const outOfStock =
     stockStatus === StockStatusEnum.OUT_OF_STOCK ||
     (stockQuantity !== null && stockQuantity !== undefined && stockQuantity <= 0)
 
-  // Display price information
   const isOnSale = product.onSale
   let price = ''
   let regularPrice = ''
@@ -186,23 +186,16 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
     regularPrice = simpleProduct.regularPrice
   }
 
-  // Handle rating filter
-  const handleRatingFilter = (rating: number) => {
-    setSelectedRating(selectedRating === rating ? null : rating)
-  }
-
-  // Handle add to cart
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault()
 
-    // Prevent multiple clicks
     if (executing || fetching) return
 
     setExecuting(true)
     try {
       await mutate({
         mutation: 'add',
-        quantity: 1, // Default to 1 for quick add
+        quantity: 1,
       })
 
       toast({
@@ -211,7 +204,7 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
         duration: 3000,
       })
 
-      onOpen() // Open the cart drawer
+      onOpen()
     } catch (error) {
       toast({
         title: 'Error',
@@ -226,7 +219,6 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
 
   return (
     <div className="flex-shrink-0 w-full border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-300">
-      {/* Product Image with Sale Badge */}
       <Link href={`/products/${product.slug}`} className="block group">
         <div className="relative">
           {isOnSale && (
@@ -254,7 +246,6 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
         </div>
       </Link>
 
-      {/* Product Info */}
       <div className="p-3">
         <Link href={`/products/${product.slug}`} className="block group">
           <h3 className="mb-1 text-sm font-semibold line-clamp-2 min-h-[2.5rem]">
@@ -264,7 +255,6 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
           </h3>
         </Link>
 
-        {/* Price */}
         {isOnSale && regularPrice ? (
           <div className="mb-2">
             <div className="text-sm font-semibold text-red-600">{price}</div>
@@ -277,7 +267,6 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
           <div className="mb-2 text-sm font-medium">{price}</div>
         )}
 
-        {/* Ratings Section */}
         {product.isLoadingReviews ? (
           <div className="flex items-center justify-center py-1 mb-2">
             <Loader2 className="w-3 h-3 animate-spin" />
@@ -315,7 +304,6 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
           </div>
         )}
 
-        {/* Add to Cart Button */}
         {outOfStock ? (
           <div className="inline-flex items-center gap-1 text-red-700 py-1 rounded-md whitespace-nowrap text-xs">
             <AlertTriangle className="h-3 w-3" />
@@ -342,13 +330,16 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
   )
 }
 
-export default function TopSellingProductsClient({
+export default function HomepageGridClient({
   products,
-  title = 'Best-Selling Products',
+  categories = [],
+  title = 'Featured Products',
 }: {
   products: Product[]
+  categories?: ProductCategory[]
   title?: string
 }) {
+  const [selectedCategory, setSelectedCategory] = useState('all')
   const [productsWithReviews, setProductsWithReviews] = useState<ProductWithReviews[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -357,34 +348,37 @@ export default function TopSellingProductsClient({
   // Touch handling states
   const [touchStart, setTouchStart] = useState<number | null>(null)
   const [touchEnd, setTouchEnd] = useState<number | null>(null)
-
-  // Minimum swipe distance (in px)
   const minSwipeDistance = 50
 
   // Responsive configuration
   const [itemsPerSlide, setItemsPerSlide] = useState(4)
   const [totalSlides, setTotalSlides] = useState(0)
 
+  // Prepare category options
+  const categoryOptions = [
+    { name: 'All Products', slug: 'all' },
+    ...categories.slice(0, 4).map((cat) => ({ name: cat.name || '', slug: cat.slug || '' })),
+  ]
+
   useEffect(() => {
     const handleResize = () => {
       let visibleItems
       if (window.innerWidth < 640) {
-        visibleItems = 2 // 2 items per slide on mobile
+        visibleItems = 2
       } else if (window.innerWidth < 1024) {
-        visibleItems = 3 // 3 items per slide on tablet
+        visibleItems = 3
       } else {
-        visibleItems = 4 // 4 items per slide on desktop
+        visibleItems = 4
       }
 
       setItemsPerSlide(visibleItems)
 
-      // Calculate total slides
       if (productsWithReviews.length > 0) {
         setTotalSlides(Math.ceil(productsWithReviews.length / visibleItems))
       }
     }
 
-    handleResize() // Initial call
+    handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [productsWithReviews.length])
@@ -396,9 +390,11 @@ export default function TopSellingProductsClient({
         return
       }
 
-      // Filter out hidden products first, then sort by purchase count and get top 8
-      const visibleProducts = filterVisibleProducts(products)
-      const topSellingProducts = [...visibleProducts]
+      // Filter products by selected category
+      const filteredProducts = filterProductsByCategory(products, selectedCategory)
+
+      // Sort by purchase count and get top 8
+      const topProducts = [...filteredProducts]
         .sort((a, b) => getProductPurchases(b) - getProductPurchases(a))
         .slice(0, 8)
         .map((product) => ({
@@ -406,15 +402,15 @@ export default function TopSellingProductsClient({
           isLoadingReviews: true,
         }))
 
-      setProductsWithReviews(topSellingProducts)
+      setProductsWithReviews(topProducts)
+      setCurrentSlide(0) // Reset to first slide when category changes
       setIsLoading(false)
 
-      // Calculate total slides based on number of products
-      setTotalSlides(Math.ceil(topSellingProducts.length / itemsPerSlide))
+      setTotalSlides(Math.ceil(topProducts.length / itemsPerSlide))
 
       // Fetch reviews for each product
       const updatedProducts = await Promise.all(
-        topSellingProducts.map(async (product) => {
+        topProducts.map(async (product) => {
           const reviewData = await fetchAndProcessReviews(product.id)
           return {
             ...product,
@@ -428,11 +424,11 @@ export default function TopSellingProductsClient({
     }
 
     prepareProducts()
-  }, [products, itemsPerSlide])
+  }, [products, selectedCategory, itemsPerSlide])
 
   // Touch event handlers
   const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null) // otherwise the swipe is fired even with usual touch events
+    setTouchEnd(null)
     setTouchStart(e.targetTouches[0].clientX)
   }
 
@@ -455,7 +451,6 @@ export default function TopSellingProductsClient({
     }
   }
 
-  // Slide navigation functions
   const goToSlide = (index: number) => {
     setCurrentSlide(index)
   }
@@ -476,13 +471,27 @@ export default function TopSellingProductsClient({
     )
   }
 
-  if (productsWithReviews.length === 0) {
-    return null
-  }
-
   return (
-    <div className="relative w-full h-full py-8 sm:py-14 text-xl sm:text-2xl text-balance leading-normal">
-      <MaxWidthWrapper>
+    <div className="relative w-full py-10 sm:py-14 text-xl sm:text-2xl font-extrabold text-balance leading-normal">
+      <MaxWidthWrapper className="px-4 sm:px-5">
+        {/* Category Filter Tabs */}
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8 sm:mb-12">
+          {categoryOptions.map((category) => (
+            <button
+              key={category.slug}
+              onClick={() => setSelectedCategory(category.slug)}
+              className={`px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-medium rounded-full transition-all duration-300 ${
+                selectedCategory === category.slug
+                  ? 'bg-black text-white shadow-lg'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {category.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Section Header */}
         <div className="flex items-center gap-4 mb-6">
           <h2 className="font-extrabold">{title}</h2>
           <Link href="/collections?sort=popular" className="flex items-center">
@@ -504,71 +513,94 @@ export default function TopSellingProductsClient({
           </Link>
         </div>
 
-        {/* Carousel Container */}
-        <div className="relative">
-          {/* Navigation Buttons - Hidden on mobile */}
-          {totalSlides > 1 && (
-            <>
-              <button
-                onClick={goToPrevSlide}
-                className="absolute -left-4 top-1/3 z-10 bg-white rounded-full shadow-md p-2 hover:bg-gray-100 hidden sm:block"
-                aria-label="Previous slide"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-              <button
-                onClick={goToNextSlide}
-                className="absolute -right-4 top-1/3 z-10 bg-white rounded-full shadow-md p-2 hover:bg-gray-100 hidden sm:block"
-                aria-label="Next slide"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </>
-          )}
-
-          {/* Products Carousel with Touch Support */}
-          <div
-            ref={carouselRef}
-            className="overflow-hidden"
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
-          >
-            <div
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-            >
-              {/* Group products into slides */}
-              {Array.from({ length: totalSlides }).map((_, slideIndex) => (
-                <div key={slideIndex} className="flex-none w-full">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 px-1">
-                    {productsWithReviews
-                      .slice(slideIndex * itemsPerSlide, (slideIndex + 1) * itemsPerSlide)
-                      .map((product) => (
-                        <ProductCard key={product.id} product={product} />
-                      ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+        {productsWithReviews.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <p>No products found in this category.</p>
           </div>
-
-          {/* Carousel Indicators */}
-          {totalSlides > 1 && (
-            <div className="flex justify-center mt-6 gap-2">
-              {Array.from({ length: totalSlides }).map((_, index) => (
+        ) : (
+          <div className="relative">
+            {/* Navigation Buttons - Hidden on mobile */}
+            {totalSlides > 1 && (
+              <>
                 <button
-                  key={index}
-                  onClick={() => goToSlide(index)}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    currentSlide === index ? 'bg-black' : 'bg-gray-300 hover:bg-gray-400'
-                  }`}
-                  aria-label={`Go to slide ${index + 1}`}
-                  aria-current={currentSlide === index ? 'true' : 'false'}
-                />
-              ))}
+                  onClick={goToPrevSlide}
+                  className="absolute -left-4 top-1/3 z-10 bg-white rounded-full shadow-md p-2 hover:bg-gray-100 hidden sm:block"
+                  aria-label="Previous slide"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={goToNextSlide}
+                  className="absolute -right-4 top-1/3 z-10 bg-white rounded-full shadow-md p-2 hover:bg-gray-100 hidden sm:block"
+                  aria-label="Next slide"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </>
+            )}
+
+            {/* Products Carousel with Touch Support */}
+            <div
+              ref={carouselRef}
+              className="overflow-hidden"
+              onTouchStart={onTouchStart}
+              onTouchMove={onTouchMove}
+              onTouchEnd={onTouchEnd}
+            >
+              <div
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+              >
+                {Array.from({ length: totalSlides }).map((_, slideIndex) => (
+                  <div key={slideIndex} className="flex-none w-full">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 px-1">
+                      {productsWithReviews
+                        .slice(slideIndex * itemsPerSlide, (slideIndex + 1) * itemsPerSlide)
+                        .map((product) => (
+                          <ProductCard key={product.id} product={product} />
+                        ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          )}
+
+            {/* Carousel Indicators */}
+            {totalSlides > 1 && (
+              <div className="flex justify-center mt-6 gap-2">
+                {Array.from({ length: totalSlides }).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => goToSlide(index)}
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      currentSlide === index ? 'bg-black' : 'bg-gray-300 hover:bg-gray-400'
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                    aria-current={currentSlide === index ? 'true' : 'false'}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Show More Button */}
+        <div className="flex justify-center mt-8">
+          <Link
+            href={`/collections${
+              selectedCategory !== 'all' ? `/${selectedCategory}` : ''
+            }?sort=popular`}
+            className={cn(
+              buttonVariants({
+                size: 'lg',
+                className:
+                  'bg-transparent border-2 border-black !rounded-full !font-bold !text-black hover:!bg-black hover:!text-white transition-all duration-300',
+              })
+            )}
+          >
+            Show More Products
+            <ArrowRight className="h-4 w-4 ml-2" />
+          </Link>
         </div>
       </MaxWidthWrapper>
     </div>

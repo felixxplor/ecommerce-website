@@ -9,6 +9,7 @@ import TopSellingProducts from '@/components/top-selling'
 import LogoCarousel from '@/components/ui/logo-carousel'
 import { Icons } from '@/components/Icons'
 import { cn } from '@/utils/ui'
+import HomepageGrid from '@/components/homepage-grid'
 
 export default function ResponsiveHomePage() {
   return (
@@ -16,7 +17,7 @@ export default function ResponsiveHomePage() {
       {/* Hero Section */}
       <section>
         <div className="relative text-left flex flex-col items-center">
-          <div className="relative w-full pt-[12vh] lg:pt-[20vh] pb-14 px-4 sm:px-5 max-h-[580px] lg:min-h-[680px]">
+          <div className="relative w-full pt-[8vh] sm:pt-[10vh] lg:pt-[20vh] pb-8 sm:pb-10 lg:pb-14 px-4 sm:px-5 max-h-[400px] sm:max-h-[480px] lg:max-h-[580px] lg:min-h-[680px]">
             <span className="absolute inset-0 z-10 bg-black opacity-20"></span>
             <Image
               alt="Home"
@@ -24,21 +25,19 @@ export default function ResponsiveHomePage() {
               fill
               className="absolute inset-0 object-cover z-0"
             />
-            <div className="relative w-full h-full z-20 text-white text-3xl sm:text-4xl lg:text-5xl text-balance leading-normal">
+            <div className="relative w-full h-full z-20 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-balance leading-normal">
               <MaxWidthWrapper className="flex flex-col items-center md:items-start">
                 <div className="max-w-[668px] mx-auto md:mx-0 text-center md:text-left">
-                  <h1>Elevate your space with Gizmooz innovative smart tech solutions.</h1>
-                  <p className="mt-6 sm:mt-10 text-base sm:text-lg">
-                    Premium smart devices for home and workplace.
-                    <br className="hidden sm:block" />
-                    Transform your space into a connected, modern sanctuary.
+                  <h1>Elevate your space with Gizmooz innovative solutions</h1>
+                  <p className="mt-4 sm:mt-6 lg:mt-10 text-sm sm:text-base lg:text-lg">
+                    Transform your space into a connected, modern sanctuary
                   </p>
-                  <div className="flex justify-center md:justify-start mt-10 lg:mt-28">
+                  <div className="flex justify-center md:justify-start mt-6 sm:mt-8 lg:mt-28">
                     <Link
                       href="/collections"
-                      className="text-base md:text-lg border-2 border-white rounded-full px-8 sm:px-16 py-3 sm:py-4 font-medium hover:bg-white hover:text-black transition-colors duration-300"
+                      className="text-sm sm:text-base lg:text-lg border-2 border-white rounded-full px-6 sm:px-12 lg:px-16 py-2 sm:py-3 lg:py-4 font-medium hover:bg-white hover:text-black transition-colors duration-300"
                     >
-                      Explore our collections
+                      Shop now
                     </Link>
                   </div>
                 </div>
@@ -100,7 +99,7 @@ export default function ResponsiveHomePage() {
         </div>
 
         {/* Top selling products section */}
-        <TopSellingProducts title="Top Picks" />
+        <TopSellingProducts title="Best-Seliing Products" />
 
         {/* Trusted companies section - More compact on mobile */}
         <div className="relative w-full pt-0 pb-8 sm:py-14 text-sm md:text-xl font-extrabold text-balance leading-normal">
@@ -194,8 +193,10 @@ export default function ResponsiveHomePage() {
           </MaxWidthWrapper>
         </div>
 
+        <HomepageGrid />
+
         {/* Featured Double Banner - Side by side on all screens */}
-        <div className="relative w-full py-10 sm:py-14 text-xl sm:text-2xl font-extrabold text-balance leading-normal">
+        {/* <div className="relative w-full py-10 sm:py-14 text-xl sm:text-2xl font-extrabold text-balance leading-normal">
           <div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
               {featureBanners.map((banner, index) => (
@@ -203,7 +204,6 @@ export default function ResponsiveHomePage() {
                   key={index}
                   className={`relative col-span-1 ${index === 1 ? 'hidden sm:block' : ''}`}
                 >
-                  {/* Make the aspect ratio shorter to make photos smaller vertically while taking full width */}
                   <div className="w-full aspect-[16/13] sm:aspect-[16/14] md:aspect-[16/12] relative">
                     <Image
                       alt={banner.title}
@@ -246,7 +246,8 @@ export default function ResponsiveHomePage() {
               ))}
             </div>
           </div>
-        </div>
+        </div> */}
+
         {/* Our Collections */}
         <div className="relative w-full py-10 sm:py-14 text-xl sm:text-2xl font-extrabold text-balance leading-normal bg-[#F6F5F2] px-4 sm:px-5">
           <MaxWidthWrapper>
@@ -441,15 +442,15 @@ export default function ResponsiveHomePage() {
 
 // Data for the page
 const categories = [
-  { name: 'Digital Elegance', slug: 'digital', image: '/cat-1.avif' },
-  { name: 'Home Lighting', slug: 'lighting', image: '/cat-2.png' },
-  { name: 'Cool Gadgets', slug: 'gadgets', image: '/cat-3.avif' },
-  { name: 'Outdoor Fun', slug: 'outdoor', image: '/cat-4.png' },
+  { name: 'Digital Elegance', slug: 'electronics', image: '/cat-1.avif' },
+  { name: 'Home Lighting', slug: 'new-arrivals', image: '/cat-2.png' },
+  { name: 'Cool Gadgets', slug: 'electronics', image: '/cat-3.avif' },
+  { name: 'Outdoor Fun', slug: 'new-arrivals', image: '/cat-4.png' },
 ]
 
 const newArrivals = [
-  { name: 'Latest Gadgets', slug: 'gadgets', image: '/latest-1.jpg' },
-  { name: 'Kitchen Appliances', slug: 'kitchen-appliances', image: '/latest-2.jpg' },
+  { name: 'Latest Gadgets', slug: 'electronics', image: '/latest-1.jpg' },
+  { name: 'Kitchen Appliances', slug: 'home-appliances', image: '/latest-2.jpg' },
   { name: 'Home Decor', slug: 'home-decor', image: '/cat-3.png' },
 ]
 
@@ -471,8 +472,8 @@ const featureBanners = [
 ]
 
 const collections = [
-  { name: 'Office Gadgets', slug: 'office-gadgets', image: '/collection-1.jpg' },
-  { name: 'Home Gadgets', slug: 'home-gadgets', image: '/home-collection-2.png' },
+  { name: 'Office Gadgets', slug: 'electronics', image: '/collection-1.jpg' },
+  { name: 'Home Gadgets', slug: 'new-arrivals', image: '/home-collection-2.png' },
   { name: 'Pet Gadgets', slug: 'pet-gadgets', image: '/collection-3.webp' },
 ]
 

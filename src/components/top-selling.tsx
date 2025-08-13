@@ -2,12 +2,12 @@ import TopSellingProductsClient from '@/client/top-seliing-client'
 import { fetchProducts } from '@/graphql'
 
 export default async function TopSellingProducts({
-  title = 'Handpicked lights',
+  title = 'Best-Selling Products',
 }: {
   title?: string
 }) {
   // Fetch products from your existing function on the server
-  const products = await fetchProducts(20, 5)
+  const products = await fetchProducts(20, 0)
 
   if (!products || products.length === 0) {
     return null

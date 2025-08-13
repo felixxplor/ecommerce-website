@@ -6,7 +6,7 @@ import { ProductWithPrice } from '@/client/shop-provider'
 import { ReviewsSection } from '@/components/review-section'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import Link from 'next/link'
-import { Truck, Star, AlertTriangle } from 'lucide-react'
+import { Truck, Star, AlertTriangle, ChevronRight } from 'lucide-react'
 import { getClient } from '@/graphql'
 import { print } from 'graphql'
 import Script from 'next/script'
@@ -41,6 +41,56 @@ interface ProductCategory {
     sourceUrl: string
     altText: string
   } | null
+}
+
+// Breadcrumb Component
+interface BreadcrumbProps {
+  productName: string
+}
+
+function Breadcrumb({ productName }: BreadcrumbProps) {
+  // Truncate product name if it's too long (keeping it on one line)
+  const truncateProductName = (name: string, maxLength: number = 50) => {
+    if (name.length <= maxLength) return name
+    return name.substring(0, maxLength - 3) + '...'
+  }
+
+  return (
+    <nav aria-label="Breadcrumb" className="mb-4 sm:mb-6">
+      <ol className="flex items-center space-x-1 text-sm text-gray-600">
+        <li>
+          <Link
+            href="/"
+            className="hover:text-gray-900 transition-colors"
+            aria-label="Go to home page"
+          >
+            Home
+          </Link>
+        </li>
+
+        <li className="flex items-center">
+          <ChevronRight className="h-4 w-4 mx-1 text-gray-400" />
+          <Link
+            href="/collections"
+            className="hover:text-gray-900 transition-colors"
+            aria-label="View all products"
+          >
+            All Products
+          </Link>
+        </li>
+
+        <li className="flex items-center">
+          <ChevronRight className="h-4 w-4 mx-1 text-gray-400" />
+          <span
+            className="text-gray-900 font-medium truncate max-w-xs sm:max-w-md"
+            title={productName}
+          >
+            {truncateProductName(productName)}
+          </span>
+        </li>
+      </ol>
+    </nav>
+  )
 }
 
 async function getProductReviews(productId: string) {
@@ -276,6 +326,9 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
         <link itemProp="image" href={product.image?.sourceUrl || '/product-placeholder.png'} />
 
         <MaxWidthWrapper className="py-6 sm:py-12 mb-12 sm:mb-20 lg:mb-0">
+          {/* Breadcrumb Navigation */}
+          <Breadcrumb productName={product.name ?? ''} />
+
           {/* Single white background container for both columns */}
           <div className="bg-white p-4 sm:p-8 rounded-lg shadow-sm mb-8 sm:mb-16 w-full">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-12">
@@ -477,27 +530,6 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
 
                 {/* Product Badges Section */}
                 <div className="flex flex-wrap gap-2 mb-6">
-                  {/* Product Categories as badges with links */}
-                  {/* {categories.map((category: any) => (
-                    <Link
-                      key={category.id}
-                      href={`/category/${category.slug}`}
-                      aria-label={`View all products in ${category.name} category`}
-                    >
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          'cursor-pointer transition-colors duration-250 ease-in-out px-3 py-1 h-8',
-                          'hover:bg-gray-200 hover:text-gray-800 text-gray-700 bg-white',
-                          category.name === 'Sales' &&
-                            'bg-red-100 text-red-700 hover:bg-red-200 hover:text-red-800 border-red-300'
-                        )}
-                      >
-                        {category.name}
-                      </Badge>
-                    </Link>
-                  ))} */}
-
                   {/* Sales badge if category is specifically "Sales" */}
                   {hasSalesCategory && (
                     <Badge className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 h-8">
