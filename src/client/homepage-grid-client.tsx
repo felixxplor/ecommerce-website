@@ -218,17 +218,18 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
   }
 
   return (
-    <div className="flex-shrink-0 w-full border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-300">
+    <div className="flex-shrink-0 w-full border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-300 relative">
+      {/* Sale badge positioned at the very top-left corner of the card border */}
+      {isOnSale && (
+        <div className="absolute top-0 left-0 z-20">
+          <span className="inline-block bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-tl-lg rounded-br-lg">
+            Sale
+          </span>
+        </div>
+      )}
+
       <Link href={`/products/${product.slug}`} className="block group">
         <div className="relative">
-          {isOnSale && (
-            <div className="absolute top-2 left-2 z-10">
-              <span className="inline-block bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">
-                Sale
-              </span>
-            </div>
-          )}
-
           <div className="aspect-square overflow-hidden relative rounded-t-lg">
             {product.image?.sourceUrl && (
               <>
@@ -330,15 +331,18 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
   )
 }
 
+// Props interface for HomepageGridClient
+interface HomepageGridClientProps {
+  products: Product[]
+  categories?: ProductCategory[]
+  title?: string
+}
+
 export default function HomepageGridClient({
   products,
   categories = [],
   title = 'Featured Products',
-}: {
-  products: Product[]
-  categories?: ProductCategory[]
-  title?: string
-}) {
+}: HomepageGridClientProps) {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [productsWithReviews, setProductsWithReviews] = useState<ProductWithReviews[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -364,17 +368,17 @@ export default function HomepageGridClient({
     const handleResize = () => {
       let visibleItems
       if (window.innerWidth < 640) {
-        visibleItems = 2
+        visibleItems = 2.2 // Show 2 full items + partial 3rd item on mobile
       } else if (window.innerWidth < 1024) {
-        visibleItems = 3
+        visibleItems = 3.3 // Show 3 full items + partial 4th item on tablet
       } else {
-        visibleItems = 4
+        visibleItems = 4 // Show 4 full items on desktop
       }
 
       setItemsPerSlide(visibleItems)
 
       if (productsWithReviews.length > 0) {
-        setTotalSlides(Math.ceil(productsWithReviews.length / visibleItems))
+        setTotalSlides(Math.ceil(productsWithReviews.length / Math.floor(visibleItems)))
       }
     }
 
@@ -553,11 +557,26 @@ export default function HomepageGridClient({
               >
                 {Array.from({ length: totalSlides }).map((_, slideIndex) => (
                   <div key={slideIndex} className="flex-none w-full">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 px-1">
+                    <div className="flex gap-2 sm:gap-4 px-1">
                       {productsWithReviews
-                        .slice(slideIndex * itemsPerSlide, (slideIndex + 1) * itemsPerSlide)
-                        .map((product) => (
-                          <ProductCard key={product.id} product={product} />
+                        .slice(
+                          slideIndex * Math.floor(itemsPerSlide),
+                          (slideIndex + 1) * Math.floor(itemsPerSlide) +
+                            (itemsPerSlide % 1 > 0 ? 1 : 0)
+                        )
+                        .map((product, index) => (
+                          <div
+                            key={product.id}
+                            className={`flex-shrink-0 ${
+                              window.innerWidth < 640
+                                ? 'w-[calc(50%-4px)]' // 2 items per row on mobile with small gap
+                                : window.innerWidth < 1024
+                                ? 'w-[calc(33.333%-8px)]' // 3 items per row on tablet
+                                : 'w-[calc(25%-12px)]' // 4 items per row on desktop
+                            }`}
+                          >
+                            <ProductCard product={product} />
+                          </div>
                         ))}
                     </div>
                   </div>
@@ -594,7 +613,7 @@ export default function HomepageGridClient({
               buttonVariants({
                 size: 'lg',
                 className:
-                  'bg-transparent border-2 border-black !rounded-full !font-bold !text-black hover:!bg-black hover:!text-white transition-all duration-300',
+                  'bg-transparent border border-black !rounded-full !text-black hover:!bg-black hover:!text-white transition-all duration-300',
               })
             )}
           >

@@ -49,43 +49,40 @@ interface BreadcrumbProps {
 }
 
 function Breadcrumb({ productName }: BreadcrumbProps) {
-  // Truncate product name if it's too long (keeping it on one line)
-  const truncateProductName = (name: string, maxLength: number = 50) => {
+  // More aggressive truncation to prevent line wrapping
+  const truncateProductName = (name: string, maxLength: number = 25) => {
     if (name.length <= maxLength) return name
     return name.substring(0, maxLength - 3) + '...'
   }
 
   return (
     <nav aria-label="Breadcrumb" className="mb-4 sm:mb-6">
-      <ol className="flex items-center space-x-1 text-sm text-gray-600">
-        <li>
+      <ol className="flex items-center space-x-1 text-sm text-gray-600 flex-nowrap overflow-hidden">
+        <li className="flex-shrink-0">
           <Link
             href="/"
-            className="hover:text-gray-900 transition-colors"
+            className="hover:text-gray-900 transition-colors whitespace-nowrap"
             aria-label="Go to home page"
           >
             Home
           </Link>
         </li>
 
-        <li className="flex items-center">
+        <li className="flex items-center flex-shrink-0">
           <ChevronRight className="h-4 w-4 mx-1 text-gray-400" />
           <Link
             href="/collections"
-            className="hover:text-gray-900 transition-colors"
+            className="hover:text-gray-900 transition-colors whitespace-nowrap"
             aria-label="View all products"
           >
             All Products
           </Link>
         </li>
 
-        <li className="flex items-center">
-          <ChevronRight className="h-4 w-4 mx-1 text-gray-400" />
-          <span
-            className="text-gray-900 font-medium truncate max-w-xs sm:max-w-md"
-            title={productName}
-          >
-            {truncateProductName(productName)}
+        <li className="flex items-center min-w-0 flex-1">
+          <ChevronRight className="h-4 w-4 mx-1 text-gray-400 flex-shrink-0" />
+          <span className="text-gray-900 font-medium truncate" title={productName}>
+            {truncateProductName(productName, 30)}
           </span>
         </li>
       </ol>
