@@ -369,18 +369,19 @@ export default function TopSellingProductsClient({
     const handleResize = () => {
       let visibleItems
       if (window.innerWidth < 640) {
-        visibleItems = 2 // 2 items per slide on mobile
+        visibleItems = 2.2 // 2.2 items visible on mobile (showing partial third)
       } else if (window.innerWidth < 1024) {
-        visibleItems = 3 // 3 items per slide on tablet
+        visibleItems = 3.3 // 3.3 items visible on tablet (showing partial fourth)
       } else {
-        visibleItems = 4 // 4 items per slide on desktop
+        visibleItems = 4.5 // 4.5 items visible on desktop (showing partial fifth)
       }
 
-      setItemsPerSlide(visibleItems)
+      setItemsPerSlide(Math.floor(visibleItems))
 
-      // Calculate total slides
+      // Calculate total slides - subtract the visible items and add 1
       if (productsWithReviews.length > 0) {
-        setTotalSlides(Math.ceil(productsWithReviews.length / visibleItems))
+        const maxSlides = Math.max(0, productsWithReviews.length - Math.floor(visibleItems))
+        setTotalSlides(maxSlides + 1)
       }
     }
 
@@ -457,15 +458,15 @@ export default function TopSellingProductsClient({
 
   // Slide navigation functions
   const goToSlide = (index: number) => {
-    setCurrentSlide(index)
+    setCurrentSlide(Math.min(index, totalSlides - 1))
   }
 
   const goToNextSlide = () => {
-    setCurrentSlide((prev) => (prev === totalSlides - 1 ? 0 : prev + 1))
+    setCurrentSlide((prev) => Math.min(prev + 1, totalSlides - 1))
   }
 
   const goToPrevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? totalSlides - 1 : prev - 1))
+    setCurrentSlide((prev) => Math.max(prev - 1, 0))
   }
 
   if (isLoading) {
@@ -535,19 +536,25 @@ export default function TopSellingProductsClient({
             onTouchEnd={onTouchEnd}
           >
             <div
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+              className="flex gap-2 sm:gap-4 transition-transform duration-500 ease-in-out"
+              style={{
+                transform: `translateX(-${currentSlide * (100 / itemsPerSlide)}%)`,
+                width: `${(productsWithReviews.length / itemsPerSlide) * 100}%`,
+              }}
             >
-              {/* Group products into slides */}
-              {Array.from({ length: totalSlides }).map((_, slideIndex) => (
-                <div key={slideIndex} className="flex-none w-full pr-8 sm:pr-16">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 px-1">
-                    {productsWithReviews
-                      .slice(slideIndex * itemsPerSlide, (slideIndex + 1) * itemsPerSlide)
-                      .map((product) => (
-                        <ProductCard key={product.id} product={product} />
-                      ))}
-                  </div>
+              {/* Display all products in a single row */}
+              {productsWithReviews.map((product) => (
+                <div
+                  key={product.id}
+                  className="flex-none"
+                  style={{
+                    width: `calc(${100 / itemsPerSlide}% - ${
+                      (itemsPerSlide - 1) *
+                      (itemsPerSlide === 2 ? 0.5 : itemsPerSlide === 3 ? 0.67 : 0.75)
+                    }rem / ${itemsPerSlide})`,
+                  }}
+                >
+                  <ProductCard product={product} />
                 </div>
               ))}
             </div>
