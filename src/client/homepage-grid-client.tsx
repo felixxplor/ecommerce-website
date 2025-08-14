@@ -458,16 +458,16 @@ export default function HomepageGridClient({
           </div>
         )}
 
-        {/* Category Tabs */}
-        <div className="flex gap-2 mb-6 overflow-x-auto scrollbar-hide">
+        {/* Updated Category Tabs with modern pill design */}
+        <div className="flex flex-wrap gap-2 mb-6 overflow-x-auto scrollbar-hide pb-1">
           {categoryOptions.map((category) => (
             <button
               key={category.slug}
               onClick={() => setSelectedCategory(category.slug)}
-              className={`flex-shrink-0 px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 ${
+              className={`flex-shrink-0 px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200 whitespace-nowrap ${
                 selectedCategory === category.slug
-                  ? 'bg-black text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-black text-white border-black shadow-sm'
+                  : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400 hover:bg-gray-50'
               }`}
             >
               {category.name}
@@ -488,11 +488,31 @@ export default function HomepageGridClient({
             <p>No products found in this category.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            {productsWithReviews.slice(0, 8).map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              {productsWithReviews.slice(0, 8).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+
+            {/* Show More Button */}
+            <div className="flex justify-center mt-8">
+              <Link
+                href="https://gizmooz.com/collections"
+                className="inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-full hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                Show More Products
+                <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </Link>
+            </div>
+          </>
         )}
       </MaxWidthWrapper>
     </div>
