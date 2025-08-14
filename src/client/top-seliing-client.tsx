@@ -225,19 +225,19 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
   }
 
   return (
-    <div className="flex-shrink-0 w-full border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-300">
+    <div className="flex-shrink-0 w-full border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-300 aspect-[3/4]">
       {/* Product Image with Sale Badge */}
-      <Link href={`/products/${product.slug}`} className="block group">
-        <div className="relative">
+      <Link href={`/products/${product.slug}`} className="block group h-2/3">
+        <div className="relative h-full">
           {isOnSale && (
-            <div className="absolute top-2 left-2 z-10">
-              <span className="inline-block bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">
+            <div className="absolute top-0 left-0 z-10">
+              <span className="inline-block bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-br-lg">
                 Sale
               </span>
             </div>
           )}
 
-          <div className="aspect-square overflow-hidden relative rounded-t-lg">
+          <div className="w-full h-full overflow-hidden relative rounded-t-lg">
             {product.image?.sourceUrl && (
               <>
                 <Image
@@ -255,9 +255,9 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
       </Link>
 
       {/* Product Info */}
-      <div className="p-3">
+      <div className="p-3 h-1/3 flex flex-col justify-between">
         <Link href={`/products/${product.slug}`} className="block group">
-          <h3 className="mb-1 text-sm font-semibold line-clamp-2 min-h-[2.5rem]">
+          <h3 className="mb-1 text-sm font-semibold truncate">
             <span className="relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-black group-hover:after:w-full after:transition-all after:duration-300">
               {product.name}
             </span>
@@ -344,7 +344,7 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
 
 export default function TopSellingProductsClient({
   products,
-  title = 'Best-Selling Products',
+  title = 'Top Picks',
 }: {
   products: Product[]
   title?: string
