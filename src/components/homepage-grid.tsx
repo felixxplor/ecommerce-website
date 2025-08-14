@@ -12,6 +12,13 @@ export default async function HomepageGrid({ title = 'Featured Products' }: { ti
       }),
     ])
 
+    console.log('Fetched products count:', products?.length)
+    console.log('Fetched categories:', categories)
+    console.log(
+      'Raw categories data:',
+      categories?.map((cat) => ({ name: cat.name, slug: cat.slug, count: cat.count }))
+    )
+
     if (!products || products.length === 0) {
       return null
     }

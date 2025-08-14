@@ -225,10 +225,10 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
   }
 
   return (
-    <div className="flex-shrink-0 w-full border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-300 aspect-[3/4]">
+    <div className="flex-shrink-0 w-full border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-300">
       {/* Product Image with Sale Badge */}
-      <Link href={`/products/${product.slug}`} className="block group h-2/3">
-        <div className="relative h-full">
+      <Link href={`/products/${product.slug}`} className="block group">
+        <div className="relative">
           {isOnSale && (
             <div className="absolute top-0 left-0 z-10">
               <span className="inline-block bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-br-lg">
@@ -237,7 +237,7 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
             </div>
           )}
 
-          <div className="w-full h-full overflow-hidden relative rounded-t-lg">
+          <div className="aspect-square overflow-hidden relative rounded-t-lg">
             {product.image?.sourceUrl && (
               <>
                 <Image
@@ -255,7 +255,7 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
       </Link>
 
       {/* Product Info */}
-      <div className="p-3 h-1/3 flex flex-col justify-between">
+      <div className="p-3 flex flex-col">
         <Link href={`/products/${product.slug}`} className="block group">
           <h3 className="mb-1 text-sm font-semibold truncate">
             <span className="relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-black group-hover:after:w-full after:transition-all after:duration-300">
@@ -540,7 +540,7 @@ export default function TopSellingProductsClient({
             >
               {/* Group products into slides */}
               {Array.from({ length: totalSlides }).map((_, slideIndex) => (
-                <div key={slideIndex} className="flex-none w-full">
+                <div key={slideIndex} className="flex-none w-full pr-8 sm:pr-16">
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 px-1">
                     {productsWithReviews
                       .slice(slideIndex * itemsPerSlide, (slideIndex + 1) * itemsPerSlide)
