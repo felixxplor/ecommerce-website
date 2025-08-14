@@ -17,11 +17,7 @@ export default async function HomepageGrid({ title = 'Featured Products' }: { ti
     }
 
     // Filter out categories that should be hidden (like 'misc')
-    const visibleCategories =
-      categories?.filter(
-        (category) =>
-          category.name?.toLowerCase() !== 'misc' && category.count && category.count > 0
-      ) || []
+    const visibleCategories = categories || []
 
     // Pass both products and categories to the client component
     return <HomepageGridClient products={products} categories={visibleCategories} title={title} />
