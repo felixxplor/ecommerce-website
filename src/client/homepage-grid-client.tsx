@@ -158,7 +158,7 @@ async function fetchAndProcessReviews(
   }
 }
 
-// Individual product card component
+// Individual product card component with matching style
 function ProductCard({ product }: { product: ProductWithReviews }) {
   const { toast } = useToast()
   const [executing, setExecuting] = useState<boolean>(false)
@@ -167,10 +167,12 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
   const { fetching, mutate } = useCartMutations(databaseId)
   const { onOpen } = useDrawerStore()
 
+  // Check if product is out of stock
   const outOfStock =
     stockStatus === StockStatusEnum.OUT_OF_STOCK ||
     (stockQuantity !== null && stockQuantity !== undefined && stockQuantity <= 0)
 
+  // Display price information
   const isOnSale = product.onSale
   let price = ''
   let regularPrice = ''
@@ -184,17 +186,19 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
     regularPrice = simpleProduct.regularPrice
   }
 
+  // Handle add to cart
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
 
+    // Prevent multiple clicks
     if (executing || fetching) return
 
     setExecuting(true)
     try {
       await mutate({
         mutation: 'add',
-        quantity: 1,
+        quantity: 1, // Default to 1 for quick add
       })
 
       toast({
@@ -203,7 +207,7 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
         duration: 3000,
       })
 
-      onOpen()
+      onOpen() // Open the cart drawer
     } catch (error) {
       toast({
         title: 'Error',
@@ -217,43 +221,71 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
   }
 
   return (
-    <Link href={`/products/${product.slug}`} className="block group">
-      <div className="relative bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300">
-        {/* Sale badge */}
-        {isOnSale && (
-          <div className="absolute top-2 left-2 z-10">
-            <span className="inline-block bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">
-              Sale
-            </span>
+    <div className="flex-shrink-0 w-full border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-300">
+      {/* Product Image with Sale Badge */}
+      <Link href={`/products/${product.slug}`} className="block group">
+        <div className="relative">
+          {isOnSale && (
+            <div className="absolute top-0 left-0 z-10">
+              <span className="inline-block bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-br-lg">
+                Sale
+              </span>
+            </div>
+          )}
+
+          <div className="aspect-square overflow-hidden relative rounded-t-lg">
+            {product.image?.sourceUrl && (
+              <>
+                <Image
+                  src={product.image.sourceUrl}
+                  alt={product.image.altText || product.name || ''}
+                  width={300}
+                  height={300}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300"></div>
+              </>
+            )}
           </div>
+        </div>
+      </Link>
+
+      {/* Product Info */}
+      <div className="p-3 flex flex-col">
+        <Link href={`/products/${product.slug}`} className="block group">
+          <h3 className="mb-1 text-sm font-semibold truncate">
+            <span className="relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-black group-hover:after:w-full after:transition-all after:duration-300">
+              {product.name}
+            </span>
+          </h3>
+        </Link>
+
+        {/* Price */}
+        {isOnSale && regularPrice ? (
+          <div className="mb-2">
+            <div className="text-sm font-semibold text-red-600">{price}</div>
+            <div className="text-xs text-gray-500">
+              <span>Was </span>
+              <span className="line-through">{regularPrice}</span>
+            </div>
+          </div>
+        ) : (
+          <div className="mb-2 text-sm font-medium">{price}</div>
         )}
 
-        {/* Product Image */}
-        <div className="aspect-square overflow-hidden bg-gray-50">
-          {product.image?.sourceUrl && (
-            <Image
-              src={product.image.sourceUrl}
-              alt={product.image.altText || product.name || ''}
-              width={300}
-              height={300}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-          )}
-        </div>
-
-        {/* Product Info */}
-        <div className="p-3">
-          <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-2 min-h-[2.5rem]">
-            {product.name}
-          </h3>
-
-          {/* Rating */}
-          {product.isLoadingReviews ? (
-            <div className="flex items-center justify-center py-1 mb-2">
-              <Loader2 className="w-3 h-3 animate-spin" />
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 mb-2">
+        {/* Ratings Section */}
+        {product.isLoadingReviews ? (
+          <div className="flex items-center justify-center py-1 mb-2">
+            <Loader2 className="w-3 h-3 animate-spin" />
+          </div>
+        ) : (
+          <div className="mb-2">
+            <div className="flex items-center gap-1">
+              <div className="text-xs font-medium">
+                {product.reviewData && product.reviewData.averageRating
+                  ? product.reviewData.averageRating.toFixed(1)
+                  : '0.0'}
+              </div>
               <div className="flex text-yellow-400">
                 {[...Array(5)].map((_, i) => (
                   <Star
@@ -268,46 +300,41 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
                   />
                 ))}
               </div>
-              <span className="text-xs text-gray-500">
-                ({product.reviewData?.reviewCount || 0})
-              </span>
+              <p className="text-xs">
+                (
+                {product.reviewData && product.reviewData.reviewCount
+                  ? product.reviewData.reviewCount
+                  : 0}
+                )
+              </p>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Price */}
-          <div className="flex items-center gap-2 mb-3">
-            {isOnSale && regularPrice ? (
+        {/* Add to Cart Button */}
+        {outOfStock ? (
+          <div className="inline-flex items-center gap-1 text-red-700 py-1 rounded-md whitespace-nowrap text-xs">
+            <AlertTriangle className="h-3 w-3" />
+            <span className="font-medium">Out of Stock</span>
+          </div>
+        ) : (
+          <button
+            onClick={handleAddToCart}
+            disabled={executing || fetching}
+            className="w-full text-xs font-medium px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-800 hover:bg-gray-50 hover:border-gray-400 transition-colors duration-200 disabled:opacity-50 flex items-center justify-center gap-1 min-h-[32px]"
+          >
+            {executing || fetching ? (
               <>
-                <span className="text-sm font-semibold text-red-600">{price}</span>
-                <span className="text-xs text-gray-500 line-through">{regularPrice}</span>
+                <LoadingSpinner className="h-3 w-3" noText />
+                <span>Adding...</span>
               </>
             ) : (
-              <span className="text-sm font-semibold text-gray-900">{price}</span>
+              'Add to cart'
             )}
-          </div>
-
-          {/* Add to Cart Button */}
-          {outOfStock ? (
-            <div className="text-center py-2 text-red-600 text-xs font-medium">Out of Stock</div>
-          ) : (
-            <button
-              onClick={handleAddToCart}
-              disabled={executing || fetching}
-              className="w-full bg-blue-600 text-white text-xs font-medium py-2 px-3 rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {executing || fetching ? (
-                <div className="flex items-center justify-center">
-                  <LoadingSpinner className="w-3 h-3 mr-1" noText />
-                  Adding...
-                </div>
-              ) : (
-                'Add to Cart'
-              )}
-            </button>
-          )}
-        </div>
+          </button>
+        )}
       </div>
-    </Link>
+    </div>
   )
 }
 
@@ -337,11 +364,30 @@ export default function HomepageGridClient({
   const [productsWithReviews, setProductsWithReviews] = useState<ProductWithReviews[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  // Prepare category options - First 4 categories plus "Recommend"
+  // Debug: Log categories to see what we're getting
+  console.log('Categories received:', categories)
+  console.log('Categories length:', categories?.length)
+
+  // Filter categories to exclude 'misc' and get visible ones
+  const visibleCategories =
+    categories?.filter((cat) => {
+      const categoryName = cat.name?.toLowerCase() || ''
+      return categoryName !== 'misc' && cat.name && cat.slug
+    }) || []
+
+  console.log('Visible categories after filtering:', visibleCategories)
+
+  // Prepare category options - Show more categories if available
   const categoryOptions = [
     { name: 'Recommend', slug: 'recommend' },
-    ...categories.slice(0, 3).map((cat) => ({ name: cat.name || '', slug: cat.slug || '' })),
+    // Take up to 5 visible categories instead of 3
+    ...visibleCategories.slice(0, 5).map((cat) => ({
+      name: cat.name || '',
+      slug: cat.slug || '',
+    })),
   ]
+
+  console.log('Final category options:', categoryOptions)
 
   useEffect(() => {
     const prepareProducts = async () => {
@@ -398,6 +444,20 @@ export default function HomepageGridClient({
   return (
     <div className="w-full py-6">
       <MaxWidthWrapper className="px-4 sm:px-5">
+        {/* Debug Info - Remove this in production */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mb-4 p-3 bg-gray-100 rounded text-xs">
+            <p>Debug: Categories count: {categories?.length || 0}</p>
+            <p>Debug: Visible categories: {visibleCategories.length}</p>
+            <p>Debug: Category options: {categoryOptions.length}</p>
+            {categoryOptions.map((cat) => (
+              <span key={cat.slug} className="inline-block mr-2 mb-1 px-2 py-1 bg-white rounded">
+                {cat.name}
+              </span>
+            ))}
+          </div>
+        )}
+
         {/* Category Tabs */}
         <div className="flex gap-2 mb-6 overflow-x-auto scrollbar-hide">
           {categoryOptions.map((category) => (
@@ -414,6 +474,13 @@ export default function HomepageGridClient({
             </button>
           ))}
         </div>
+
+        {/* Show message if no categories are available */}
+        {categoryOptions.length === 1 && (
+          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
+            No product categories found. Only showing recommended products.
+          </div>
+        )}
 
         {/* Products Grid */}
         {productsWithReviews.length === 0 ? (

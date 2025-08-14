@@ -325,12 +325,12 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
           <button
             onClick={handleAddToCart}
             disabled={executing || fetching}
-            className="w-full text-xs font-medium px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-800 hover:bg-gray-50 hover:border-gray-400 transition-colors duration-200 disabled:opacity-50"
+            className="w-full text-xs font-medium px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-800 hover:bg-gray-50 hover:border-gray-400 transition-colors duration-200 disabled:opacity-50 flex items-center justify-center gap-1 min-h-[32px]"
           >
             {executing || fetching ? (
               <>
-                <LoadingSpinner className="mr-1 h-3 w-3" noText />
-                Adding...
+                <LoadingSpinner className="h-3 w-3" noText />
+                <span>Adding...</span>
               </>
             ) : (
               'Add to cart'
@@ -369,7 +369,7 @@ export default function TopSellingProductsClient({
     const handleResize = () => {
       let visibleItems
       if (window.innerWidth < 640) {
-        visibleItems = 2.2 // 2.2 items visible on mobile (showing partial third)
+        visibleItems = 3.3 // 3.3 items visible on mobile (showing partial fourth)
       } else if (window.innerWidth < 1024) {
         visibleItems = 3.3 // 3.3 items visible on tablet (showing partial fourth)
       } else {
