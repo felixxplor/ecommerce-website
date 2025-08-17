@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Star, Loader2, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Star, Loader2, AlertTriangle } from 'lucide-react'
 import { Product, ProductCategory, ProductTypesEnum, SimpleProduct } from '@/graphql'
 import { getClient } from '@/graphql'
 import { print } from 'graphql'
@@ -349,73 +349,28 @@ function CategorySlider({
   onCategoryChange: (slug: string) => void
 }) {
   const scrollRef = useRef<HTMLDivElement>(null)
-  const [canScrollLeft, setCanScrollLeft] = useState(false)
-  const [canScrollRight, setCanScrollRight] = useState(false)
-
-  const checkScrollButtons = () => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current
-      setCanScrollLeft(scrollLeft > 0)
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1)
-    }
-  }
-
-  useEffect(() => {
-    checkScrollButtons()
-    const ref = scrollRef.current
-    if (ref) {
-      ref.addEventListener('scroll', checkScrollButtons)
-      return () => ref.removeEventListener('scroll', checkScrollButtons)
-    }
-  }, [categories])
-
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const scrollAmount = 200
-      scrollRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth',
-      })
-    }
-  }
 
   return (
-    <div className="relative">
-      {/* Left scroll button */}
-      {canScrollLeft && (
-        <button
-          onClick={() => scroll('left')}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white border border-gray-300 rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
-        >
-          <ChevronLeft className="w-4 h-4" />
-        </button>
-      )}
-
-      {/* Right scroll button */}
-      {canScrollRight && (
-        <button
-          onClick={() => scroll('right')}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white border border-gray-300 rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
-        >
-          <ChevronRight className="w-4 h-4" />
-        </button>
-      )}
-
-      {/* Scrollable categories */}
+    <div className="w-full">
+      {/* Scrollable categories - no arrows, just swipe/scroll */}
       <div
         ref={scrollRef}
-        className="flex gap-3 overflow-x-auto scrollbar-hide pb-1 px-8"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        className="flex gap-2 overflow-x-auto scrollbar-hide pb-1"
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          WebkitOverflowScrolling: 'touch',
+        }}
       >
-        {categories.map((category) => (
+        {categories.map((category, index) => (
           <button
             key={category.slug}
             onClick={() => onCategoryChange(category.slug)}
-            className={`flex-shrink-0 px-6 py-3 text-sm font-medium rounded-full border transition-all duration-200 whitespace-nowrap min-w-fit ${
+            className={`flex-shrink-0 px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 whitespace-nowrap min-w-fit ${
               selectedCategory === category.slug
-                ? 'bg-black text-white border-black shadow-sm'
-                : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-            }`}
+                ? 'bg-emerald-500 text-white shadow-sm'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            } ${index === 0 ? 'ml-0' : ''}`}
           >
             {category.name}
           </button>
