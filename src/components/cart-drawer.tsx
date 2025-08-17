@@ -52,16 +52,23 @@ function CartItem({ item }: CartItemProps) {
 
   const cartMutations = useCartMutations(productId, variationId)
 
+  // Check if any mutation is currently pending
+  const isLoading = cartMutations.fetching
+
   const handleQuantityChange = (newQuantity: number) => {
-    if (newQuantity < 1) return
+    if (newQuantity < 1 || isLoading) return
     cartMutations.mutate({ mutation: 'update', quantity: newQuantity })
+  }
+
+  const handleRemove = () => {
+    if (isLoading) return
+    cartMutations.mutate({ mutation: 'remove' })
   }
 
   return (
     <div className="py-6 flex gap-4">
       <div className="w-24 h-24 rounded-md border bg-gray-50 flex items-center justify-center">
         <Link href={`/products/${slug}`}>
-          {' '}
           <Image
             src={image?.sourceUrl || '/product-placeholder.png'}
             alt={image?.altText ?? name ?? ''}
@@ -75,7 +82,7 @@ function CartItem({ item }: CartItemProps) {
       <div className="flex-1 flex flex-col">
         <div className="flex justify-between">
           <div>
-            <Link href={`/collections/${slug}`}>
+            <Link href={`/products/${slug}`}>
               <h3 className="text-sm font-medium">{name}</h3>
             </Link>
 
@@ -93,23 +100,32 @@ function CartItem({ item }: CartItemProps) {
 
         <div className="mt-4 flex items-center gap-2">
           <button
-            className="rounded-md border p-1 hover:bg-gray-100"
+            className={`rounded-md border p-1 hover:bg-gray-100 ${
+              isLoading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
             onClick={() => handleQuantityChange((quantity ?? 0) - 1)}
+            disabled={isLoading}
           >
             <Minus className="h-4 w-4" />
           </button>
           <span className="text-sm w-8 text-center">{quantity}</span>
           <button
-            className="rounded-md border p-1 hover:bg-gray-100"
+            className={`rounded-md border p-1 hover:bg-gray-100 ${
+              isLoading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
             onClick={() => handleQuantityChange((quantity ?? 0) + 1)}
+            disabled={isLoading}
           >
             <Plus className="h-4 w-4" />
           </button>
           <button
-            className="ml-auto text-sm text-red-500 hover:text-red-600"
-            onClick={() => cartMutations.mutate({ mutation: 'remove' })}
+            className={`ml-auto text-sm text-red-500 hover:text-red-600 ${
+              isLoading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            onClick={handleRemove}
+            disabled={isLoading}
           >
-            Remove
+            {isLoading ? 'Removing...' : 'Remove'}
           </button>
         </div>
       </div>
@@ -124,7 +140,7 @@ function CartSummary({ cart }: CartSummaryProps) {
   }
 
   return (
-    <div className="border-t px-6 py-6">
+    <div className="border-t px-6 py-6 pb-safe bg-white">
       <div className="space-y-3">
         <div className="flex items-center justify-between text-base">
           <span className="font-medium">Subtotal</span>
@@ -156,17 +172,17 @@ function CartSummary({ cart }: CartSummaryProps) {
         </div>
 
         <p className="text-sm text-gray-500">Shipping and taxes calculated at checkout</p>
-        <div className="pt-3">
+        <div className="pt-3 space-y-3">
           <button
             onClick={goToCheckoutPage}
-            className="block w-full bg-black text-white py-4 text-center text-sm font-medium hover:bg-gray-900 transition-colors"
+            className="block w-full bg-black text-white py-4 text-center text-sm font-medium hover:bg-gray-900 transition-colors rounded-md"
           >
             Go to Checkout
           </button>
           <DrawerClose asChild>
             <Link
               href="/cart"
-              className="block w-full text-center mt-3 text-sm text-gray-500 hover:text-gray-800"
+              className="block w-full text-center py-3 text-sm text-gray-500 hover:text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
             >
               Go to Cart
             </Link>
@@ -201,7 +217,7 @@ export default function CartDrawer() {
       </DrawerTrigger>
       <DrawerContent
         aria-describedby="cart-description"
-        className="h-screen top-0 right-0 left-auto mt-0 w-full xs:w-[350px] sm:w-[400px] md:w-[450px] lg:w-[500px] rounded-none z-[999]"
+        className="h-screen top-0 right-0 left-auto mt-0 w-full xs:w-[350px] sm:w-[400px] md:w-[450px] lg:w-[500px] rounded-none z-[999] pb-safe"
       >
         <DrawerHeader className="border-b px-4 sm:px-6 py-3 sm:py-4">
           <DrawerTitle className="text-base sm:text-lg font-medium">
@@ -229,14 +245,17 @@ export default function CartDrawer() {
               <CartSummary cart={cart} />
             </>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 text-center">
+            <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 text-center pb-safe">
               <ShoppingBag className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mb-3 sm:mb-4" />
               <h3 className="text-base sm:text-lg font-medium mb-2">Your cart is empty</h3>
               <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
                 Looks like you haven't added any items to your cart yet.
               </p>
               <DrawerClose asChild>
-                <Link href="/cart" className="text-xs sm:text-sm text-gray-500 hover:text-gray-800">
+                <Link
+                  href="/cart"
+                  className="text-xs sm:text-sm text-gray-500 hover:text-gray-800 border border-gray-300 rounded-md px-4 py-2 hover:bg-gray-50 transition-colors"
+                >
                   Go to Cart
                 </Link>
               </DrawerClose>

@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Star, Loader2, AlertTriangle } from 'lucide-react'
+import { Star, Loader2, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Product, ProductCategory, ProductTypesEnum, SimpleProduct } from '@/graphql'
 import { getClient } from '@/graphql'
 import { print } from 'graphql'
@@ -158,7 +158,7 @@ async function fetchAndProcessReviews(
   }
 }
 
-// Individual product card component with matching style
+// Individual product card component with responsive sizing
 function ProductCard({ product }: { product: ProductWithReviews }) {
   const { toast } = useToast()
   const [executing, setExecuting] = useState<boolean>(false)
@@ -338,6 +338,93 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
   )
 }
 
+// Category Slider Component
+function CategorySlider({
+  categories,
+  selectedCategory,
+  onCategoryChange,
+}: {
+  categories: { name: string; slug: string }[]
+  selectedCategory: string
+  onCategoryChange: (slug: string) => void
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
+
+  const checkScrollButtons = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current
+      setCanScrollLeft(scrollLeft > 0)
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1)
+    }
+  }
+
+  useEffect(() => {
+    checkScrollButtons()
+    const ref = scrollRef.current
+    if (ref) {
+      ref.addEventListener('scroll', checkScrollButtons)
+      return () => ref.removeEventListener('scroll', checkScrollButtons)
+    }
+  }, [categories])
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const scrollAmount = 200
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      })
+    }
+  }
+
+  return (
+    <div className="relative">
+      {/* Left scroll button */}
+      {canScrollLeft && (
+        <button
+          onClick={() => scroll('left')}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white border border-gray-300 rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+      )}
+
+      {/* Right scroll button */}
+      {canScrollRight && (
+        <button
+          onClick={() => scroll('right')}
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white border border-gray-300 rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      )}
+
+      {/* Scrollable categories */}
+      <div
+        ref={scrollRef}
+        className="flex gap-3 overflow-x-auto scrollbar-hide pb-1 px-8"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {categories.map((category) => (
+          <button
+            key={category.slug}
+            onClick={() => onCategoryChange(category.slug)}
+            className={`flex-shrink-0 px-6 py-3 text-sm font-medium rounded-full border transition-all duration-200 whitespace-nowrap min-w-fit ${
+              selectedCategory === category.slug
+                ? 'bg-black text-white border-black shadow-sm'
+                : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+            }`}
+          >
+            {category.name}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // Shuffle array function
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array]
@@ -364,10 +451,6 @@ export default function HomepageGridClient({
   const [productsWithReviews, setProductsWithReviews] = useState<ProductWithReviews[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  // Debug: Log categories to see what we're getting
-  console.log('Categories received:', categories)
-  console.log('Categories length:', categories?.length)
-
   // Filter categories to exclude 'misc' and get visible ones
   const visibleCategories =
     categories?.filter((cat) => {
@@ -375,19 +458,14 @@ export default function HomepageGridClient({
       return categoryName !== 'misc' && cat.name && cat.slug
     }) || []
 
-  console.log('Visible categories after filtering:', visibleCategories)
-
-  // Prepare category options - Show more categories if available
+  // Prepare category options - Show more categories
   const categoryOptions = [
     { name: 'Recommend', slug: 'recommend' },
-    // Take up to 5 visible categories instead of 3
-    ...visibleCategories.slice(0, 5).map((cat) => ({
+    ...visibleCategories.slice(0, 8).map((cat) => ({
       name: cat.name || '',
       slug: cat.slug || '',
     })),
   ]
-
-  console.log('Final category options:', categoryOptions)
 
   useEffect(() => {
     const prepareProducts = async () => {
@@ -401,10 +479,10 @@ export default function HomepageGridClient({
       if (selectedCategory === 'recommend') {
         // For "Recommend", show random products from all categories
         const visibleProducts = products.filter((product) => !isProductHidden(product))
-        filteredProducts = shuffleArray(visibleProducts).slice(0, 8)
+        filteredProducts = shuffleArray(visibleProducts).slice(0, 5) // Limit to 5 for single row
       } else {
         // Filter by specific category
-        filteredProducts = filterProductsByCategory(products, selectedCategory).slice(0, 8)
+        filteredProducts = filterProductsByCategory(products, selectedCategory).slice(0, 5) // Limit to 5 for single row
       }
 
       const productsWithLoadingState = filteredProducts.map((product) => ({
@@ -444,35 +522,13 @@ export default function HomepageGridClient({
   return (
     <div className="w-full py-6">
       <MaxWidthWrapper className="px-4 sm:px-5">
-        {/* Debug Info - Remove this in production */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mb-4 p-3 bg-gray-100 rounded text-xs">
-            <p>Debug: Categories count: {categories?.length || 0}</p>
-            <p>Debug: Visible categories: {visibleCategories.length}</p>
-            <p>Debug: Category options: {categoryOptions.length}</p>
-            {categoryOptions.map((cat) => (
-              <span key={cat.slug} className="inline-block mr-2 mb-1 px-2 py-1 bg-white rounded">
-                {cat.name}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* Updated Category Tabs with modern pill design */}
-        <div className="flex flex-wrap gap-2 mb-6 overflow-x-auto scrollbar-hide pb-1">
-          {categoryOptions.map((category) => (
-            <button
-              key={category.slug}
-              onClick={() => setSelectedCategory(category.slug)}
-              className={`flex-shrink-0 px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200 whitespace-nowrap ${
-                selectedCategory === category.slug
-                  ? 'bg-black text-white border-black shadow-sm'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-              }`}
-            >
-              {category.name}
-            </button>
-          ))}
+        {/* Category Slider */}
+        <div className="mb-8">
+          <CategorySlider
+            categories={categoryOptions}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+          />
         </div>
 
         {/* Show message if no categories are available */}
@@ -482,15 +538,16 @@ export default function HomepageGridClient({
           </div>
         )}
 
-        {/* Products Grid */}
+        {/* Products Grid - Single row on large screens */}
         {productsWithReviews.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <p>No products found in this category.</p>
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
-              {productsWithReviews.slice(0, 8).map((product) => (
+            {/* Mobile: 2 columns, Tablet: 3 columns, Desktop: 5 columns in single row */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
+              {productsWithReviews.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
