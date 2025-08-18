@@ -635,74 +635,67 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                       <Link
                         href={`/products/${relatedProduct.slug}`}
                         key={relatedProduct.id}
-                        className="group bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100"
+                        className="group bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-200 overflow-hidden"
                         aria-label={`View ${relatedProduct.name} product details`}
                       >
                         <div className="relative aspect-square overflow-hidden bg-gray-50">
+                          {/* Sale badge */}
+                          {isOnSale && (
+                            <div className="absolute top-0 left-0 z-10">
+                              <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-br-md">
+                                Sale
+                              </span>
+                            </div>
+                          )}
+
                           {sourceUrl && (
                             <img
                               src={sourceUrl}
                               alt={altText}
-                              className="object-cover h-full w-full group-hover:scale-105 transition-transform duration-300"
+                              className="object-contain h-full w-full p-4"
                               loading="lazy"
                               width="200"
                               height="200"
                             />
                           )}
-
-                          {/* Sale badge */}
-                          {isOnSale && (
-                            <div className="absolute top-2 left-2">
-                              <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-sm">
-                                SALE
-                              </span>
-                            </div>
-                          )}
-
-                          {/* Quick view overlay - appears on hover */}
-                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center">
-                            <span className="text-white font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black bg-opacity-70 px-3 py-1 rounded-sm text-sm">
-                              Quick View
-                            </span>
-                          </div>
                         </div>
 
-                        <div className="p-3 space-y-2">
-                          <h3 className="text-sm font-medium line-clamp-2 text-gray-900 group-hover:text-blue-600 transition-colors">
+                        <div className="p-4 space-y-3">
+                          <h3 className="text-sm font-medium text-gray-900 line-clamp-2 leading-snug">
                             {relatedProduct.name}
                           </h3>
 
-                          <div className="flex items-center justify-between">
-                            <div className="flex flex-col">
-                              {isOnSale ? (
-                                <div className="flex items-center gap-2">
-                                  <span className="text-sm font-bold text-red-600">
-                                    ${currentPrice}
-                                  </span>
-                                  <span className="text-xs text-gray-500 line-through">
-                                    ${originalPrice}
-                                  </span>
+                          <div className="space-y-1">
+                            {isOnSale ? (
+                              <>
+                                <div className="text-lg font-bold text-red-600">
+                                  ${currentPrice}
                                 </div>
-                              ) : (
-                                <span className="text-sm font-bold text-gray-900">
-                                  {productPrice}
-                                </span>
-                              )}
-                            </div>
-
-                            {/* Quick add indicator - appears on hover */}
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-blue-600 text-white text-xs px-2 py-1 rounded-sm">
-                              View
-                            </div>
+                                <div className="text-sm text-gray-500">
+                                  was <span className="line-through">${originalPrice}</span>
+                                </div>
+                              </>
+                            ) : (
+                              <div className="text-lg font-bold text-gray-900">{productPrice}</div>
+                            )}
                           </div>
 
-                          {/* Savings amount */}
-                          {isOnSale && (
-                            <div className="text-xs text-green-600 font-medium">
-                              Save $
-                              {Math.round(parseFloat(originalPrice) - parseFloat(currentPrice))}
+                          {/* Star rating placeholder - you can add actual ratings here */}
+                          <div className="flex items-center gap-1">
+                            <div className="flex text-gray-300">
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} className="w-3 h-3" />
+                              ))}
                             </div>
-                          )}
+                            <span className="text-xs text-gray-500">(0)</span>
+                          </div>
+
+                          {/* Add to cart button */}
+                          <div className="pt-2">
+                            <div className="w-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 text-center py-2 px-4 rounded text-sm font-medium text-gray-700 border border-gray-300">
+                              Add to cart
+                            </div>
+                          </div>
                         </div>
                       </Link>
                     )
