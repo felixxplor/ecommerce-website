@@ -690,16 +690,10 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                               )}
                             </div>
 
-                            {/* Add to cart button - appears on hover */}
-                            <button
-                              className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-1 rounded-sm"
-                              onClick={(e) => {
-                                e.preventDefault()
-                                // Add to cart functionality would go here
-                              }}
-                            >
-                              Add
-                            </button>
+                            {/* Quick add indicator - appears on hover */}
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-blue-600 text-white text-xs px-2 py-1 rounded-sm">
+                              View
+                            </div>
                           </div>
 
                           {/* Savings amount */}
