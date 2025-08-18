@@ -15,6 +15,8 @@ export interface ProductPageProps {
   }>
 }
 
+export const revalidate = 60
+
 // generateMetadata function is already correct for Next.js 15
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params

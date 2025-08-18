@@ -14,6 +14,8 @@ export interface CategoryPageProps {
   }>
 }
 
+export const revalidate = 60
+
 // Generate metadata function for SEO
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { category } = await params

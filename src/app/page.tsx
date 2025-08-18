@@ -11,6 +11,8 @@ import { Icons } from '@/components/Icons'
 import { cn } from '@/utils/ui'
 import HomepageGrid from '@/components/homepage-grid'
 
+export const revalidate = 60
+
 export default function ResponsiveHomePage() {
   return (
     <div className="bg-white min-h-[calc(100vh-3.5rem-1px)]">

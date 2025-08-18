@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   },
 }
 
+export const revalidate = 60
+
 export default async function ShopPage() {
   const products = await fetchProducts(20, 0)
   const categories = (await fetchCategories(20, 0, { hideEmpty: true })) || []
