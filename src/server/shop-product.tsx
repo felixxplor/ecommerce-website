@@ -679,23 +679,6 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                               <div className="text-lg font-bold text-gray-900">{productPrice}</div>
                             )}
                           </div>
-
-                          {/* Star rating placeholder - you can add actual ratings here */}
-                          <div className="flex items-center gap-1">
-                            <div className="flex text-gray-300">
-                              {[...Array(5)].map((_, i) => (
-                                <Star key={i} className="w-3 h-3" />
-                              ))}
-                            </div>
-                            <span className="text-xs text-gray-500">(0)</span>
-                          </div>
-
-                          {/* Add to cart button */}
-                          <div className="pt-2">
-                            <div className="w-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 text-center py-2 px-4 rounded text-sm font-medium text-gray-700 border border-gray-300">
-                              Add to cart
-                            </div>
-                          </div>
                         </div>
                       </Link>
                     )
