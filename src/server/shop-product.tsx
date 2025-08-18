@@ -609,7 +609,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
           {/* Add the MobileBottomCart component which handles showing only below 976px */}
           <MobileBottomCart product={product} isOutOfStock={isOutOfStock} />
 
-          {/* Related Products with semantic HTML */}
+          {/* Related Products with updated styling to match top picks */}
           {relatedProducts.length > 0 && (
             <section aria-labelledby="related-heading" className="mb-8">
               <h2
@@ -623,34 +623,92 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                   {relatedProducts.map((relatedProduct) => {
                     const sourceUrl = relatedProduct.image?.sourceUrl
                     const altText = relatedProduct.image?.altText || relatedProduct.name || ''
+                    const productPrice = (relatedProduct as SimpleProduct).price
+                    const regularPrice = (relatedProduct as SimpleProduct).regularPrice
+
+                    // Extract numeric values for comparison
+                    const currentPrice = productPrice?.replace(/[^0-9.]/g, '') || '0'
+                    const originalPrice = regularPrice?.replace(/[^0-9.]/g, '') || '0'
+                    const isOnSale = parseFloat(originalPrice) > parseFloat(currentPrice)
+
                     return (
                       <Link
                         href={`/products/${relatedProduct.slug}`}
                         key={relatedProduct.id}
-                        className="group border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-300"
+                        className="group bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100"
                         aria-label={`View ${relatedProduct.name} product details`}
                       >
-                        <div className="relative aspect-square mb-2 overflow-hidden rounded-t-lg bg-gray-100">
+                        <div className="relative aspect-square overflow-hidden bg-gray-50">
                           {sourceUrl && (
-                            <div className="h-full w-full relative">
-                              <img
-                                src={sourceUrl}
-                                alt={altText}
-                                className="object-cover h-full w-full group-hover:scale-105 transition-transform duration-300"
-                                loading="lazy"
-                                width="150"
-                                height="150"
-                              />
+                            <img
+                              src={sourceUrl}
+                              alt={altText}
+                              className="object-cover h-full w-full group-hover:scale-105 transition-transform duration-300"
+                              loading="lazy"
+                              width="200"
+                              height="200"
+                            />
+                          )}
+
+                          {/* Sale badge */}
+                          {isOnSale && (
+                            <div className="absolute top-2 left-2">
+                              <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-sm">
+                                SALE
+                              </span>
                             </div>
                           )}
+
+                          {/* Quick view overlay - appears on hover */}
+                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center">
+                            <span className="text-white font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black bg-opacity-70 px-3 py-1 rounded-sm text-sm">
+                              Quick View
+                            </span>
+                          </div>
                         </div>
-                        <div className="space-y-1 p-3">
-                          <h3 className="text-xs sm:text-sm font-medium line-clamp-2">
+
+                        <div className="p-3 space-y-2">
+                          <h3 className="text-sm font-medium line-clamp-2 text-gray-900 group-hover:text-blue-600 transition-colors">
                             {relatedProduct.name}
                           </h3>
-                          <p className="text-xs sm:text-sm text-gray-500">
-                            {(relatedProduct as SimpleProduct).price}
-                          </p>
+
+                          <div className="flex items-center justify-between">
+                            <div className="flex flex-col">
+                              {isOnSale ? (
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm font-bold text-red-600">
+                                    ${currentPrice}
+                                  </span>
+                                  <span className="text-xs text-gray-500 line-through">
+                                    ${originalPrice}
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="text-sm font-bold text-gray-900">
+                                  {productPrice}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Add to cart button - appears on hover */}
+                            <button
+                              className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-1 rounded-sm"
+                              onClick={(e) => {
+                                e.preventDefault()
+                                // Add to cart functionality would go here
+                              }}
+                            >
+                              Add
+                            </button>
+                          </div>
+
+                          {/* Savings amount */}
+                          {isOnSale && (
+                            <div className="text-xs text-green-600 font-medium">
+                              Save $
+                              {Math.round(parseFloat(originalPrice) - parseFloat(currentPrice))}
+                            </div>
+                          )}
                         </div>
                       </Link>
                     )
