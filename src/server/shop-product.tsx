@@ -324,7 +324,9 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
 
         <MaxWidthWrapper className="py-6 sm:py-12 mb-12 sm:mb-20 lg:mb-0">
           {/* Breadcrumb Navigation */}
-          <Breadcrumb productName={product.name ?? ''} />
+          <div className="px-1 sm:px-0">
+            <Breadcrumb productName={product.name ?? ''} />
+          </div>
 
           {/* Single white background container for both columns */}
           <div className="bg-white p-4 sm:p-8 rounded-lg shadow-sm mb-8 sm:mb-16 w-full">
@@ -609,7 +611,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
           {/* Add the MobileBottomCart component which handles showing only below 976px */}
           <MobileBottomCart product={product} isOutOfStock={isOutOfStock} />
 
-          {/* Related Products with updated styling to match top picks */}
+          {/* Related Products with horizontal scrolling for all screens */}
           {relatedProducts.length > 0 && (
             <section aria-labelledby="related-heading" className="mb-8">
               <h2
@@ -619,70 +621,76 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                 You May Also Like
               </h2>
               <div className="bg-white rounded-lg p-4 sm:p-8 shadow-sm overflow-hidden">
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-                  {relatedProducts.map((relatedProduct) => {
-                    const sourceUrl = relatedProduct.image?.sourceUrl
-                    const altText = relatedProduct.image?.altText || relatedProduct.name || ''
-                    const productPrice = (relatedProduct as SimpleProduct).price
-                    const regularPrice = (relatedProduct as SimpleProduct).regularPrice
+                {/* Horizontal scrolling container */}
+                <div className="overflow-x-auto scrollbar-hide">
+                  <div className="flex gap-3 sm:gap-4 pb-2">
+                    {relatedProducts.map((relatedProduct) => {
+                      const sourceUrl = relatedProduct.image?.sourceUrl
+                      const altText = relatedProduct.image?.altText || relatedProduct.name || ''
+                      const productPrice = (relatedProduct as SimpleProduct).price
+                      const regularPrice = (relatedProduct as SimpleProduct).regularPrice
 
-                    // Extract numeric values for comparison
-                    const currentPrice = productPrice?.replace(/[^0-9.]/g, '') || '0'
-                    const originalPrice = regularPrice?.replace(/[^0-9.]/g, '') || '0'
-                    const isOnSale = parseFloat(originalPrice) > parseFloat(currentPrice)
+                      // Extract numeric values for comparison
+                      const currentPrice = productPrice?.replace(/[^0-9.]/g, '') || '0'
+                      const originalPrice = regularPrice?.replace(/[^0-9.]/g, '') || '0'
+                      const isOnSale = parseFloat(originalPrice) > parseFloat(currentPrice)
 
-                    return (
-                      <Link
-                        href={`/products/${relatedProduct.slug}`}
-                        key={relatedProduct.id}
-                        className="group bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-200 overflow-hidden"
-                        aria-label={`View ${relatedProduct.name} product details`}
-                      >
-                        <div className="relative aspect-square overflow-hidden bg-gray-50">
-                          {/* Sale badge */}
-                          {isOnSale && (
-                            <div className="absolute top-0 left-0 z-10">
-                              <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-br-md">
-                                Sale
-                              </span>
-                            </div>
-                          )}
+                      return (
+                        <Link
+                          href={`/products/${relatedProduct.slug}`}
+                          key={relatedProduct.id}
+                          className="group bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-200 overflow-hidden flex-shrink-0"
+                          style={{ minWidth: '160px', width: '160px' }} // Fixed width for consistency
+                          aria-label={`View ${relatedProduct.name} product details`}
+                        >
+                          <div className="relative aspect-square overflow-hidden bg-gray-50">
+                            {/* Sale badge */}
+                            {isOnSale && (
+                              <div className="absolute top-0 left-0 z-10">
+                                <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-br-md">
+                                  Sale
+                                </span>
+                              </div>
+                            )}
 
-                          {sourceUrl && (
-                            <img
-                              src={sourceUrl}
-                              alt={altText}
-                              className="object-contain h-full w-full p-4"
-                              loading="lazy"
-                              width="200"
-                              height="200"
-                            />
-                          )}
-                        </div>
-
-                        <div className="p-4 space-y-3">
-                          <h3 className="text-sm font-medium text-gray-900 line-clamp-2 leading-snug">
-                            {relatedProduct.name}
-                          </h3>
-
-                          <div className="space-y-1">
-                            {isOnSale ? (
-                              <>
-                                <div className="text-lg font-bold text-red-600">
-                                  ${currentPrice}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  was <span className="line-through">${originalPrice}</span>
-                                </div>
-                              </>
-                            ) : (
-                              <div className="text-lg font-bold text-gray-900">{productPrice}</div>
+                            {sourceUrl && (
+                              <img
+                                src={sourceUrl}
+                                alt={altText}
+                                className="object-contain h-full w-full p-4"
+                                loading="lazy"
+                                width="200"
+                                height="200"
+                              />
                             )}
                           </div>
-                        </div>
-                      </Link>
-                    )
-                  })}
+
+                          <div className="p-3 space-y-2">
+                            <h3 className="text-sm font-medium text-gray-900 line-clamp-2 leading-snug">
+                              {relatedProduct.name}
+                            </h3>
+
+                            <div className="space-y-1">
+                              {isOnSale ? (
+                                <>
+                                  <div className="text-base font-bold text-red-600">
+                                    ${currentPrice}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    was <span className="line-through">${originalPrice}</span>
+                                  </div>
+                                </>
+                              ) : (
+                                <div className="text-base font-bold text-gray-900">
+                                  {productPrice}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </Link>
+                      )
+                    })}
+                  </div>
                 </div>
               </div>
             </section>

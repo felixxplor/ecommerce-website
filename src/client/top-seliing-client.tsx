@@ -225,7 +225,7 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
   }
 
   return (
-    <div className="w-full max-w-xs mx-auto border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-300">
+    <div className="w-full border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-300">
       {/* Product Image with Sale Badge */}
       <Link href={`/products/${product.slug}`} className="block group">
         <div className="relative">
@@ -280,12 +280,12 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
         {/* Ratings Section */}
         {product.isLoadingReviews ? (
           <div className="flex items-center justify-center py-1 mb-2">
-            <Loader2 className="w-3 h-3 animate-spin" />
+            <Loader2 className="w-2.5 h-2.5 animate-spin" />
           </div>
         ) : (
           <div className="mb-2">
-            <div className="flex items-center gap-1">
-              <div className="text-xs font-medium">
+            <div className="flex items-center gap-0.5">
+              <div className="text-[10px] font-medium">
                 {product.reviewData && product.reviewData.averageRating
                   ? product.reviewData.averageRating.toFixed(1)
                   : '0.0'}
@@ -294,7 +294,7 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className={`w-3 h-3 ${
+                    className={`w-2.5 h-2.5 ${
                       product.reviewData &&
                       product.reviewData.averageRating &&
                       i < Math.round(product.reviewData.averageRating)
@@ -304,7 +304,7 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
                   />
                 ))}
               </div>
-              <p className="text-xs">
+              <p className="text-[10px]">
                 (
                 {product.reviewData && product.reviewData.reviewCount
                   ? product.reviewData.reviewCount
@@ -317,19 +317,19 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
 
         {/* Add to Cart Button */}
         {outOfStock ? (
-          <div className="inline-flex items-center gap-1 text-red-700 py-1 rounded-md whitespace-nowrap text-xs">
-            <AlertTriangle className="h-3 w-3" />
+          <div className="inline-flex items-center gap-1 text-red-700 py-1 rounded-md whitespace-nowrap text-[10px]">
+            <AlertTriangle className="h-2.5 w-2.5" />
             <span className="font-medium">Out of Stock</span>
           </div>
         ) : (
           <button
             onClick={handleAddToCart}
             disabled={executing || fetching}
-            className="w-full text-xs font-medium px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-800 hover:bg-gray-50 hover:border-gray-400 transition-colors duration-200 disabled:opacity-50 flex items-center justify-center gap-1 min-h-[32px]"
+            className="w-full text-[10px] font-medium px-2 py-1.5 border border-gray-300 rounded-md bg-white text-gray-800 hover:bg-gray-50 hover:border-gray-400 transition-colors duration-200 disabled:opacity-50 flex items-center justify-center gap-1 min-h-[26px]"
           >
             {executing || fetching ? (
               <>
-                <LoadingSpinner className="h-3 w-3" noText />
+                <LoadingSpinner className="h-2.5 w-2.5" noText />
                 <span>Adding...</span>
               </>
             ) : (
@@ -368,7 +368,7 @@ export default function TopSellingProductsClient({
     desktop: 5,
   })
 
-  const [currentSlidesPerView, setCurrentSlidesPerView] = useState(4)
+  const [currentSlidesPerView, setCurrentSlidesPerView] = useState(5)
 
   useEffect(() => {
     const handleResize = () => {
