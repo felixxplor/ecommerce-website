@@ -225,7 +225,7 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
   }
 
   return (
-    <div className="flex-shrink-0 w-full border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-300">
+    <div className="w-full max-w-xs mx-auto border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-300">
       {/* Product Image with Sale Badge */}
       <Link href={`/products/${product.slug}`} className="block group">
         <div className="relative">
@@ -351,7 +351,7 @@ export default function TopSellingProductsClient({
 }) {
   const [productsWithReviews, setProductsWithReviews] = useState<ProductWithReviews[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [currentSlide, setCurrentSlide] = useState(0)
+  const [currentIndex, setCurrentIndex] = useState(0)
   const carouselRef = useRef<HTMLDivElement>(null)
 
   // Touch handling states
@@ -362,33 +362,31 @@ export default function TopSellingProductsClient({
   const minSwipeDistance = 50
 
   // Responsive configuration
-  const [itemsPerSlide, setItemsPerSlide] = useState(4)
-  const [totalSlides, setTotalSlides] = useState(0)
+  const [slidesPerView, setSlidesPerView] = useState({
+    mobile: 3.2,
+    tablet: 4.5,
+    desktop: 5,
+  })
+
+  const [currentSlidesPerView, setCurrentSlidesPerView] = useState(4)
 
   useEffect(() => {
     const handleResize = () => {
-      let visibleItems
+      let visibleSlides
       if (window.innerWidth < 640) {
-        visibleItems = 3.3 // 3.3 items visible on mobile (showing partial fourth)
+        visibleSlides = slidesPerView.mobile
       } else if (window.innerWidth < 1024) {
-        visibleItems = 3.3 // 3.3 items visible on tablet (showing partial fourth)
+        visibleSlides = slidesPerView.tablet
       } else {
-        visibleItems = 4.5 // 4.5 items visible on desktop (showing partial fifth)
+        visibleSlides = slidesPerView.desktop
       }
-
-      setItemsPerSlide(Math.floor(visibleItems))
-
-      // Calculate total slides - subtract the visible items and add 1
-      if (productsWithReviews.length > 0) {
-        const maxSlides = Math.max(0, productsWithReviews.length - Math.floor(visibleItems))
-        setTotalSlides(maxSlides + 1)
-      }
+      setCurrentSlidesPerView(visibleSlides)
     }
 
-    handleResize() // Initial call
+    handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [productsWithReviews.length])
+  }, [slidesPerView])
 
   useEffect(() => {
     const prepareProducts = async () => {
@@ -410,9 +408,6 @@ export default function TopSellingProductsClient({
       setProductsWithReviews(topSellingProducts)
       setIsLoading(false)
 
-      // Calculate total slides based on number of products
-      setTotalSlides(Math.ceil(topSellingProducts.length / itemsPerSlide))
-
       // Fetch reviews for each product
       const updatedProducts = await Promise.all(
         topSellingProducts.map(async (product) => {
@@ -429,11 +424,11 @@ export default function TopSellingProductsClient({
     }
 
     prepareProducts()
-  }, [products, itemsPerSlide])
+  }, [products])
 
   // Touch event handlers
   const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null) // otherwise the swipe is fired even with usual touch events
+    setTouchEnd(null)
     setTouchStart(e.targetTouches[0].clientX)
   }
 
@@ -448,25 +443,48 @@ export default function TopSellingProductsClient({
     const isLeftSwipe = distance > minSwipeDistance
     const isRightSwipe = distance < -minSwipeDistance
 
-    if (isLeftSwipe && currentSlide < totalSlides - 1) {
-      goToNextSlide()
+    if (isLeftSwipe) {
+      goToNext()
     }
-    if (isRightSwipe && currentSlide > 0) {
-      goToPrevSlide()
+    if (isRightSwipe) {
+      goToPrev()
     }
+  }
+
+  // Calculate maximum slide index
+  const getMaxIndex = () => {
+    return Math.max(0, productsWithReviews.length - Math.floor(currentSlidesPerView))
   }
 
   // Slide navigation functions
-  const goToSlide = (index: number) => {
-    setCurrentSlide(Math.min(index, totalSlides - 1))
+  const goToNext = () => {
+    const maxIndex = getMaxIndex()
+    setCurrentIndex((prev) => Math.min(prev + 1, maxIndex))
   }
 
-  const goToNextSlide = () => {
-    setCurrentSlide((prev) => Math.min(prev + 1, totalSlides - 1))
+  const goToPrev = () => {
+    setCurrentIndex((prev) => Math.max(prev - 1, 0))
   }
 
-  const goToPrevSlide = () => {
-    setCurrentSlide((prev) => Math.max(prev - 1, 0))
+  const goToIndex = (index: number) => {
+    const maxIndex = getMaxIndex()
+    setCurrentIndex(Math.min(Math.max(index, 0), maxIndex))
+  }
+
+  // Calculate transform value
+  const getTransformValue = () => {
+    const cardWidth = 100 / currentSlidesPerView
+    return currentIndex * cardWidth
+  }
+
+  // Calculate number of dots
+  const getTotalDots = () => {
+    return Math.ceil(productsWithReviews.length / Math.floor(currentSlidesPerView))
+  }
+
+  // Calculate current dot
+  const getCurrentDot = () => {
+    return Math.floor(currentIndex / Math.floor(currentSlidesPerView))
   }
 
   if (isLoading) {
@@ -480,6 +498,8 @@ export default function TopSellingProductsClient({
   if (productsWithReviews.length === 0) {
     return null
   }
+
+  const showNavigation = productsWithReviews.length > Math.floor(currentSlidesPerView)
 
   return (
     <div className="relative w-full h-full py-8 sm:py-14 text-xl sm:text-2xl text-balance leading-normal">
@@ -508,18 +528,26 @@ export default function TopSellingProductsClient({
         {/* Carousel Container */}
         <div className="relative">
           {/* Navigation Buttons - Hidden on mobile */}
-          {totalSlides > 1 && (
+          {showNavigation && (
             <>
               <button
-                onClick={goToPrevSlide}
-                className="absolute -left-4 top-1/3 z-10 bg-white rounded-full shadow-md p-2 hover:bg-gray-100 hidden sm:block"
+                onClick={goToPrev}
+                disabled={currentIndex === 0}
+                className={cn(
+                  'absolute -left-4 top-1/3 z-10 bg-white rounded-full shadow-md p-2 hover:bg-gray-100 transition-colors hidden sm:block',
+                  currentIndex === 0 && 'opacity-50 cursor-not-allowed'
+                )}
                 aria-label="Previous slide"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
               <button
-                onClick={goToNextSlide}
-                className="absolute -right-4 top-1/3 z-10 bg-white rounded-full shadow-md p-2 hover:bg-gray-100 hidden sm:block"
+                onClick={goToNext}
+                disabled={currentIndex >= getMaxIndex()}
+                className={cn(
+                  'absolute -right-4 top-1/3 z-10 bg-white rounded-full shadow-md p-2 hover:bg-gray-100 transition-colors hidden sm:block',
+                  currentIndex >= getMaxIndex() && 'opacity-50 cursor-not-allowed'
+                )}
                 aria-label="Next slide"
               >
                 <ChevronRight className="h-4 w-4" />
@@ -536,22 +564,19 @@ export default function TopSellingProductsClient({
             onTouchEnd={onTouchEnd}
           >
             <div
-              className="flex gap-2 sm:gap-4 transition-transform duration-500 ease-in-out"
+              className="flex gap-4 transition-transform duration-500 ease-in-out"
               style={{
-                transform: `translateX(-${currentSlide * (100 / itemsPerSlide)}%)`,
-                width: `${(productsWithReviews.length / itemsPerSlide) * 100}%`,
+                transform: `translateX(-${getTransformValue()}%)`,
               }}
             >
-              {/* Display all products in a single row */}
               {productsWithReviews.map((product) => (
                 <div
                   key={product.id}
                   className="flex-none"
                   style={{
-                    width: `calc(${100 / itemsPerSlide}% - ${
-                      (itemsPerSlide - 1) *
-                      (itemsPerSlide === 2 ? 0.5 : itemsPerSlide === 3 ? 0.67 : 0.75)
-                    }rem / ${itemsPerSlide})`,
+                    width: `calc(${100 / currentSlidesPerView}% - ${
+                      ((currentSlidesPerView - 1) * 16) / currentSlidesPerView
+                    }px)`,
                   }}
                 >
                   <ProductCard product={product} />
@@ -561,17 +586,17 @@ export default function TopSellingProductsClient({
           </div>
 
           {/* Carousel Indicators */}
-          {totalSlides > 1 && (
+          {showNavigation && getTotalDots() > 1 && (
             <div className="flex justify-center mt-6 gap-2">
-              {Array.from({ length: totalSlides }).map((_, index) => (
+              {Array.from({ length: getTotalDots() }).map((_, index) => (
                 <button
                   key={index}
-                  onClick={() => goToSlide(index)}
+                  onClick={() => goToIndex(index * Math.floor(currentSlidesPerView))}
                   className={`w-2 h-2 rounded-full transition-colors ${
-                    currentSlide === index ? 'bg-black' : 'bg-gray-300 hover:bg-gray-400'
+                    getCurrentDot() === index ? 'bg-black' : 'bg-gray-300 hover:bg-gray-400'
                   }`}
                   aria-label={`Go to slide ${index + 1}`}
-                  aria-current={currentSlide === index ? 'true' : 'false'}
+                  aria-current={getCurrentDot() === index ? 'true' : 'false'}
                 />
               ))}
             </div>

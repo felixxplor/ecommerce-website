@@ -140,8 +140,9 @@ function CartSummary({ cart }: CartSummaryProps) {
   }
 
   return (
-    <div className="border-t px-6 py-6 pb-safe bg-white">
-      <div className="space-y-3">
+    <div className="border-t px-4 sm:px-6 py-4 sm:py-6 bg-white">
+      {/* Add extra padding at bottom for iOS Safari */}
+      <div className="space-y-3 pb-safe-area-inset-bottom">
         <div className="flex items-center justify-between text-base">
           <span className="font-medium">Subtotal</span>
           <span className="font-medium">{cart.subtotal}</span>
@@ -172,7 +173,9 @@ function CartSummary({ cart }: CartSummaryProps) {
         </div>
 
         <p className="text-sm text-gray-500">Shipping and taxes calculated at checkout</p>
-        <div className="pt-3 space-y-3">
+
+        {/* Updated button container with better spacing */}
+        <div className="pt-3 space-y-3 pb-4 sm:pb-0">
           <button
             onClick={goToCheckoutPage}
             className="block w-full bg-black text-white py-4 text-center text-sm font-medium hover:bg-gray-900 transition-colors rounded-md"
@@ -217,9 +220,9 @@ export default function CartDrawer() {
       </DrawerTrigger>
       <DrawerContent
         aria-describedby="cart-description"
-        className="h-screen top-0 right-0 left-auto mt-0 w-full xs:w-[350px] sm:w-[400px] md:w-[450px] lg:w-[500px] rounded-none z-[999] pb-safe"
+        className="h-screen top-0 right-0 left-auto mt-0 w-full xs:w-[350px] sm:w-[400px] md:w-[450px] lg:w-[500px] rounded-none z-[999] overflow-hidden"
       >
-        <DrawerHeader className="border-b px-4 sm:px-6 py-3 sm:py-4">
+        <DrawerHeader className="border-b px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0">
           <DrawerTitle className="text-base sm:text-lg font-medium">
             Shopping Cart ({totalItems})
           </DrawerTitle>
@@ -232,23 +235,26 @@ export default function CartDrawer() {
           </DrawerClose>
         </DrawerHeader>
 
-        <div className="flex h-[calc(100vh-66px)] sm:h-[calc(100vh-74px)] flex-col">
+        {/* Updated container with better height calculations */}
+        <div className="flex flex-col flex-1 min-h-0">
           {cart?.contents?.nodes && cart.contents.nodes.length > 0 ? (
             <>
-              <ScrollArea className="flex-1 px-4 sm:px-6">
+              <ScrollArea className="flex-1 px-4 sm:px-6 min-h-0">
                 <div className="divide-y">
                   {cart.contents.nodes.map((item) => (
                     <CartItem key={item.key} item={item} />
                   ))}
                 </div>
               </ScrollArea>
-              <CartSummary cart={cart} />
+              <div className="flex-shrink-0">
+                <CartSummary cart={cart} />
+              </div>
             </>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 text-center pb-safe">
+            <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 text-center">
               <ShoppingBag className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mb-3 sm:mb-4" />
               <h3 className="text-base sm:text-lg font-medium mb-2">Your cart is empty</h3>
-              <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
+              <p className="text-xs sm:text-sm text-gray-500 mb-6">
                 Looks like you haven't added any items to your cart yet.
               </p>
               <DrawerClose asChild>
