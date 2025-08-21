@@ -140,9 +140,9 @@ function CartSummary({ cart }: CartSummaryProps) {
   }
 
   return (
-    <div className="border-t px-4 sm:px-6 py-4 sm:py-6 bg-white">
-      {/* Add extra padding at bottom for iOS Safari */}
-      <div className="space-y-3 pb-safe-area-inset-bottom">
+    <div className="border-t bg-white">
+      {/* Increased padding and added extra bottom spacing for iOS */}
+      <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-3 pb-24 sm:pb-6">
         <div className="flex items-center justify-between text-base">
           <span className="font-medium">Subtotal</span>
           <span className="font-medium">{cart.subtotal}</span>
@@ -174,8 +174,8 @@ function CartSummary({ cart }: CartSummaryProps) {
 
         <p className="text-sm text-gray-500">Shipping and taxes calculated at checkout</p>
 
-        {/* Updated button container with better spacing */}
-        <div className="pt-3 space-y-3 pb-4 sm:pb-0">
+        {/* Button container with significant spacing for iOS Safari */}
+        <div className="pt-4 space-y-3">
           <button
             onClick={goToCheckoutPage}
             className="block w-full bg-black text-white py-4 text-center text-sm font-medium hover:bg-gray-900 transition-colors rounded-md"
