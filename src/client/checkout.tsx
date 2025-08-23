@@ -126,11 +126,11 @@ export function CheckoutClient() {
 
   if (error) {
     return (
-      <MaxWidthWrapper className="py-14">
+      <MaxWidthWrapper className="py-8 px-4">
         <div className="text-center text-red-600">
-          <h2 className="text-xl font-bold mb-2">Error creating checkout session</h2>
-          <p>{error}</p>
-          <Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>
+          <h2 className="text-lg font-bold mb-2">Error creating checkout session</h2>
+          <p className="text-sm mb-4">{error}</p>
+          <Button variant="outline" onClick={() => window.location.reload()}>
             Try Again
           </Button>
         </div>
@@ -141,12 +141,12 @@ export function CheckoutClient() {
   // Handle empty cart
   if (cart && cart.contents?.nodes?.length === 0) {
     return (
-      <MaxWidthWrapper className="py-14">
+      <MaxWidthWrapper className="py-8 px-4">
         <div className="text-center">
           <div className="mb-6">
             <ShoppingCart className="h-12 w-12 text-gray-400 mx-auto" />
           </div>
-          <h2 className="text-2xl font-bold mb-2">Your cart is empty</h2>
+          <h2 className="text-xl font-bold mb-2">Your cart is empty</h2>
           <p className="text-gray-600 mb-6">Add items to your cart to proceed with checkout.</p>
           <Button asChild>
             <Link href="/collections">Continue Shopping</Link>
@@ -159,7 +159,7 @@ export function CheckoutClient() {
   // Show loading state if we're still checking authentication
   if (!authChecked || initialLoading) {
     return (
-      <MaxWidthWrapper className="py-14">
+      <MaxWidthWrapper className="py-8 px-4">
         <div className="flex flex-col items-center justify-center py-12">
           <LoadingSpinner className="h-8 w-8" />
           <p className="mt-4 text-gray-600">Loading checkout...</p>
@@ -169,68 +169,75 @@ export function CheckoutClient() {
   }
 
   return (
-    <MaxWidthWrapper className="py-10 md:py-14">
+    <MaxWidthWrapper className="py-6 px-4 md:py-10 lg:py-14">
       {/* Checkout method selection - only show if not authenticated and no choice made */}
       {!isAuthenticated && !checkoutChoice && (
-        <div className="max-w-2xl mx-auto">
-          <h1 className="text-2xl font-bold text-center mb-8">Checkout Options</h1>
+        <div className="max-w-md mx-auto">
+          <div className="text-center mb-6">
+            <h1 className="text-xl md:text-2xl font-bold mb-2">Checkout Options</h1>
+            <p className="text-sm text-gray-600">Choose how you'd like to checkout</p>
+          </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-8">
+          {/* Stack vertically on mobile, side by side on larger screens */}
+          <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
             {/* Sign In Option */}
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-6">
-              <div className="flex flex-col h-full">
-                <div className="mb-4 text-blue-600">
-                  <UserCircle size={36} />
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 md:p-6">
+              <div className="flex items-start gap-3 md:flex-col md:items-start md:gap-4">
+                <div className="flex-shrink-0 text-blue-600 md:mb-0">
+                  <UserCircle size={28} className="md:w-9 md:h-9" />
                 </div>
-                <h2 className="text-xl font-semibold mb-2">Sign In</h2>
-                <p className="text-gray-600 mb-6 flex-grow">
-                  Already have an account? Sign in for a faster checkout experience and to access
-                  your order history.
-                </p>
-                <Link
-                  href={`/login?returnUrl=${encodeURIComponent('/checkout')}`}
-                  className="w-full"
-                >
-                  <Button className="w-full" variant="outline">
-                    Sign In
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-
-                {/* Create Account Option moved here */}
-                <div className="text-center mt-4">
-                  <p className="text-gray-600 mb-2 text-sm">Don't have an account yet?</p>
+                <div className="flex-grow min-w-0">
+                  <h2 className="text-lg md:text-xl font-semibold mb-1 md:mb-2">Sign In</h2>
+                  <p className="text-sm text-gray-600 mb-3 md:mb-4">
+                    Sign in for faster checkout and order history access.
+                  </p>
                   <Link
-                    href={`/register?returnUrl=${encodeURIComponent('/checkout')}`}
-                    className="text-blue-600 hover:text-blue-800 font-medium text-sm"
+                    href={`/login?returnUrl=${encodeURIComponent('/checkout')}`}
+                    className="block w-full"
                   >
-                    Create an account
+                    <Button className="w-full text-sm" variant="outline" size="sm">
+                      Sign In
+                      <ArrowRight className="ml-2 h-3 w-3" />
+                    </Button>
                   </Link>
                 </div>
               </div>
             </div>
 
             {/* Guest Checkout Option */}
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-6">
-              <div className="flex flex-col h-full">
-                <div className="mb-4 text-gray-600">
-                  <CreditCard size={36} />
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 md:p-6">
+              <div className="flex items-start gap-3 md:flex-col md:items-start md:gap-4">
+                <div className="flex-shrink-0 text-gray-600 md:mb-0">
+                  <CreditCard size={28} className="md:w-9 md:h-9" />
                 </div>
-                <h2 className="text-xl font-semibold mb-2">Guest Checkout</h2>
-                <p className="text-gray-600 mb-6 flex-grow">
-                  Continue as a guest. No account required. You'll still have the option to create
-                  an account during checkout.
-                </p>
-                <Button
-                  onClick={() => setCheckoutChoice('guest')}
-                  className="w-full"
-                  variant="default"
-                >
-                  Continue as Guest
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
+                <div className="flex-grow min-w-0">
+                  <h2 className="text-lg md:text-xl font-semibold mb-1 md:mb-2">Guest Checkout</h2>
+                  <p className="text-sm text-gray-600 mb-3 md:mb-4">
+                    Continue without an account. No registration required.
+                  </p>
+                  <Button
+                    onClick={() => setCheckoutChoice('guest')}
+                    className="w-full text-sm"
+                    variant="default"
+                    size="sm"
+                  >
+                    Continue as Guest
+                    <ArrowRight className="ml-2 h-3 w-3" />
+                  </Button>
+                </div>
               </div>
             </div>
+          </div>
+
+          {/* Create Account Option - moved to bottom for mobile */}
+          <div className="text-center mt-6 pt-4 border-t border-gray-100">
+            <p className="text-sm text-gray-600 mb-2">Don't have an account?</p>
+            <Link
+              href={`/register?returnUrl=${encodeURIComponent('/checkout')}`}
+              className="text-blue-600 hover:text-blue-800 font-medium text-sm underline"
+            >
+              Create an account
+            </Link>
           </div>
         </div>
       )}
@@ -239,7 +246,7 @@ export function CheckoutClient() {
       {isLoading && (
         <div className="flex flex-col items-center justify-center py-12">
           <LoadingSpinner className="h-8 w-8" />
-          <p className="mt-4 text-gray-600">Preparing your checkout...</p>
+          <p className="mt-4 text-gray-600 text-sm">Preparing your checkout...</p>
         </div>
       )}
 
@@ -255,20 +262,26 @@ export function CheckoutClient() {
                 setClientSecret(null)
               }}
               className="mb-4"
+              size="sm"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Change Checkout Option
+              Back to Options
             </Button>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Mobile: Stack vertically, Desktop: Side by side */}
+          <div className="space-y-6 lg:grid lg:grid-cols-3 lg:gap-8 lg:space-y-0">
+            {/* Order Summary - Show first on mobile */}
+            <div className="order-first lg:order-last lg:col-span-1">
+              {cart && <CartSummary cart={cart} />}
+            </div>
+
+            {/* Checkout Form */}
             <div className="lg:col-span-2">
               <Elements stripe={stripePromise} options={{ clientSecret }}>
                 <CheckoutForm clientSecret={clientSecret} />
               </Elements>
             </div>
-
-            <div className="lg:col-span-1">{cart && <CartSummary cart={cart} />}</div>
           </div>
         </div>
       )}
