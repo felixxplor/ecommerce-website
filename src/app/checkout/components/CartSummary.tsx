@@ -58,17 +58,6 @@ export function CartSummary({ cart }: { cart: Cart }) {
             </div>
           )}
 
-          {/* Show any fees (backend discounts will appear here) */}
-          {cart.fees?.map(
-            (fee) =>
-              fee && (
-                <div key={fee.id || fee.name} className="flex justify-between text-green-600">
-                  <span className="text-sm">{fee.name}</span>
-                  <span>{fee.total}</span>
-                </div>
-              )
-          )}
-
           <div className="pt-2 border-t">
             <div className="flex justify-between font-semibold">
               <span>Total</span>
