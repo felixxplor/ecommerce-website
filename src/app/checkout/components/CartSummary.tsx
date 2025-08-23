@@ -3,35 +3,10 @@ import { Cart } from '@/graphql/generated'
 import { CartItem } from './CartItem'
 
 export function CartSummary({ cart }: { cart: Cart }) {
-  // Calculate if any items have quantity discounts
+  // Simple check if any items have quantity 2+ (for banner only)
   const hasQuantityDiscounts = cart.contents?.nodes?.some(
     (item) => item && item.quantity && item.quantity >= 2
   )
-
-  // Calculate total savings (approximate - since discounts are already applied to prices)
-  const calculateSavings = () => {
-    let totalSavings = 0
-    cart.contents?.nodes?.forEach((item) => {
-      if (item && item.quantity) {
-        // This is an approximation - you might want to get this from backend instead
-        const quantity = item.quantity
-        if (quantity >= 3) {
-          // Assuming 15% savings for 3+ items
-          const currentPrice = parseFloat(item.subtotal?.replace(/[^\d.-]/g, '') || '0')
-          const originalPrice = currentPrice / 0.85 // Reverse calculate original price
-          totalSavings += originalPrice - currentPrice
-        } else if (quantity === 2) {
-          // Assuming 10% savings for 2 items
-          const currentPrice = parseFloat(item.subtotal?.replace(/[^\d.-]/g, '') || '0')
-          const originalPrice = currentPrice / 0.9 // Reverse calculate original price
-          totalSavings += originalPrice - currentPrice
-        }
-      }
-    })
-    return totalSavings
-  }
-
-  const totalSavings = calculateSavings()
 
   return (
     <Card>
@@ -39,16 +14,14 @@ export function CartSummary({ cart }: { cart: Cart }) {
         <CardTitle>Order Summary</CardTitle>
       </CardHeader>
       <CardContent>
-        {/* Quantity Discount Banner */}
+        {/* Simple quantity discount banner */}
         {hasQuantityDiscounts && (
           <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
             <div className="flex items-center gap-2 text-green-800">
               <span className="text-lg">🎉</span>
               <div>
                 <p className="font-semibold text-sm">Quantity Discounts Applied!</p>
-                {totalSavings > 0 && (
-                  <p className="text-xs">You're saving ${totalSavings.toFixed(2)}</p>
-                )}
+                <p className="text-xs">Discounted prices are reflected in your cart</p>
               </div>
             </div>
           </div>
@@ -66,14 +39,7 @@ export function CartSummary({ cart }: { cart: Cart }) {
             <span>{cart.subtotal}</span>
           </div>
 
-          {/* Show quantity discounts if any */}
-          {totalSavings > 0 && (
-            <div className="flex justify-between text-green-600">
-              <span className="text-sm">Quantity Discounts</span>
-              <span>-${totalSavings.toFixed(2)}</span>
-            </div>
-          )}
-
+          {/* Show any coupons */}
           {cart.appliedCoupons?.filter(Boolean).map(
             (coupon) =>
               coupon && (
@@ -84,6 +50,7 @@ export function CartSummary({ cart }: { cart: Cart }) {
               )
           )}
 
+          {/* Show shipping */}
           {cart.shippingTotal && (
             <div className="flex justify-between">
               <span>Shipping</span>
@@ -91,7 +58,7 @@ export function CartSummary({ cart }: { cart: Cart }) {
             </div>
           )}
 
-          {/* Show fees (this will include any backend-applied discounts) */}
+          {/* Show any fees (backend discounts will appear here) */}
           {cart.fees?.map(
             (fee) =>
               fee && (
