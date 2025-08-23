@@ -36,6 +36,7 @@ function CartItem({ item }: CartItemProps) {
   // Add null check for product and node
   const productNode = product?.node
   const variationNode = variation?.node
+  const qty = quantity ?? 0
 
   // Add null checks and default values
   const productId = productNode?.databaseId ?? 0
@@ -44,6 +45,26 @@ function CartItem({ item }: CartItemProps) {
   const variationId = variationNode?.databaseId
 
   const cartMutations = useCartMutations(productId, variationId)
+
+  // Calculate bulk discount info
+  const hasBulkDiscount = qty >= 2
+  let discountPercent = 0
+
+  if (qty >= 3) {
+    discountPercent = 15
+  } else if (qty === 2) {
+    discountPercent = 10
+  }
+
+  // Parse current price (after discount)
+  const currentSubtotal = parseFloat(subtotal?.replace(/[^\d.-]/g, '') || '0')
+  const currentPriceEach = qty > 0 ? currentSubtotal / qty : 0
+
+  // Calculate original price (before bulk discount)
+  const originalPriceEach =
+    discountPercent > 0 ? currentPriceEach / (1 - discountPercent / 100) : currentPriceEach
+
+  const savingsPerItem = originalPriceEach - currentPriceEach
 
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity < 1) return
@@ -74,41 +95,90 @@ function CartItem({ item }: CartItemProps) {
             )
         )}
 
+        {/* Price display with bulk discount info */}
+        <div className="mt-2">
+          {hasBulkDiscount ? (
+            <div className="space-y-1">
+              {/* Original vs Discounted Price */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-gray-500 line-through text-sm">
+                  ${originalPriceEach.toFixed(2)} each
+                </span>
+                <span className="text-green-600 font-medium">
+                  ${currentPriceEach.toFixed(2)} each
+                </span>
+                <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
+                  {discountPercent}% OFF
+                </span>
+              </div>
+
+              {/* Savings info */}
+              <div className="text-sm text-green-600">
+                Save ${savingsPerItem.toFixed(2)} per item • Total saved: $
+                {(savingsPerItem * qty).toFixed(2)}
+              </div>
+            </div>
+          ) : (
+            <div className="text-sm text-gray-700 mt-1">
+              ${currentPriceEach.toFixed(2)} each
+              {qty === 1 && (
+                <span className="text-blue-600 text-xs ml-2">Add 1 more for 10% off!</span>
+              )}
+            </div>
+          )}
+        </div>
+
         {/* Price shown below product info on mobile */}
-        <p className="font-medium mt-1 sm:hidden">{subtotal}</p>
+        <div className="sm:hidden mt-2">
+          <p className="font-medium">{subtotal}</p>
+          {hasBulkDiscount && (
+            <p className="text-sm text-green-600">
+              (${(savingsPerItem * qty).toFixed(2)} total savings)
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Bottom section on mobile, flex row on desktop */}
-      <div className="flex justify-between items-center w-full sm:w-auto mt-4 sm:mt-0">
+      <div className="flex justify-between items-center w-full sm:w-auto mt-4 sm:mt-0 gap-4">
         {/* Quantity Controls - more compact on mobile */}
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="icon"
-            onClick={() => handleQuantityChange((quantity ?? 0) - 1)}
+            onClick={() => handleQuantityChange(qty - 1)}
             className="h-8 w-8"
           >
             <Minus className="h-3 w-3" />
           </Button>
           <Input
             type="number"
-            value={quantity ?? 0}
+            value={qty}
             onChange={(e) => handleQuantityChange(parseInt(e.target.value))}
             className="w-12 text-center h-8 px-1"
           />
           <Button
             variant="outline"
             size="icon"
-            onClick={() => handleQuantityChange((quantity ?? 0) + 1)}
+            onClick={() => handleQuantityChange(qty + 1)}
             className="h-8 w-8"
           >
             <Plus className="h-3 w-3" />
           </Button>
+
+          {/* Next tier motivation - desktop only */}
+          <div className="hidden sm:block ml-2">
+            {qty === 1 && <span className="text-xs text-blue-600">+1 for 10% off!</span>}
+            {qty === 2 && <span className="text-xs text-blue-600">+1 for 15% off!</span>}
+          </div>
         </div>
 
         {/* Price hidden on mobile (shown above) */}
-        <div className="hidden sm:block text-right min-w-[80px] md:min-w-[100px]">
+        <div className="hidden sm:block text-right min-w-[100px] md:min-w-[120px]">
           <p className="font-medium">{subtotal}</p>
+          {hasBulkDiscount && (
+            <p className="text-xs text-green-600">(${(savingsPerItem * qty).toFixed(2)} saved)</p>
+          )}
         </div>
 
         {/* Delete button */}
@@ -132,6 +202,11 @@ function CartSummary({ cart, onCouponApplied }: CartSummaryProps) {
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false)
   const [isRemovingCoupon, setIsRemovingCoupon] = useState(false)
   const [couponError, setCouponError] = useState('')
+
+  // Check if any items have quantity discounts
+  const hasQuantityDiscounts = cart?.contents?.nodes?.some(
+    (item) => item && item.quantity && item.quantity >= 2
+  )
 
   const goToCheckoutPage = () => {
     deleteClientSessionId()
@@ -255,6 +330,19 @@ function CartSummary({ cart, onCouponApplied }: CartSummaryProps) {
   return (
     <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm space-y-3 md:space-y-4 sticky top-20">
       <h3 className="text-lg font-semibold">Cart Summary</h3>
+
+      {/* Quantity Discount Banner */}
+      {hasQuantityDiscounts && (
+        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+          <div className="flex items-center gap-2 text-green-800">
+            <span className="text-lg">🎉</span>
+            <div>
+              <p className="font-semibold text-sm">Quantity Discounts Applied!</p>
+              <p className="text-xs">Savings shown in item prices above</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Coupon Section */}
       <div className="border-t pt-4">

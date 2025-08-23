@@ -82,10 +82,6 @@ export function CartItem({ item }: { item: CartItemType }) {
         <div className="flex justify-between items-center mt-2">
           <div className="flex items-center gap-2">
             <p className="text-sm text-gray-600">Qty: {qty}</p>
-
-            {/* Next tier motivation */}
-            {qty === 1 && <span className="text-xs text-blue-600">+1 for 10% off!</span>}
-            {qty === 2 && <span className="text-xs text-blue-600">+1 for 15% off!</span>}
           </div>
 
           <div className="text-right">
