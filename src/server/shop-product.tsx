@@ -24,7 +24,7 @@ import { SecurePaymentInfo } from '@/components/secure-payment-info'
 import { RelatedProducts } from '@/components/related-products'
 import MobileBottomCart from '@/components/mobile-bottom-cart'
 import { formatProductDescription } from '@/utils/advanced-wp-processor'
-import { BundlePricing } from '@/components/bundle-pricing'
+import { BundlePricingWrapper } from '@/components/bundle-pricing-wrapper'
 
 export interface ShopProductProps {
   product: Product
@@ -266,6 +266,9 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
   const priceValue = (product as SimpleProduct).price?.replace(/[^0-9.]/g, '') || '0'
   const rrpValue = (product as SimpleProduct).regularPrice?.replace(/[^0-9.]/g, '') || '0'
 
+  // Calculate base price for bundles
+  const basePriceForBundles = parseFloat(rrpValue) || parseFloat(priceValue) || 55.0
+
   // Generate category keywords for SEO
   const categoryNames = categories.map((category: any) => category.name).join(', ')
 
@@ -306,13 +309,6 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
 
   // Clean structured data for valid JSON
   const cleanedStructuredData = JSON.stringify(structuredData)
-
-  // Bundle pricing handler
-  const handleBundleChange = (bundle: any) => {
-    console.log('Bundle selected:', bundle)
-    // Here you can handle the bundle selection
-    // Update cart logic, pricing display, etc.
-  }
 
   return (
     <>
@@ -396,11 +392,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
 
                   {/* Mobile Bundle Pricing - Show above price */}
                   {!isOutOfStock && (
-                    <BundlePricing
-                      basePrice={parseFloat(rrpValue) || parseFloat(priceValue) || 55.0}
-                      onBundleChange={handleBundleChange}
-                      className="mb-4"
-                    />
+                    <BundlePricingWrapper basePrice={basePriceForBundles} className="mb-4" />
                   )}
 
                   {/* Price with schema markup */}
@@ -564,11 +556,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
 
                 {/* Desktop Bundle Pricing - Show above price and cart */}
                 {!isOutOfStock && (
-                  <BundlePricing
-                    basePrice={parseFloat(rrpValue) || parseFloat(priceValue) || 55.0}
-                    onBundleChange={handleBundleChange}
-                    className="mb-6"
-                  />
+                  <BundlePricingWrapper basePrice={basePriceForBundles} className="mb-6" />
                 )}
 
                 {/* Price with schema.org markup */}

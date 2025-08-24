@@ -1,4 +1,4 @@
-// components/bundle-pricing.tsx
+// components/bundle-pricing-wrapper.tsx
 'use client'
 
 import React, { useState } from 'react'
@@ -18,15 +18,13 @@ interface BundleOption {
   quantity: number
 }
 
-interface BundlePricingProps {
+interface BundlePricingWrapperProps {
   basePrice: number
-  onBundleChange?: (bundle: BundleOption) => void
   className?: string
 }
 
-export const BundlePricing: React.FC<BundlePricingProps> = ({
+export const BundlePricingWrapper: React.FC<BundlePricingWrapperProps> = ({
   basePrice,
-  onBundleChange,
   className,
 }) => {
   // Calculate bundle prices based on base price
@@ -68,7 +66,8 @@ export const BundlePricing: React.FC<BundlePricingProps> = ({
 
   const handleBundleSelect = (bundle: BundleOption) => {
     setSelectedBundle(bundle.id)
-    onBundleChange?.(bundle)
+    console.log('Bundle selected:', bundle)
+    // Here you can add more logic like updating cart, etc.
   }
 
   const formatPrice = (price: number) => `$${price.toFixed(2)}`
