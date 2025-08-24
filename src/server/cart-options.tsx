@@ -1,13 +1,10 @@
-// components/cart-options-with-bundles.tsx
-'use client'
-
+// components/cart-options.tsx (clean version without bundle context)
 import { PropsWithChildren } from 'react'
 import { Product, ProductTypesEnum, SimpleProduct } from '@/graphql'
 import { cn } from '@/utils/ui'
 import { SimpleCartOptions } from '@/client/simple-cart-options'
 import { VariableCartOptions } from '@/client/variable-cart-options'
 import { AlertTriangle } from 'lucide-react'
-import { useBundleContext } from '@/components/bundle-pricing-wrapper'
 
 function Container({ className, children }: PropsWithChildren<{ className?: string }>) {
   return (
@@ -25,7 +22,7 @@ function Container({ className, children }: PropsWithChildren<{ className?: stri
   )
 }
 
-export interface CartOptionsWithBundlesProps {
+export interface CartOptionsProps {
   product: Product
   className?: string
   value?: number
@@ -35,12 +32,9 @@ export interface CartOptionsWithBundlesProps {
   onFocusOut?: (value: number) => void
 }
 
-export function CartOptionsWithBundles(props: CartOptionsWithBundlesProps) {
+export function CartOptions(props: CartOptionsProps) {
   const { product, className } = props
   const { type, stockStatus, stockQuantity } = product as SimpleProduct
-
-  // This is now safe because this is a client component
-  const bundleContext = useBundleContext()
 
   // Check if product is out of stock
   const isOutOfStock =
@@ -60,10 +54,7 @@ export function CartOptionsWithBundles(props: CartOptionsWithBundlesProps) {
     )
   }
 
-  // Get the quantity from bundle selection, default to 1
-  const bundleQuantity = bundleContext?.selectedBundle?.quantity || 1
-
-  let Component: (props: any) => JSX.Element | null = () => null
+  let Component: (props: CartOptionsProps) => JSX.Element | null = () => null
   if (type === ProductTypesEnum.SIMPLE) {
     Component = SimpleCartOptions
   } else if (type === ProductTypesEnum.VARIABLE) {
@@ -72,7 +63,7 @@ export function CartOptionsWithBundles(props: CartOptionsWithBundlesProps) {
 
   return (
     <Container className={className}>
-      <Component {...props} value={bundleQuantity} bundleContext={bundleContext} />
+      <Component {...props} />
     </Container>
   )
 }

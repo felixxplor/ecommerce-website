@@ -1,5 +1,6 @@
 import { ProductImage } from '@/client/product-image'
 import { Product, SimpleProduct, VariationAttribute } from '@/graphql'
+import { CartOptions } from './cart-options'
 import MaxWidthWrapper from '@/components/max-width-wrapper'
 import { ProductWithPrice } from '@/client/shop-provider'
 import { ReviewsSection } from '@/components/review-section'
