@@ -14,7 +14,6 @@ import useCartMutations from '@/hooks/use-cart-mutations'
 import InputNumber, { InputNumberProps } from '@/components/input-number'
 import { useDrawerStore } from '@/components/cart-drawer'
 import { AlertTriangle } from 'lucide-react'
-import { useBundleContext } from '@/components/bundle-pricing-wrapper'
 
 interface CartOptionsProps extends InputNumberProps {
   product: Product
@@ -24,14 +23,20 @@ interface CartOptionsProps extends InputNumberProps {
   onDecrease?: (value: number) => void
   onType?: (value: number) => void
   onFocusOut?: (value: number) => void
+  bundleContext?: {
+    selectedBundle: {
+      id: string
+      title: string
+      quantity: number
+      price: number
+    } | null
+  } | null
 }
 
 export function SimpleCartOptions({ ...props }: CartOptionsProps) {
-  const { product, value, onIncrease, onDecrease, onType, onFocusOut, ...rest } = props
+  const { product, value, onIncrease, onDecrease, onType, onFocusOut, bundleContext, ...rest } =
+    props
   const { toast } = useToast()
-
-  // Always call the hook - it will return null if context is not available
-  const bundleContext = useBundleContext()
 
   // Use bundle quantity if available, otherwise use passed value or default to 1
   const bundleQuantity = bundleContext?.selectedBundle?.quantity || value || 1
@@ -206,8 +211,8 @@ export function SimpleCartOptions({ ...props }: CartOptionsProps) {
         <div>
           <span className="text-lg font-semibold text-gray-900">
             {bundleContext?.selectedBundle
-              ? `$${bundleContext.selectedBundle.price.toFixed(2)}`
-              : `$${(product as SimpleProduct).price?.replace(/[^0-9.]/g, '')}`}
+              ? `${bundleContext.selectedBundle.price.toFixed(2)}`
+              : `${(product as SimpleProduct).price?.replace(/[^0-9.]/g, '')}`}
           </span>
         </div>
 

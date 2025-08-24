@@ -1,6 +1,5 @@
 import { ProductImage } from '@/client/product-image'
 import { Product, SimpleProduct, VariationAttribute } from '@/graphql'
-import { CartOptions } from './cart-options'
 import MaxWidthWrapper from '@/components/max-width-wrapper'
 import { ProductWithPrice } from '@/client/shop-provider'
 import { ReviewsSection } from '@/components/review-section'
@@ -25,6 +24,7 @@ import { RelatedProducts } from '@/components/related-products'
 import MobileBottomCart from '@/components/mobile-bottom-cart'
 import { formatProductDescription } from '@/utils/advanced-wp-processor'
 import { BundlePricingWrapper } from '@/components/bundle-pricing-wrapper'
+import { CartOptionsWithBundles } from '@/components/cart-options-with-bundles'
 
 export interface ShopProductProps {
   product: Product
@@ -594,7 +594,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                       )}
                     </div>
 
-                    <CartOptions product={product} />
+                    <CartOptionsWithBundles product={product} />
                   </BundlePricingWrapper>
                 ) : (
                   <>

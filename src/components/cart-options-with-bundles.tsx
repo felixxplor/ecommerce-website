@@ -63,7 +63,7 @@ export function CartOptionsWithBundles(props: CartOptionsWithBundlesProps) {
   // Get the quantity from bundle selection, default to 1
   const bundleQuantity = bundleContext?.selectedBundle?.quantity || 1
 
-  let Component: (props: any) => JSX.Element | null = () => null
+  let Component: (props: CartOptionsWithBundlesProps) => JSX.Element | null = () => null
   if (type === ProductTypesEnum.SIMPLE) {
     Component = SimpleCartOptions
   } else if (type === ProductTypesEnum.VARIABLE) {
@@ -72,7 +72,7 @@ export function CartOptionsWithBundles(props: CartOptionsWithBundlesProps) {
 
   return (
     <Container className={className}>
-      <Component {...props} value={bundleQuantity} bundleContext={bundleContext} />
+      <Component {...props} product={product} value={bundleQuantity} />
     </Container>
   )
 }
