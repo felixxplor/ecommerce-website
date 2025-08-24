@@ -1,4 +1,6 @@
 // components/bundle-pricing.tsx
+'use client'
+
 import React, { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/utils/ui'
