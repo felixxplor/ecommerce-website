@@ -390,52 +390,54 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                     )}
                   </div>
 
-                  {/* Mobile Bundle Pricing - Show above price */}
-                  {!isOutOfStock && (
-                    <BundlePricingWrapper basePrice={basePriceForBundles} className="mb-4" />
+                  {/* Mobile Bundle Pricing with Cart Options */}
+                  {!isOutOfStock ? (
+                    <BundlePricingWrapper basePrice={basePriceForBundles} className="mb-4">
+                      {/* Mobile price display will be handled by CartOptions */}
+                    </BundlePricingWrapper>
+                  ) : (
+                    <div className="flex items-center gap-3 mb-4">
+                      <AlertTriangle className="h-5 w-5 text-red-500" />
+                      <span className="font-medium text-red-700">Out of Stock</span>
+                    </div>
                   )}
 
-                  {/* Price with schema markup */}
-                  <div
-                    className="flex flex-col gap-2 mb-4"
-                    itemProp="offers"
-                    itemScope
-                    itemType="https://schema.org/Offer"
-                  >
-                    <meta itemProp="priceCurrency" content="AUD" />
-                    <meta itemProp="price" content={priceValue} />
-                    <meta
-                      itemProp="availability"
-                      content={
-                        isOutOfStock
-                          ? 'https://schema.org/OutOfStock'
-                          : 'https://schema.org/InStock'
-                      }
-                    />
-                    <link
-                      itemProp="url"
-                      href={`https://www.gizmooz.com/products/${product.slug}`}
-                    />
+                  {/* Mobile Price Display - only show if not using bundles */}
+                  {!isOutOfStock && (
+                    <div
+                      className="flex flex-col gap-2 mb-4"
+                      itemProp="offers"
+                      itemScope
+                      itemType="https://schema.org/Offer"
+                    >
+                      <meta itemProp="priceCurrency" content="AUD" />
+                      <meta itemProp="price" content={priceValue} />
+                      <meta itemProp="availability" content="https://schema.org/InStock" />
+                      <link
+                        itemProp="url"
+                        href={`https://www.gizmooz.com/products/${product.slug}`}
+                      />
 
-                    {/* Price line */}
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold text-gray-900">${priceValue}</span>
+                      {/* Price line */}
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-bold text-gray-900">${priceValue}</span>
+                        {parseFloat(rrpValue) > parseFloat(priceValue) && (
+                          <span className="text-gray-500">
+                            <span>Was</span> <span className="line-through">${rrpValue}</span>
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Savings badge line */}
                       {parseFloat(rrpValue) > parseFloat(priceValue) && (
-                        <span className="text-gray-500">
-                          <span>Was</span> <span className="line-through">${rrpValue}</span>
-                        </span>
+                        <div className="flex items-center">
+                          <span className="bg-yellow-400 text-black text-sm font-bold px-3 py-1 rounded-sm">
+                            SAVE ${Math.round(parseFloat(rrpValue) - parseFloat(priceValue))}
+                          </span>
+                        </div>
                       )}
                     </div>
-
-                    {/* Savings badge line */}
-                    {parseFloat(rrpValue) > parseFloat(priceValue) && (
-                      <div className="flex items-center">
-                        <span className="bg-yellow-400 text-black text-sm font-bold px-3 py-1 rounded-sm">
-                          SAVE ${Math.round(parseFloat(rrpValue) - parseFloat(priceValue))}
-                        </span>
-                      </div>
-                    )}
-                  </div>
+                  )}
 
                   {/* Small screen shipping information */}
                   <div className="flex items-center gap-2 mt-6 text-gray-700">
@@ -554,56 +556,88 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                   )}
                 </div>
 
-                {/* Desktop Bundle Pricing - Show above price and cart */}
-                {!isOutOfStock && (
-                  <BundlePricingWrapper basePrice={basePriceForBundles} className="mb-6" />
-                )}
+                {/* Desktop Bundle Pricing with Cart Options */}
+                {!isOutOfStock ? (
+                  <BundlePricingWrapper basePrice={basePriceForBundles} className="mb-6">
+                    {/* Desktop price and cart options will be rendered inside bundle context */}
+                    <div
+                      className="flex flex-col gap-2 mb-4"
+                      itemProp="offers"
+                      itemScope
+                      itemType="https://schema.org/Offer"
+                    >
+                      <meta itemProp="priceCurrency" content="AUD" />
+                      <meta itemProp="price" content={priceValue} />
+                      <meta itemProp="availability" content="https://schema.org/InStock" />
+                      <link
+                        itemProp="url"
+                        href={`https://www.gizmooz.com/products/${product.slug}`}
+                      />
 
-                {/* Price with schema.org markup */}
-                <div
-                  className="flex flex-col gap-2 mb-4"
-                  itemProp="offers"
-                  itemScope
-                  itemType="https://schema.org/Offer"
-                >
-                  <meta itemProp="priceCurrency" content="AUD" />
-                  <meta itemProp="price" content={priceValue} />
-                  <meta
-                    itemProp="availability"
-                    content={
-                      isOutOfStock ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock'
-                    }
-                  />
-                  <link itemProp="url" href={`https://www.gizmooz.com/products/${product.slug}`} />
+                      {/* Price line */}
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-semibold text-gray-900">${priceValue}</span>
+                        {parseFloat(rrpValue) > parseFloat(priceValue) && (
+                          <span className="text-gray-500">
+                            <span>Was</span> <span className="line-through">${rrpValue}</span>
+                          </span>
+                        )}
+                      </div>
 
-                  {/* Price line */}
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-semibold text-gray-900">${priceValue}</span>
-                    {parseFloat(rrpValue) > parseFloat(priceValue) && (
-                      <span className="text-gray-500">
-                        <span>Was</span> <span className="line-through">${rrpValue}</span>
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Savings badge line */}
-                  {parseFloat(rrpValue) > parseFloat(priceValue) && (
-                    <div className="flex items-center">
-                      <span className="bg-yellow-400 text-black text-sm font-bold px-3 py-1 rounded-sm">
-                        SAVE ${Math.round(parseFloat(rrpValue) - parseFloat(priceValue))}
-                      </span>
+                      {/* Savings badge line */}
+                      {parseFloat(rrpValue) > parseFloat(priceValue) && (
+                        <div className="flex items-center">
+                          <span className="bg-yellow-400 text-black text-sm font-bold px-3 py-1 rounded-sm">
+                            SAVE ${Math.round(parseFloat(rrpValue) - parseFloat(priceValue))}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
 
-                {/* Conditionally render CartOptions or Out of Stock message */}
-                {isOutOfStock ? (
-                  <div className="flex items-center gap-3">
-                    <AlertTriangle className="h-5 w-5 text-red-500" />
-                    <span className="font-medium text-red-700">Out of Stock</span>
-                  </div>
+                    <CartOptions product={product} />
+                  </BundlePricingWrapper>
                 ) : (
-                  <CartOptions product={product} />
+                  <>
+                    {/* Price with schema.org markup for out of stock */}
+                    <div
+                      className="flex flex-col gap-2 mb-4"
+                      itemProp="offers"
+                      itemScope
+                      itemType="https://schema.org/Offer"
+                    >
+                      <meta itemProp="priceCurrency" content="AUD" />
+                      <meta itemProp="price" content={priceValue} />
+                      <meta itemProp="availability" content="https://schema.org/OutOfStock" />
+                      <link
+                        itemProp="url"
+                        href={`https://www.gizmooz.com/products/${product.slug}`}
+                      />
+
+                      {/* Price line */}
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-semibold text-gray-900">${priceValue}</span>
+                        {parseFloat(rrpValue) > parseFloat(priceValue) && (
+                          <span className="text-gray-500">
+                            <span>Was</span> <span className="line-through">${rrpValue}</span>
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Savings badge line */}
+                      {parseFloat(rrpValue) > parseFloat(priceValue) && (
+                        <div className="flex items-center">
+                          <span className="bg-yellow-400 text-black text-sm font-bold px-3 py-1 rounded-sm">
+                            SAVE ${Math.round(parseFloat(rrpValue) - parseFloat(priceValue))}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <AlertTriangle className="h-5 w-5 text-red-500" />
+                      <span className="font-medium text-red-700">Out of Stock</span>
+                    </div>
+                  </>
                 )}
 
                 {/* Shipping Information */}

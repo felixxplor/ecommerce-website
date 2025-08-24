@@ -14,6 +14,7 @@ import useCartMutations from '@/hooks/use-cart-mutations'
 import InputNumber, { InputNumberProps } from '@/components/input-number'
 import { useDrawerStore } from '@/components/cart-drawer'
 import { AlertTriangle } from 'lucide-react'
+import { useBundleContext } from '@/components/bundle-pricing-wrapper'
 
 interface CartOptionsProps extends InputNumberProps {
   product: Product
@@ -28,12 +29,32 @@ interface CartOptionsProps extends InputNumberProps {
 export function SimpleCartOptions({ ...props }: CartOptionsProps) {
   const { product, value, onIncrease, onDecrease, onType, onFocusOut, ...rest } = props
   const { toast } = useToast()
-  const [localValue, setLocalValue] = useState<number>(Number(value) || 1)
+
+  // Always call the hook - it will return null if context is not available
+  const bundleContext = useBundleContext()
+
+  // Use bundle quantity if available, otherwise use passed value or default to 1
+  const bundleQuantity = bundleContext?.selectedBundle?.quantity || value || 1
+  const [localValue, setLocalValue] = useState<number>(bundleQuantity)
   const [executing, setExecuting] = useState<boolean>(false)
   const { rawPrice, databaseId, soldIndividually, stockStatus, stockQuantity } =
     product as ProductWithPrice
   const { fetching, mutate } = useCartMutations(databaseId)
   const { onOpen } = useDrawerStore()
+
+  // Update local value when bundle changes
+  useEffect(() => {
+    if (bundleContext?.selectedBundle) {
+      setLocalValue(bundleContext.selectedBundle.quantity)
+    }
+  }, [bundleContext?.selectedBundle])
+
+  // Update local value when value prop changes
+  useEffect(() => {
+    if (value !== undefined && value !== localValue) {
+      setLocalValue(value)
+    }
+  }, [value, localValue])
 
   // Check if product is out of stock
   const outOfStock =
@@ -61,9 +82,13 @@ export function SimpleCartOptions({ ...props }: CartOptionsProps) {
         quantity: localValue,
       })
 
+      const bundleInfo = bundleContext?.selectedBundle
+        ? ` (${bundleContext.selectedBundle.title})`
+        : ''
+
       toast({
         title: 'Added to cart',
-        description: `${localValue} × ${product.name}`,
+        description: `${localValue} × ${product.name}${bundleInfo}`,
         duration: 3000,
       })
 
@@ -93,7 +118,7 @@ export function SimpleCartOptions({ ...props }: CartOptionsProps) {
   }
 
   const increase = () => {
-    let _value = Number(value || localValue) + 1
+    let _value = Number(localValue) + 1
     if (maxQuantity !== undefined && _value > maxQuantity) {
       _value = maxQuantity
     }
@@ -102,7 +127,7 @@ export function SimpleCartOptions({ ...props }: CartOptionsProps) {
   }
 
   const decrease = () => {
-    let _value = Number(value || localValue) - 1
+    let _value = Number(localValue) - 1
     if (_value < 1) {
       _value = 1
     }
@@ -177,10 +202,12 @@ export function SimpleCartOptions({ ...props }: CartOptionsProps) {
           </button>
         </div>
 
-        {/* Price */}
+        {/* Price - Show bundle price if available */}
         <div>
           <span className="text-lg font-semibold text-gray-900">
-            ${(product as SimpleProduct).price?.replace(/[^0-9.]/g, '')}
+            {bundleContext?.selectedBundle
+              ? `$${bundleContext.selectedBundle.price.toFixed(2)}`
+              : `$${(product as SimpleProduct).price?.replace(/[^0-9.]/g, '')}`}
           </span>
         </div>
 
@@ -252,11 +279,12 @@ export function SimpleCartOptions({ ...props }: CartOptionsProps) {
             </button>
           </div>
 
-          <div className="flex items-baseline mb-4">
-            <span className="text-2xl font-semibold text-gray-900 sm:hidden">
-              ${(product as SimpleProduct).price?.replace(/[^0-9.]/g, '')}
-            </span>
-          </div>
+          {/* Bundle quantity indicator */}
+          {bundleContext?.selectedBundle && bundleContext.selectedBundle.quantity > 1 && (
+            <div className="text-sm text-gray-600">
+              ({bundleContext.selectedBundle.title} - {bundleContext.selectedBundle.quantity} items)
+            </div>
+          )}
         </div>
 
         <div className="mt-2 sm:mt-4">
@@ -270,6 +298,11 @@ export function SimpleCartOptions({ ...props }: CartOptionsProps) {
           >
             <span className="flex items-center justify-center">
               Add To Basket
+              {bundleContext?.selectedBundle && bundleContext.selectedBundle.quantity > 1 && (
+                <span className="ml-2 text-sm">
+                  ({bundleContext.selectedBundle.quantity} items)
+                </span>
+              )}
               {(fetching || executing) && <LoadingSpinner noText className="ml-2" />}
             </span>
           </Button>

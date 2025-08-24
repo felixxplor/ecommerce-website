@@ -1,7 +1,7 @@
 // components/bundle-pricing-wrapper.tsx
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, createContext, useContext } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/utils/ui'
 
@@ -18,14 +18,34 @@ interface BundleOption {
   quantity: number
 }
 
+interface BundleContextType {
+  selectedBundle: BundleOption | null
+  setSelectedBundle: (bundle: BundleOption) => void
+}
+
+const BundleContext = createContext<BundleContextType | null>(null)
+
+// Safe hook that returns null if context is not available
+export const useBundleContext = () => {
+  return useContext(BundleContext)
+}
+
+// Hook that checks if we're inside a bundle context
+export const useHasBundleContext = () => {
+  const context = useContext(BundleContext)
+  return context !== null
+}
+
 interface BundlePricingWrapperProps {
   basePrice: number
   className?: string
+  children?: React.ReactNode
 }
 
 export const BundlePricingWrapper: React.FC<BundlePricingWrapperProps> = ({
   basePrice,
   className,
+  children,
 }) => {
   // Calculate bundle prices based on base price
   const bundleOptions: BundleOption[] = [
@@ -62,28 +82,57 @@ export const BundlePricingWrapper: React.FC<BundlePricingWrapperProps> = ({
     },
   ]
 
-  const [selectedBundle, setSelectedBundle] = useState<string>('single')
+  const [selectedBundle, setSelectedBundle] = useState<BundleOption>(bundleOptions[0])
 
   const handleBundleSelect = (bundle: BundleOption) => {
-    setSelectedBundle(bundle.id)
+    setSelectedBundle(bundle)
     console.log('Bundle selected:', bundle)
-    // Here you can add more logic like updating cart, etc.
   }
 
-  const formatPrice = (price: number) => `$${price.toFixed(2)}`
+  const contextValue: BundleContextType = {
+    selectedBundle,
+    setSelectedBundle: handleBundleSelect,
+  }
 
   return (
-    <div className={cn('space-y-3 mb-6', className)}>
+    <BundleContext.Provider value={contextValue}>
+      <div className={cn('space-y-3 mb-6', className)}>
+        <BundlePricingOptions
+          bundleOptions={bundleOptions}
+          selectedBundle={selectedBundle}
+          onBundleSelect={handleBundleSelect}
+        />
+      </div>
+      {children}
+    </BundleContext.Provider>
+  )
+}
+
+interface BundlePricingOptionsProps {
+  bundleOptions: BundleOption[]
+  selectedBundle: BundleOption
+  onBundleSelect: (bundle: BundleOption) => void
+}
+
+const BundlePricingOptions: React.FC<BundlePricingOptionsProps> = ({
+  bundleOptions,
+  selectedBundle,
+  onBundleSelect,
+}) => {
+  const formatPrice = (price: number) => `${price.toFixed(2)}`
+
+  return (
+    <>
       {bundleOptions.map((bundle) => (
         <div
           key={bundle.id}
           className={cn(
             'relative border-2 rounded-lg p-4 cursor-pointer transition-all duration-200',
-            selectedBundle === bundle.id
+            selectedBundle.id === bundle.id
               ? 'border-cyan-400 bg-cyan-50 shadow-md'
               : 'border-gray-200 hover:border-gray-300 bg-white'
           )}
-          onClick={() => handleBundleSelect(bundle)}
+          onClick={() => onBundleSelect(bundle)}
         >
           {/* Badge */}
           {bundle.badge && (
@@ -101,8 +150,8 @@ export const BundlePricingWrapper: React.FC<BundlePricingWrapperProps> = ({
                 type="radio"
                 id={bundle.id}
                 name="bundle"
-                checked={selectedBundle === bundle.id}
-                onChange={() => handleBundleSelect(bundle)}
+                checked={selectedBundle.id === bundle.id}
+                onChange={() => onBundleSelect(bundle)}
                 className="w-5 h-5 text-cyan-600 border-2 border-gray-300 focus:ring-cyan-500"
               />
             </div>
@@ -146,6 +195,6 @@ export const BundlePricingWrapper: React.FC<BundlePricingWrapperProps> = ({
           </div>
         </div>
       ))}
-    </div>
+    </>
   )
 }

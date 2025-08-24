@@ -1,9 +1,11 @@
+// Updated CartOptions component to work with bundles
 import { PropsWithChildren } from 'react'
 import { Product, ProductTypesEnum, SimpleProduct } from '@/graphql'
 import { cn } from '@/utils/ui'
 import { SimpleCartOptions } from '@/client/simple-cart-options'
 import { VariableCartOptions } from '@/client/variable-cart-options'
 import { AlertTriangle } from 'lucide-react'
+import { useBundleContext } from '@/components/bundle-pricing-wrapper'
 
 function Container({ className, children }: PropsWithChildren<{ className?: string }>) {
   return (
@@ -35,6 +37,9 @@ export function CartOptions(props: CartOptionsProps) {
   const { product, className } = props
   const { type, stockStatus, stockQuantity } = product as SimpleProduct
 
+  // Always call the hook - it will return null if context is not available
+  const bundleContext = useBundleContext()
+
   // Check if product is out of stock
   const isOutOfStock =
     stockStatus === 'OUT_OF_STOCK' || (stockQuantity !== null && (stockQuantity as number) <= 0)
@@ -53,6 +58,9 @@ export function CartOptions(props: CartOptionsProps) {
     )
   }
 
+  // Get the quantity from bundle selection, default to 1
+  const bundleQuantity = bundleContext?.selectedBundle?.quantity || 1
+
   let Component: (props: CartOptionsProps) => JSX.Element | null = () => null
   if (type === ProductTypesEnum.SIMPLE) {
     Component = SimpleCartOptions
@@ -62,7 +70,12 @@ export function CartOptions(props: CartOptionsProps) {
 
   return (
     <Container className={className}>
-      <Component product={product} />
+      <Component
+        {...props}
+        product={product}
+        value={bundleQuantity}
+        // Pass bundle quantity as the initial value
+      />
     </Container>
   )
 }
