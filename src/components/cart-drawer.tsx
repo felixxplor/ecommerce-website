@@ -167,7 +167,7 @@ function CartItem({ item }: CartItemProps) {
 
             {/* Next tier motivation - compact version */}
             <div className="ml-2">
-              {qty === 1 && <span className="text-xs text-blue-600">+1 for 15% off!</span>}
+              {qty === 1 && <span className="text-xs text-blue-600">+1 for 10% off!</span>}
               {qty === 2 && <span className="text-xs text-blue-600">+1 for 15% off!</span>}
             </div>
           </div>

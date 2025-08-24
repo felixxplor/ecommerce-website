@@ -24,6 +24,7 @@ import { SecurePaymentInfo } from '@/components/secure-payment-info'
 import { RelatedProducts } from '@/components/related-products'
 import MobileBottomCart from '@/components/mobile-bottom-cart'
 import { formatProductDescription } from '@/utils/advanced-wp-processor'
+import { BundlePricing } from '@/components/bundle-pricing'
 
 export interface ShopProductProps {
   product: Product
@@ -306,6 +307,13 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
   // Clean structured data for valid JSON
   const cleanedStructuredData = JSON.stringify(structuredData)
 
+  // Bundle pricing handler
+  const handleBundleChange = (bundle: any) => {
+    console.log('Bundle selected:', bundle)
+    // Here you can handle the bundle selection
+    // Update cart logic, pricing display, etc.
+  }
+
   return (
     <>
       {/* Add structured data and canonical tag */}
@@ -385,6 +393,15 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                       </Badge>
                     )}
                   </div>
+
+                  {/* Mobile Bundle Pricing - Show above price */}
+                  {!isOutOfStock && (
+                    <BundlePricing
+                      basePrice={parseFloat(rrpValue) || parseFloat(priceValue) || 55.0}
+                      onBundleChange={handleBundleChange}
+                      className="mb-4"
+                    />
+                  )}
 
                   {/* Price with schema markup */}
                   <div
@@ -544,6 +561,15 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                     </Badge>
                   )}
                 </div>
+
+                {/* Desktop Bundle Pricing - Show above price and cart */}
+                {!isOutOfStock && (
+                  <BundlePricing
+                    basePrice={parseFloat(rrpValue) || parseFloat(priceValue) || 55.0}
+                    onBundleChange={handleBundleChange}
+                    className="mb-6"
+                  />
+                )}
 
                 {/* Price with schema.org markup */}
                 <div
