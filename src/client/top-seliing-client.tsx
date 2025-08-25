@@ -317,19 +317,19 @@ function ProductCard({ product }: { product: ProductWithReviews }) {
 
         {/* Add to Cart Button */}
         {outOfStock ? (
-          <div className="inline-flex items-center gap-1 text-red-700 py-1 rounded-md whitespace-nowrap text-[10px]">
-            <AlertTriangle className="h-2.5 w-2.5" />
+          <div className="inline-flex items-center gap-1 text-red-700 py-1 rounded-md whitespace-nowrap text-xs">
+            <AlertTriangle className="h-3 w-3" />
             <span className="font-medium">Out of Stock</span>
           </div>
         ) : (
           <button
             onClick={handleAddToCart}
             disabled={executing || fetching}
-            className="w-full text-[10px] font-medium px-2 py-1.5 border border-gray-300 rounded-md bg-white text-gray-800 hover:bg-gray-50 hover:border-gray-400 transition-colors duration-200 disabled:opacity-50 flex items-center justify-center gap-1 min-h-[26px]"
+            className="w-full text-xs font-medium px-2 py-1.5 border border-gray-300 rounded-md bg-white text-gray-800 hover:bg-gray-50 hover:border-gray-400 transition-colors duration-200 disabled:opacity-50 flex items-center justify-center gap-1 min-h-[26px]"
           >
             {executing || fetching ? (
               <>
-                <LoadingSpinner className="h-2.5 w-2.5" noText />
+                <LoadingSpinner className="h-3 w-3" noText />
                 <span>Adding...</span>
               </>
             ) : (

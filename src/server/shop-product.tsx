@@ -657,8 +657,15 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
             </div>
           </div>
 
-          {/* Add the MobileBottomCart component which handles showing only below 976px */}
-          <MobileBottomCart product={product} isOutOfStock={isOutOfStock} />
+          {/* Mobile Bundle Pricing with Mobile Bottom Cart */}
+          {!isOutOfStock ? (
+            <BundlePricingWrapper basePrice={basePriceForBundles} className="mb-4">
+              {/* Mobile Bottom Cart will be rendered inside bundle context */}
+              <MobileBottomCart product={product} isOutOfStock={isOutOfStock} />
+            </BundlePricingWrapper>
+          ) : (
+            <MobileBottomCart product={product} isOutOfStock={isOutOfStock} />
+          )}
 
           {/* Related Products with horizontal scrolling for all screens */}
           {relatedProducts.length > 0 && (

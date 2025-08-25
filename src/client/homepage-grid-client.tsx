@@ -531,13 +531,6 @@ export default function HomepageGridClient({
           />
         </div>
 
-        {/* Show message if no categories are available */}
-        {categoryOptions.length === 1 && (
-          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
-            No product categories found. Only showing recommended products.
-          </div>
-        )}
-
         {/* Products Grid - Single row on large screens */}
         {productsWithReviews.length === 0 ? (
           <div className="text-center py-8 text-gray-500">

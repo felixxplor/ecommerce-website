@@ -3,7 +3,7 @@
 import { AlertTriangle } from 'lucide-react'
 import { Product, SimpleProduct } from '@/graphql'
 import { useEffect, useState } from 'react'
-import { CartOptions } from '@/server/cart-options'
+import { CartOptionsWithBundles } from '@/components/cart-options-with-bundles'
 
 interface MobileBottomCartProps {
   product: Product
@@ -42,7 +42,7 @@ export function MobileBottomCart({ product, isOutOfStock }: MobileBottomCartProp
             <span className="font-medium text-red-700">Out of Stock</span>
           </div>
         ) : (
-          <CartOptions product={product} />
+          <CartOptionsWithBundles product={product} />
         )}
       </div>
     </div>
