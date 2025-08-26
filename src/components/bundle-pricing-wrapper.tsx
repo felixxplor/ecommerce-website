@@ -82,7 +82,10 @@ export const BundlePricingWrapper: React.FC<BundlePricingWrapperProps> = ({
     },
   ]
 
-  const [selectedBundle, setSelectedBundle] = useState<BundleOption>(bundleOptions[0])
+  // Default to the single option (first option with id 'single')
+  const [selectedBundle, setSelectedBundle] = useState<BundleOption>(() => {
+    return bundleOptions.find((option) => option.id === 'single') || bundleOptions[0]
+  })
 
   const handleBundleSelect = (bundle: BundleOption) => {
     setSelectedBundle(bundle)

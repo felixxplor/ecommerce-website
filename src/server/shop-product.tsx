@@ -657,15 +657,17 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
             </div>
           </div>
 
-          {/* Mobile Bundle Pricing with Mobile Bottom Cart */}
-          {!isOutOfStock ? (
-            <BundlePricingWrapper basePrice={basePriceForBundles} className="mb-4">
-              {/* Mobile Bottom Cart will be rendered inside bundle context */}
+          {/* Mobile Bundle Pricing with Mobile Bottom Cart - Hidden on large screens */}
+          <div className="lg:hidden">
+            {!isOutOfStock ? (
+              <BundlePricingWrapper basePrice={basePriceForBundles} className="mb-4">
+                {/* Mobile Bottom Cart will be rendered inside bundle context */}
+                <MobileBottomCart product={product} isOutOfStock={isOutOfStock} />
+              </BundlePricingWrapper>
+            ) : (
               <MobileBottomCart product={product} isOutOfStock={isOutOfStock} />
-            </BundlePricingWrapper>
-          ) : (
-            <MobileBottomCart product={product} isOutOfStock={isOutOfStock} />
-          )}
+            )}
+          </div>
 
           {/* Related Products with horizontal scrolling for all screens */}
           {relatedProducts.length > 0 && (
