@@ -279,8 +279,9 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
     : 0
 
   // Calculate base price for bundles - use sale price if available, otherwise regular price
-  const basePriceForBundles =
-    parseFloat(salePrice) > 0 ? parseFloat(salePrice) : parseFloat(regularPrice)
+  const basePriceForBundles = parseFloat(regularPrice)
+
+  const salePriceForBundles = parseFloat(salePrice)
 
   // Generate category keywords for SEO
   const categoryNames = categories.map((category: any) => category.name).join(', ')
@@ -405,7 +406,11 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
 
                   {/* Mobile Bundle Pricing with Cart Options */}
                   {!isOutOfStock ? (
-                    <BundlePricingWrapper basePrice={basePriceForBundles} className="mb-4">
+                    <BundlePricingWrapper
+                      basePrice={basePriceForBundles}
+                      salePrice={salePriceForBundles}
+                      className="mb-4"
+                    >
                       {/* Mobile price display will be handled by CartOptions */}
                     </BundlePricingWrapper>
                   ) : (
@@ -615,7 +620,10 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                     </div>
 
                     {/* Bundle Pricing Wrapper - This should enhance, not replace the price display */}
-                    <BundlePricingWrapper basePrice={basePriceForBundles}>
+                    <BundlePricingWrapper
+                      basePrice={basePriceForBundles}
+                      salePrice={salePriceForBundles}
+                    >
                       <CartOptionsWithBundles product={product} />
                     </BundlePricingWrapper>
                   </div>
@@ -682,7 +690,11 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
           {/* Mobile Bundle Pricing with Mobile Bottom Cart - Hidden on large screens */}
           <div className="lg:hidden">
             {!isOutOfStock ? (
-              <BundlePricingWrapper basePrice={basePriceForBundles} className="mb-4">
+              <BundlePricingWrapper
+                basePrice={basePriceForBundles}
+                salePrice={salePriceForBundles}
+                className="mb-4"
+              >
                 {/* Mobile Bottom Cart will be rendered inside bundle context */}
                 <MobileBottomCart product={product} isOutOfStock={isOutOfStock} />
               </BundlePricingWrapper>

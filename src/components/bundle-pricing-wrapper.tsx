@@ -38,23 +38,41 @@ export const useHasBundleContext = () => {
 
 interface BundlePricingWrapperProps {
   basePrice: number
+  salePrice: number
   className?: string
   children?: React.ReactNode
 }
 
 export const BundlePricingWrapper: React.FC<BundlePricingWrapperProps> = ({
   basePrice,
+  salePrice,
   className,
   children,
 }) => {
-  // Calculate bundle prices based on base price
+  // Use salePrice as the customer-facing price for single item
+  const singlePrice = salePrice
+  const duoPrice = salePrice * 2 * 0.9 // 10% discount on duo
+  const trioPrice = salePrice * 3 * 0.85 // 15% discount on trio
+
+  // Calculate original prices (what they would pay without bundle deals)
+  const singleOriginalPrice = basePrice
+  const duoOriginalPrice = basePrice * 2
+  const trioOriginalPrice = basePrice * 3
+
+  // Calculate savings percentages
+  const singleSavings = Math.round(
+    ((singleOriginalPrice - singlePrice) / singleOriginalPrice) * 100
+  )
+  const duoSavings = Math.round(((duoOriginalPrice - duoPrice) / duoOriginalPrice) * 100)
+  const trioSavings = Math.round(((trioOriginalPrice - trioPrice) / trioOriginalPrice) * 100)
+
   const bundleOptions: BundleOption[] = [
     {
       id: 'single',
       title: 'Single',
-      subtitle: 'Buy 1 and save 40% off',
-      price: basePrice * 0.6, // 40% off
-      originalPrice: basePrice,
+      subtitle: `Buy 1 and save ${singleSavings}% off`,
+      price: singlePrice,
+      originalPrice: singleOriginalPrice,
       freeGift: true,
       badge: 'Most Popular',
       badgeColor: 'bg-cyan-500',
@@ -63,18 +81,18 @@ export const BundlePricingWrapper: React.FC<BundlePricingWrapperProps> = ({
     {
       id: 'duo',
       title: 'Duo',
-      subtitle: 'Buy 2 and save extra 10%',
-      price: basePrice * 2 * 0.54, // 60% off + extra 10%
-      originalPrice: basePrice * 2,
+      subtitle: `Buy 2 and save ${duoSavings}% off`,
+      price: duoPrice,
+      originalPrice: duoOriginalPrice,
       freeGift: true,
       quantity: 2,
     },
     {
       id: 'trio',
       title: 'Trio',
-      subtitle: 'Buy 3 and save extra 15%',
-      price: basePrice * 3 * 0.51, // 60% off + extra 15%
-      originalPrice: basePrice * 3,
+      subtitle: `Buy 3 and save ${trioSavings}% off`,
+      price: trioPrice,
+      originalPrice: trioOriginalPrice,
       freeGift: true,
       badge: 'Best Value',
       badgeColor: 'bg-emerald-500',
