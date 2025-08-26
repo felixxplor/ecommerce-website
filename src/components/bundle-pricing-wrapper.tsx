@@ -1,7 +1,7 @@
 // components/bundle-pricing-wrapper.tsx
 'use client'
 
-import React, { useState, createContext, useContext } from 'react'
+import React, { useState, createContext, useContext, useEffect } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/utils/ui'
 
@@ -82,10 +82,17 @@ export const BundlePricingWrapper: React.FC<BundlePricingWrapperProps> = ({
     },
   ]
 
-  // Default to the single option (first option with id 'single')
-  const [selectedBundle, setSelectedBundle] = useState<BundleOption>(() => {
-    return bundleOptions.find((option) => option.id === 'single') || bundleOptions[0]
-  })
+  // Initialize with null first, then set in useEffect to avoid hydration issues
+  const [selectedBundle, setSelectedBundle] = useState<BundleOption | null>(null)
+
+  // Set default selection after component mounts
+  useEffect(() => {
+    if (!selectedBundle) {
+      const defaultBundle =
+        bundleOptions.find((option) => option.id === 'single') || bundleOptions[0]
+      setSelectedBundle(defaultBundle)
+    }
+  }, [bundleOptions, selectedBundle])
 
   const handleBundleSelect = (bundle: BundleOption) => {
     setSelectedBundle(bundle)
@@ -95,6 +102,11 @@ export const BundlePricingWrapper: React.FC<BundlePricingWrapperProps> = ({
   const contextValue: BundleContextType = {
     selectedBundle,
     setSelectedBundle: handleBundleSelect,
+  }
+
+  // Don't render until we have a selected bundle
+  if (!selectedBundle) {
+    return <div className="animate-pulse bg-gray-200 h-48 rounded-lg"></div>
   }
 
   return (
@@ -122,82 +134,89 @@ const BundlePricingOptions: React.FC<BundlePricingOptionsProps> = ({
   selectedBundle,
   onBundleSelect,
 }) => {
-  const formatPrice = (price: number) => `${price.toFixed(2)}`
+  const formatPrice = (price: number) => `$${price.toFixed(2)}`
 
   return (
     <>
-      {bundleOptions.map((bundle) => (
-        <div
-          key={bundle.id}
-          className={cn(
-            'relative border-2 rounded-lg p-4 cursor-pointer transition-all duration-200',
-            selectedBundle.id === bundle.id
-              ? 'border-cyan-400 bg-cyan-50 shadow-md'
-              : 'border-gray-200 hover:border-gray-300 bg-white'
-          )}
-          onClick={() => onBundleSelect(bundle)}
-        >
-          {/* Badge */}
-          {bundle.badge && (
-            <div className="absolute -top-2 right-4">
-              <Badge className={cn('text-white text-xs font-bold px-2 py-1', bundle.badgeColor)}>
-                {bundle.badge}
-              </Badge>
-            </div>
-          )}
+      {bundleOptions.map((bundle) => {
+        const isSelected = selectedBundle.id === bundle.id
 
-          <div className="flex items-center space-x-3">
-            {/* Radio Button */}
-            <div className="flex-shrink-0">
-              <input
-                type="radio"
-                id={bundle.id}
-                name="bundle"
-                checked={selectedBundle.id === bundle.id}
-                onChange={() => onBundleSelect(bundle)}
-                className="w-5 h-5 text-cyan-600 border-2 border-gray-300 focus:ring-cyan-500"
-              />
-            </div>
+        return (
+          <div
+            key={bundle.id}
+            className={cn(
+              'relative border-2 rounded-lg p-4 cursor-pointer transition-all duration-200',
+              isSelected
+                ? 'border-cyan-400 bg-cyan-50 shadow-md'
+                : 'border-gray-200 hover:border-gray-300 bg-white'
+            )}
+            onClick={() => onBundleSelect(bundle)}
+          >
+            {/* Badge */}
+            {bundle.badge && (
+              <div className="absolute -top-2 right-4">
+                <Badge className={cn('text-white text-xs font-bold px-2 py-1', bundle.badgeColor)}>
+                  {bundle.badge}
+                </Badge>
+              </div>
+            )}
 
-            {/* Bundle Info */}
-            <div className="flex-grow">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-semibold text-gray-900">{bundle.title}</h3>
-                {bundle.freeGift && (
-                  <Badge
-                    variant="outline"
-                    className="bg-yellow-100 text-yellow-800 border-yellow-300 text-xs px-2 py-0.5"
-                  >
-                    + Free Gift
-                  </Badge>
+            <div className="flex items-center space-x-3">
+              {/* Radio Button */}
+              <div className="flex-shrink-0">
+                <input
+                  type="radio"
+                  id={bundle.id}
+                  name="bundle-selection"
+                  checked={isSelected}
+                  onChange={() => onBundleSelect(bundle)}
+                  className="w-5 h-5 text-cyan-600 border-2 border-gray-300 focus:ring-cyan-500"
+                />
+              </div>
+
+              {/* Bundle Info */}
+              <div className="flex-grow">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-semibold text-gray-900">{bundle.title}</h3>
+                  {bundle.freeGift && (
+                    <Badge
+                      variant="outline"
+                      className="bg-yellow-100 text-yellow-800 border-yellow-300 text-xs px-2 py-0.5"
+                    >
+                      + Free Gift
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-sm text-gray-600">{bundle.subtitle}</p>
+
+                {/* Size selector for single item */}
+                {bundle.id === 'single' && (
+                  <div className="mt-2">
+                    <label className="text-xs text-gray-500 block mb-1">Size</label>
+                    <select
+                      className="text-sm border border-gray-300 rounded px-2 py-1 bg-white min-w-[80px]"
+                      onClick={(e) => e.stopPropagation()} // Prevent triggering bundle selection
+                    >
+                      <option value="small">Small</option>
+                      <option value="large">Large</option>
+                    </select>
+                  </div>
                 )}
               </div>
-              <p className="text-sm text-gray-600">{bundle.subtitle}</p>
 
-              {/* Size selector for single item */}
-              {bundle.id === 'single' && (
-                <div className="mt-2">
-                  <label className="text-xs text-gray-500 block mb-1">Size</label>
-                  <select className="text-sm border border-gray-300 rounded px-2 py-1 bg-white min-w-[80px]">
-                    <option value="small">Small</option>
-                    <option value="large">Large</option>
-                  </select>
-                </div>
-              )}
-            </div>
-
-            {/* Pricing */}
-            <div className="text-right flex-shrink-0">
-              <div className="text-lg font-bold text-gray-900">{formatPrice(bundle.price)}</div>
-              {bundle.originalPrice && (
-                <div className="text-sm text-gray-500 line-through">
-                  {formatPrice(bundle.originalPrice)}
-                </div>
-              )}
+              {/* Pricing */}
+              <div className="text-right flex-shrink-0">
+                <div className="text-lg font-bold text-gray-900">{formatPrice(bundle.price)}</div>
+                {bundle.originalPrice && (
+                  <div className="text-sm text-gray-500 line-through">
+                    {formatPrice(bundle.originalPrice)}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
     </>
   )
 }

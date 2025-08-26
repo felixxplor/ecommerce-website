@@ -265,10 +265,10 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
 
   // Convert price string to number for schema
   const priceValue = (product as SimpleProduct).price?.replace(/[^0-9.]/g, '') || '0'
-  const rrpValue = (product as SimpleProduct).regularPrice?.replace(/[^0-9.]/g, '') || '0'
+  const rrpValue = (product as SimpleProduct).salePrice?.replace(/[^0-9.]/g, '') || '0'
 
   // Calculate base price for bundles
-  const basePriceForBundles = parseFloat(rrpValue) || parseFloat(priceValue) || 55.0
+  const basePriceForBundles = parseFloat(rrpValue) || parseFloat(priceValue)
 
   // Generate category keywords for SEO
   const categoryNames = categories.map((category: any) => category.name).join(', ')
