@@ -263,12 +263,24 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
     ? String(product.shortDescription).replace(/<[^>]*>/g, '')
     : String(product.description || '').replace(/<[^>]*>/g, '')
 
-  // Convert price string to number for schema
-  const priceValue = (product as SimpleProduct).price?.replace(/[^0-9.]/g, '') || '0'
-  const rrpValue = (product as SimpleProduct).salePrice?.replace(/[^0-9.]/g, '') || '0'
+  const salePrice = (product as SimpleProduct).salePrice?.replace(/[^0-9.]/g, '') || '0'
+  const regularPrice = (product as SimpleProduct).regularPrice?.replace(/[^0-9.]/g, '') || '0'
 
-  // Calculate base price for bundles
-  const basePriceForBundles = parseFloat(rrpValue) || parseFloat(priceValue)
+  // Current price customer pays (sale price if on sale, otherwise regular price)
+  const currentPrice = salePrice && parseFloat(salePrice) > 0 ? salePrice : regularPrice
+
+  // For schema.org, use the current selling price
+  const priceValue = currentPrice
+
+  // Calculate if there's a discount (regular price is higher than sale price)
+  const hasDiscount = parseFloat(regularPrice) > parseFloat(salePrice) && parseFloat(salePrice) > 0
+  const savingsAmount = hasDiscount
+    ? Math.round(parseFloat(regularPrice) - parseFloat(salePrice))
+    : 0
+
+  // Calculate base price for bundles - use sale price if available, otherwise regular price
+  const basePriceForBundles =
+    parseFloat(salePrice) > 0 ? parseFloat(salePrice) : parseFloat(regularPrice)
 
   // Generate category keywords for SEO
   const categoryNames = categories.map((category: any) => category.name).join(', ')
@@ -412,8 +424,15 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                       itemType="https://schema.org/Offer"
                     >
                       <meta itemProp="priceCurrency" content="AUD" />
-                      <meta itemProp="price" content={priceValue} />
-                      <meta itemProp="availability" content="https://schema.org/InStock" />
+                      <meta itemProp="price" content={currentPrice} />
+                      <meta
+                        itemProp="availability"
+                        content={
+                          isOutOfStock
+                            ? 'https://schema.org/OutOfStock'
+                            : 'https://schema.org/InStock'
+                        }
+                      />
                       <link
                         itemProp="url"
                         href={`https://www.gizmooz.com/products/${product.slug}`}
@@ -421,19 +440,19 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
 
                       {/* Price line */}
                       <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-bold text-gray-900">${priceValue}</span>
-                        {parseFloat(rrpValue) > parseFloat(priceValue) && (
+                        <span className="text-2xl font-bold text-gray-900">${currentPrice}</span>
+                        {hasDiscount && (
                           <span className="text-gray-500">
-                            <span>Was</span> <span className="line-through">${rrpValue}</span>
+                            <span>Was</span> <span className="line-through">${regularPrice}</span>
                           </span>
                         )}
                       </div>
 
                       {/* Savings badge line */}
-                      {parseFloat(rrpValue) > parseFloat(priceValue) && (
+                      {hasDiscount && (
                         <div className="flex items-center">
                           <span className="bg-yellow-400 text-black text-sm font-bold px-3 py-1 rounded-sm">
-                            SAVE ${Math.round(parseFloat(rrpValue) - parseFloat(priceValue))}
+                            SAVE ${savingsAmount}
                           </span>
                         </div>
                       )}
@@ -513,7 +532,6 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
               {/* Right column: Product info and cart options (sticky) - hidden below 976px (lg breakpoint) */}
               <div className="hidden lg:flex lg:col-span-1 lg:sticky lg:top-24 lg:self-start flex-col h-fit">
                 <h1 className="font-serif text-4xl lg:text-5xl font-medium mb-2">{product.name}</h1>
-
                 {/* Review Count Badge with structured data */}
                 <div
                   className="flex items-center gap-2 mb-3"
@@ -538,7 +556,6 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                     {reviewCount} {reviewCount === 1 ? 'Review' : 'Reviews'}
                   </a>
                 </div>
-
                 {/* Product Badges Section */}
                 <div className="flex flex-wrap gap-2 mb-6">
                   {/* Sales badge if category is specifically "Sales" */}
@@ -559,8 +576,8 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
 
                 {/* Desktop Bundle Pricing with Cart Options */}
                 {!isOutOfStock ? (
-                  <BundlePricingWrapper basePrice={basePriceForBundles} className="mb-6">
-                    {/* Desktop price and cart options will be rendered inside bundle context */}
+                  <div className="mb-6">
+                    {/* Price Display - Always show this first */}
                     <div
                       className="flex flex-col gap-2 mb-4"
                       itemProp="offers"
@@ -568,7 +585,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                       itemType="https://schema.org/Offer"
                     >
                       <meta itemProp="priceCurrency" content="AUD" />
-                      <meta itemProp="price" content={priceValue} />
+                      <meta itemProp="price" content={currentPrice} />
                       <meta itemProp="availability" content="https://schema.org/InStock" />
                       <link
                         itemProp="url"
@@ -577,26 +594,31 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
 
                       {/* Price line */}
                       <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-semibold text-gray-900">${priceValue}</span>
-                        {parseFloat(rrpValue) > parseFloat(priceValue) && (
+                        <span className="text-2xl font-semibold text-gray-900">
+                          ${currentPrice}
+                        </span>
+                        {hasDiscount && (
                           <span className="text-gray-500">
-                            <span>Was</span> <span className="line-through">${rrpValue}</span>
+                            <span>Was</span> <span className="line-through">${regularPrice}</span>
                           </span>
                         )}
                       </div>
 
                       {/* Savings badge line */}
-                      {parseFloat(rrpValue) > parseFloat(priceValue) && (
+                      {hasDiscount && (
                         <div className="flex items-center">
                           <span className="bg-yellow-400 text-black text-sm font-bold px-3 py-1 rounded-sm">
-                            SAVE ${Math.round(parseFloat(rrpValue) - parseFloat(priceValue))}
+                            SAVE ${savingsAmount}
                           </span>
                         </div>
                       )}
                     </div>
 
-                    <CartOptionsWithBundles product={product} />
-                  </BundlePricingWrapper>
+                    {/* Bundle Pricing Wrapper - This should enhance, not replace the price display */}
+                    <BundlePricingWrapper basePrice={basePriceForBundles}>
+                      <CartOptionsWithBundles product={product} />
+                    </BundlePricingWrapper>
+                  </div>
                 ) : (
                   <>
                     {/* Price with schema.org markup for out of stock */}
@@ -607,7 +629,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                       itemType="https://schema.org/Offer"
                     >
                       <meta itemProp="priceCurrency" content="AUD" />
-                      <meta itemProp="price" content={priceValue} />
+                      <meta itemProp="price" content={currentPrice} />
                       <meta itemProp="availability" content="https://schema.org/OutOfStock" />
                       <link
                         itemProp="url"
@@ -616,19 +638,21 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
 
                       {/* Price line */}
                       <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-semibold text-gray-900">${priceValue}</span>
-                        {parseFloat(rrpValue) > parseFloat(priceValue) && (
+                        <span className="text-2xl font-semibold text-gray-900">
+                          ${currentPrice}
+                        </span>
+                        {hasDiscount && (
                           <span className="text-gray-500">
-                            <span>Was</span> <span className="line-through">${rrpValue}</span>
+                            <span>Was</span> <span className="line-through">${regularPrice}</span>
                           </span>
                         )}
                       </div>
 
                       {/* Savings badge line */}
-                      {parseFloat(rrpValue) > parseFloat(priceValue) && (
+                      {hasDiscount && (
                         <div className="flex items-center">
                           <span className="bg-yellow-400 text-black text-sm font-bold px-3 py-1 rounded-sm">
-                            SAVE ${Math.round(parseFloat(rrpValue) - parseFloat(priceValue))}
+                            SAVE ${savingsAmount}
                           </span>
                         </div>
                       )}
@@ -640,7 +664,6 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                     </div>
                   </>
                 )}
-
                 {/* Shipping Information */}
                 <div className="flex items-center gap-2 mt-4 text-gray-700">
                   <Truck className="h-4 w-4" />
@@ -648,7 +671,6 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                     Leave warehouses in <b>1-2 business days</b>
                   </p>
                 </div>
-
                 {/* Add the SecurePaymentInfo component below */}
                 <div className="mt-4">
                   <SecurePaymentInfo />
