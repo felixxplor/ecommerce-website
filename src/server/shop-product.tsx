@@ -27,6 +27,7 @@ import { formatProductDescription } from '@/utils/advanced-wp-processor'
 import { BundlePricingWrapper } from '@/components/bundle-pricing-wrapper'
 import { CartOptionsWithBundles } from '@/components/cart-options-with-bundles'
 import { BundleAwarePrice } from '@/components/bundle-aware-price'
+import { BundleMobileBottomCart } from '@/components/bundle-mobile-bottom-cart'
 
 export interface ShopProductProps {
   product: Product
@@ -52,7 +53,6 @@ interface BreadcrumbProps {
 }
 
 function Breadcrumb({ productName }: BreadcrumbProps) {
-  // More aggressive truncation to prevent line wrapping
   const truncateProductName = (name: string, maxLength: number = 25) => {
     if (name.length <= maxLength) return name
     return name.substring(0, maxLength - 3) + '...'
@@ -128,7 +128,6 @@ async function getProductReviews(productId: string) {
       averageRating: 0,
     }
   } catch (error) {
-    // console.error('Error fetching reviews:', error)
     return {
       reviewCount: 0,
       averageRating: 0,
@@ -141,57 +140,46 @@ async function getRelatedProducts(
   categories: ProductCategory[],
   limit: number = 6
 ) {
-  // If there are no categories, return empty array
   if (!categories || categories.length === 0) {
     return []
   }
 
   try {
-    // Extract category IDs (databaseId is more reliable for WooCommerce)
     const categoryIds = categories
       .map((category) => parseInt(String(category.databaseId), 10))
       .filter((id) => !isNaN(id))
 
-    // Check if we have valid category IDs
     if (!categoryIds.length) {
       return []
     }
 
-    // Extract product database ID from global ID
     let productDatabaseId: number
     try {
       const decoded = atob(productId)
       const [type, idStr] = decoded.split(':')
       productDatabaseId = parseInt(idStr, 10)
 
-      // If we couldn't parse a valid number, try using the ID directly
       if (isNaN(productDatabaseId)) {
         productDatabaseId = parseInt(productId, 10)
       }
     } catch (error) {
-      // If decoding fails, try using the ID directly
       productDatabaseId = parseInt(productId, 10)
     }
 
-    // If we still don't have a valid ID, return empty array
     if (isNaN(productDatabaseId)) {
-      // console.error('Could not determine product database ID for related products')
       return []
     }
 
     const client = getClient()
-
-    // Try each category individually and collect all related products
     let allRelatedProducts: any[] = []
 
-    // Process categories one at a time to find related products
     for (const categoryId of categoryIds) {
       const response = await client.request<GetRelatedProductsByCategoryQuery>(
         print(GetRelatedProductsByCategoryDocument),
         {
           categoryId,
           excludeId: productDatabaseId,
-          first: Math.min(limit, 20), // Limit per category
+          first: Math.min(limit, 20),
         }
       )
 
@@ -200,7 +188,6 @@ async function getRelatedProducts(
       }
     }
 
-    // Remove duplicates (in case a product belongs to multiple categories)
     const uniqueProducts = allRelatedProducts.reduce((acc: any[], product: any) => {
       if (!acc.some((p) => p.id === product.id)) {
         acc.push(product)
@@ -208,7 +195,6 @@ async function getRelatedProducts(
       return acc
     }, [])
 
-    // If we have more products than needed, randomly select 'limit' products
     if (uniqueProducts.length > limit) {
       const shuffled = [...uniqueProducts].sort(() => 0.5 - Math.random())
       return shuffled.slice(0, limit)
@@ -216,7 +202,6 @@ async function getRelatedProducts(
 
     return uniqueProducts
   } catch (error) {
-    // console.error('Error fetching related products:', error)
     return []
   }
 }
@@ -228,21 +213,15 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
   const formattedDescription = formatProductDescription(product.description as string)
   const formattedShortDescription = formatProductDescription(product.shortDescription as string)
 
-  // Hard-coded free shipping badge
   const hasFreeShipping = true
 
-  // Check if product has 'Sales' category specifically
   const hasSalesCategory = categories.some(
     (category) => (category as ProductCategory).name === 'Sales'
   )
 
-  // Get reviews data server-side
   const { reviewCount, averageRating } = await getProductReviews(product.id)
-
-  // Get related products based on categories
   const relatedProducts = await getRelatedProducts(product.id, categories as ProductCategory[])
 
-  // Check product stock status
   const stockStatus = (product as SimpleProduct).stockStatus
   const stockQuantity = (product as SimpleProduct).stockQuantity
   const isOutOfStock =
@@ -259,7 +238,6 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
       }
     }, {} as Record<string, string[]>) || {}
 
-  // Clean description for meta tags
   const cleanDescription = product.shortDescription
     ? String(product.shortDescription).replace(/<[^>]*>/g, '')
     : String(product.description || '').replace(/<[^>]*>/g, '')
@@ -267,27 +245,19 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
   const salePrice = (product as SimpleProduct).salePrice?.replace(/[^0-9.]/g, '') || '0'
   const regularPrice = (product as SimpleProduct).regularPrice?.replace(/[^0-9.]/g, '') || '0'
 
-  // Current price customer pays (sale price if on sale, otherwise regular price)
   const currentPrice = salePrice && parseFloat(salePrice) > 0 ? salePrice : regularPrice
-
-  // For schema.org, use the current selling price
   const priceValue = currentPrice
 
-  // Calculate if there's a discount (regular price is higher than sale price)
   const hasDiscount = parseFloat(regularPrice) > parseFloat(salePrice) && parseFloat(salePrice) > 0
   const savingsAmount = hasDiscount
     ? Math.round(parseFloat(regularPrice) - parseFloat(salePrice))
     : 0
 
-  // Calculate base price for bundles - use sale price if available, otherwise regular price
   const basePriceForBundles = parseFloat(regularPrice)
-
   const salePriceForBundles = parseFloat(salePrice)
 
-  // Generate category keywords for SEO
   const categoryNames = categories.map((category: any) => category.name).join(', ')
 
-  // Generate structured data for the product
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -313,7 +283,6 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
     },
   } as any
 
-  // Add ratings to structured data if available
   if (reviewCount > 0) {
     structuredData.aggregateRating = {
       '@type': 'AggregateRating',
@@ -322,19 +291,15 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
     }
   }
 
-  // Clean structured data for valid JSON
   const cleanedStructuredData = JSON.stringify(structuredData)
 
   return (
     <>
-      {/* Add structured data and canonical tag */}
       <Script id={`product-${product.id}-jsonld`} type="application/ld+json">
         {cleanedStructuredData}
       </Script>
 
-      {/* Main product article with schema.org markup */}
       <article className="bg-[#f6f5f2]" itemScope itemType="https://schema.org/Product">
-        {/* Hidden meta tags for schema.org */}
         <meta itemProp="name" content={product.name ?? ''} />
         <meta itemProp="description" content={cleanDescription.substring(0, 500)} />
         <meta itemProp="sku" content={(product as SimpleProduct).sku || ''} />
@@ -342,7 +307,6 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
         <link itemProp="image" href={product.image?.sourceUrl || '/product-placeholder.png'} />
 
         <MaxWidthWrapper className="py-6 sm:py-12 mb-12 sm:mb-20 lg:mb-0">
-          {/* Breadcrumb Navigation */}
           <div className="px-1 sm:px-0">
             <Breadcrumb productName={product.name ?? ''} />
           </div>
@@ -354,110 +318,6 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
               <div className="lg:col-span-2">
                 <div className="max-w-full mx-auto md:max-w-lg">
                   <ProductImage product={product} />
-                </div>
-
-                {/* Small screen product header section - All elements consolidated here for screens below 976px (lg breakpoint) */}
-                <div className="lg:hidden mt-6 space-y-4">
-                  <h1 className="text-3xl font-medium mb-2">{product.name}</h1>
-
-                  {/* Review Count Badge */}
-                  <div
-                    className="flex items-center gap-2 mb-3"
-                    itemProp="aggregateRating"
-                    itemScope
-                    itemType="https://schema.org/AggregateRating"
-                  >
-                    <meta itemProp="ratingValue" content={averageRating.toFixed(1)} />
-                    <meta itemProp="reviewCount" content={reviewCount.toString()} />
-                    <div className="flex text-yellow-400">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-4 h-4 ${
-                            i < Math.round(averageRating) ? 'fill-current' : ''
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <a
-                      href="#reviews"
-                      className="text-sm cursor-pointer hover:text-primary transition-colors underline"
-                    >
-                      {reviewCount} {reviewCount === 1 ? 'Review' : 'Reviews'}
-                    </a>
-                  </div>
-
-                  {/* Product Badges Section - Small screen version */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {/* Sales badge if category is specifically "Sales" */}
-                    {hasSalesCategory && (
-                      <Badge className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 h-8">
-                        Sale
-                      </Badge>
-                    )}
-
-                    {/* Free shipping badge */}
-                    {hasFreeShipping && (
-                      <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white flex items-center gap-1 px-3 py-1 h-8">
-                        <Truck className="h-3 w-3" />
-                        Free Shipping
-                      </Badge>
-                    )}
-                  </div>
-
-                  {/* Mobile Bundle Pricing with Cart Options */}
-                  {!isOutOfStock ? (
-                    <BundlePricingWrapper
-                      basePrice={basePriceForBundles}
-                      salePrice={salePriceForBundles}
-                      className="mb-4"
-                    >
-                      {/* Mobile price display will be handled by CartOptions */}
-                    </BundlePricingWrapper>
-                  ) : (
-                    <div className="flex items-center gap-3 mb-4">
-                      <AlertTriangle className="h-5 w-5 text-red-500" />
-                      <span className="font-medium text-red-700">Out of Stock</span>
-                    </div>
-                  )}
-
-                  {/* Mobile Price Display - only show if not using bundles */}
-                  {/* Mobile Price Display - now bundle-aware */}
-                  {!isOutOfStock && (
-                    <div
-                      className="flex flex-col gap-2 mb-4"
-                      itemProp="offers"
-                      itemScope
-                      itemType="https://schema.org/Offer"
-                    >
-                      <meta itemProp="priceCurrency" content="AUD" />
-                      <meta itemProp="price" content={currentPrice} />
-                      <meta itemProp="availability" content="https://schema.org/InStock" />
-                      <link
-                        itemProp="url"
-                        href={`https://www.gizmooz.com/products/${product.slug}`}
-                      />
-
-                      <BundleAwarePrice
-                        basePrice={basePriceForBundles}
-                        salePrice={salePriceForBundles}
-                        originalRegularPrice={parseFloat(regularPrice)}
-                      />
-                    </div>
-                  )}
-
-                  {/* Small screen shipping information */}
-                  <div className="flex items-center gap-2 mt-6 text-gray-700">
-                    <Truck className="h-4 w-4" />
-                    <p className="text-sm">
-                      Leave warehouses in <b>1-2 business days</b>
-                    </p>
-                  </div>
-
-                  {/* Small screen payment info */}
-                  <div className="mt-4">
-                    <SecurePaymentInfo />
-                  </div>
                 </div>
 
                 {/* Tabs section in left column */}
@@ -519,7 +379,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
               {/* Right column: Product info and cart options (sticky) - hidden below 976px (lg breakpoint) */}
               <div className="hidden lg:flex lg:col-span-1 lg:sticky lg:top-24 lg:self-start flex-col h-fit">
                 <h1 className="font-serif text-4xl lg:text-5xl font-medium mb-2">{product.name}</h1>
-                {/* Review Count Badge with structured data */}
+
                 <div
                   className="flex items-center gap-2 mb-3"
                   itemProp="aggregateRating"
@@ -543,16 +403,14 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                     {reviewCount} {reviewCount === 1 ? 'Review' : 'Reviews'}
                   </a>
                 </div>
-                {/* Product Badges Section */}
+
                 <div className="flex flex-wrap gap-2 mb-6">
-                  {/* Sales badge if category is specifically "Sales" */}
                   {hasSalesCategory && (
                     <Badge className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 h-8">
                       Sale
                     </Badge>
                   )}
 
-                  {/* Free shipping badge */}
                   {hasFreeShipping && (
                     <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white flex items-center gap-1 px-3 py-1 h-8">
                       <Truck className="h-3 w-3" />
@@ -561,14 +419,12 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                   )}
                 </div>
 
-                {/* Desktop Bundle Pricing with Cart Options */}
                 {!isOutOfStock ? (
                   <div className="mb-6">
                     <BundlePricingWrapper
                       basePrice={basePriceForBundles}
                       salePrice={salePriceForBundles}
                     >
-                      {/* Price Display - now bundle-aware */}
                       <div
                         className="flex flex-col gap-2 mb-4"
                         itemProp="offers"
@@ -595,7 +451,6 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                   </div>
                 ) : (
                   <>
-                    {/* Price with schema.org markup for out of stock */}
                     <div
                       className="flex flex-col gap-2 mb-4"
                       itemProp="offers"
@@ -610,7 +465,6 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                         href={`https://www.gizmooz.com/products/${product.slug}`}
                       />
 
-                      {/* Price line */}
                       <div className="flex items-baseline gap-2">
                         <span className="text-2xl font-semibold text-gray-900">
                           ${currentPrice}
@@ -622,7 +476,6 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                         )}
                       </div>
 
-                      {/* Savings badge line */}
                       {hasDiscount && (
                         <div className="flex items-center">
                           <span className="bg-yellow-400 text-black text-sm font-bold px-3 py-1 rounded-sm">
@@ -638,14 +491,14 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                     </div>
                   </>
                 )}
-                {/* Shipping Information */}
+
                 <div className="flex items-center gap-2 mt-4 text-gray-700">
                   <Truck className="h-4 w-4" />
                   <p className="text-sm">
                     Leave warehouses in <b>1-2 business days</b>
                   </p>
                 </div>
-                {/* Add the SecurePaymentInfo component below */}
+
                 <div className="mt-4">
                   <SecurePaymentInfo />
                 </div>
@@ -653,7 +506,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
             </div>
           </div>
 
-          {/* Mobile Bundle Pricing - Hidden on large screens */}
+          {/* FIXED: Single BundlePricingWrapper for all mobile components */}
           <div className="lg:hidden">
             {!isOutOfStock ? (
               <BundlePricingWrapper
@@ -661,10 +514,158 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                 salePrice={salePriceForBundles}
                 className="mb-4"
               >
+                {/* Mobile product header section - now inside bundle context */}
+                <div className="mt-6 space-y-4 bg-white p-4 rounded-lg shadow-sm mb-4">
+                  <h1 className="text-3xl font-medium mb-2">{product.name}</h1>
+
+                  {/* Review Count Badge */}
+                  <div
+                    className="flex items-center gap-2 mb-3"
+                    itemProp="aggregateRating"
+                    itemScope
+                    itemType="https://schema.org/AggregateRating"
+                  >
+                    <meta itemProp="ratingValue" content={averageRating.toFixed(1)} />
+                    <meta itemProp="reviewCount" content={reviewCount.toString()} />
+                    <div className="flex text-yellow-400">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-4 h-4 ${
+                            i < Math.round(averageRating) ? 'fill-current' : ''
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <a
+                      href="#reviews"
+                      className="text-sm cursor-pointer hover:text-primary transition-colors underline"
+                    >
+                      {reviewCount} {reviewCount === 1 ? 'Review' : 'Reviews'}
+                    </a>
+                  </div>
+
+                  {/* Product Badges Section */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {hasSalesCategory && (
+                      <Badge className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 h-8">
+                        Sale
+                      </Badge>
+                    )}
+
+                    {hasFreeShipping && (
+                      <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white flex items-center gap-1 px-3 py-1 h-8">
+                        <Truck className="h-3 w-3" />
+                        Free Shipping
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Bundle-aware price display - now has access to context */}
+                  <div
+                    className="flex flex-col gap-2 mb-4"
+                    itemProp="offers"
+                    itemScope
+                    itemType="https://schema.org/Offer"
+                  >
+                    <meta itemProp="priceCurrency" content="AUD" />
+                    <meta itemProp="availability" content="https://schema.org/InStock" />
+                    <link
+                      itemProp="url"
+                      href={`https://www.gizmooz.com/products/${product.slug}`}
+                    />
+
+                    <BundleAwarePrice
+                      basePrice={basePriceForBundles}
+                      salePrice={salePriceForBundles}
+                      originalRegularPrice={parseFloat(regularPrice)}
+                    />
+                  </div>
+
+                  {/* Mobile shipping information */}
+                  <div className="flex items-center gap-2 mt-6 text-gray-700">
+                    <Truck className="h-4 w-4" />
+                    <p className="text-sm">
+                      Leave warehouses in <b>1-2 business days</b>
+                    </p>
+                  </div>
+
+                  {/* Mobile payment info */}
+                  <div className="mt-4">
+                    <SecurePaymentInfo />
+                  </div>
+                </div>
+
+                {/* Mobile bottom cart - now shares the same context */}
                 <MobileBottomCart product={product} isOutOfStock={isOutOfStock} />
               </BundlePricingWrapper>
             ) : (
-              <MobileBottomCart product={product} isOutOfStock={isOutOfStock} />
+              <>
+                {/* Out of stock mobile header */}
+                <div className="mt-6 space-y-4 bg-white p-4 rounded-lg shadow-sm mb-4">
+                  <h1 className="text-3xl font-medium mb-2">{product.name}</h1>
+
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex text-yellow-400">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-4 h-4 ${
+                            i < Math.round(averageRating) ? 'fill-current' : ''
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <a
+                      href="#reviews"
+                      className="text-sm cursor-pointer hover:text-primary transition-colors underline"
+                    >
+                      {reviewCount} {reviewCount === 1 ? 'Review' : 'Reviews'}
+                    </a>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {hasSalesCategory && (
+                      <Badge className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 h-8">
+                        Sale
+                      </Badge>
+                    )}
+
+                    {hasFreeShipping && (
+                      <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white flex items-center gap-1 px-3 py-1 h-8">
+                        <Truck className="h-3 w-3" />
+                        Free Shipping
+                      </Badge>
+                    )}
+                  </div>
+
+                  <div className="flex items-baseline gap-2 mb-4">
+                    <span className="text-2xl font-bold text-gray-900">${currentPrice}</span>
+                    {hasDiscount && (
+                      <span className="text-gray-500">
+                        <span>Was</span> <span className="line-through">${regularPrice}</span>
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-3 mb-4">
+                    <AlertTriangle className="h-5 w-5 text-red-500" />
+                    <span className="font-medium text-red-700">Out of Stock</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <Truck className="h-4 w-4" />
+                    <p className="text-sm">
+                      Leave warehouses in <b>1-2 business days</b>
+                    </p>
+                  </div>
+
+                  <div className="mt-4">
+                    <SecurePaymentInfo />
+                  </div>
+                </div>
+                <MobileBottomCart product={product} isOutOfStock={isOutOfStock} />
+              </>
             )}
           </div>
 
@@ -678,7 +679,6 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                 You May Also Like
               </h2>
               <div className="bg-white rounded-lg p-4 sm:p-8 shadow-sm overflow-hidden">
-                {/* Horizontal scrolling container */}
                 <div className="overflow-x-auto scrollbar-hide">
                   <div className="flex gap-3 sm:gap-4 pb-2">
                     {relatedProducts.map((relatedProduct) => {
@@ -687,7 +687,6 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                       const productPrice = (relatedProduct as SimpleProduct).price
                       const regularPrice = (relatedProduct as SimpleProduct).regularPrice
 
-                      // Extract numeric values for comparison
                       const currentPrice = productPrice?.replace(/[^0-9.]/g, '') || '0'
                       const originalPrice = regularPrice?.replace(/[^0-9.]/g, '') || '0'
                       const isOnSale = parseFloat(originalPrice) > parseFloat(currentPrice)
@@ -697,11 +696,10 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                           href={`/products/${relatedProduct.slug}`}
                           key={relatedProduct.id}
                           className="group bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-200 overflow-hidden flex-shrink-0"
-                          style={{ minWidth: '160px', width: '160px' }} // Fixed width for consistency
+                          style={{ minWidth: '160px', width: '160px' }}
                           aria-label={`View ${relatedProduct.name} product details`}
                         >
                           <div className="relative aspect-square overflow-hidden bg-gray-50">
-                            {/* Sale badge */}
                             {isOnSale && (
                               <div className="absolute top-0 left-0 z-10">
                                 <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-br-md">

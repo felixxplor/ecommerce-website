@@ -9,6 +9,9 @@ import { useBundleContext, useHasBundleContext } from '@/components/bundle-prici
 interface MobileBottomCartProps {
   product: Product
   isOutOfStock: boolean
+  bundlePrice?: number
+  bundleQuantity?: number
+  bundleTitle?: string
 }
 
 export function MobileBottomCart({ product, isOutOfStock }: MobileBottomCartProps) {
