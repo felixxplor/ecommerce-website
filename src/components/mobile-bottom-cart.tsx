@@ -3,44 +3,44 @@
 import { AlertTriangle } from 'lucide-react'
 import { Product, SimpleProduct } from '@/graphql'
 import { useEffect, useState } from 'react'
-import { CartOptionsWithBundles } from '@/components/cart-options-with-bundles'
-import { useBundleContext } from '@/components/bundle-pricing-wrapper'
+import { SimpleCartOptions } from '@/client/simple-cart-options'
 
 interface MobileBottomCartProps {
   product: Product
   isOutOfStock: boolean
+  bundlePrice?: number
+  bundleQuantity?: number
+  bundleTitle?: string
 }
 
-export function MobileBottomCart({ product, isOutOfStock }: MobileBottomCartProps) {
+export function MobileBottomCart({
+  product,
+  isOutOfStock,
+  bundlePrice,
+  bundleQuantity,
+  bundleTitle,
+}: MobileBottomCartProps) {
   const [isMobile, setIsMobile] = useState(false)
 
-  // Get bundle context to show updated pricing and quantity
-  const bundleContext = useBundleContext()
-
   useEffect(() => {
-    // Function to handle resize event and check if screen is mobile
-    // Using 976px (lg breakpoint) as defined in your Tailwind config
     const handleResize = () => {
       setIsMobile(window.innerWidth < 976)
     }
 
-    // Set initial state
     handleResize()
-
-    // Add event listener
     window.addEventListener('resize', handleResize)
-
-    // Clean up
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   // Only render on mobile
   if (!isMobile) return null
 
-  // Show the updated bundle price in mobile bottom bar
-  const displayPrice = bundleContext?.selectedBundle
-    ? `${bundleContext.selectedBundle.price.toFixed(2)}`
-    : `${(product as SimpleProduct).price?.replace(/[^0-9.]/g, '') || '0'}`
+  // Use bundle price if provided, otherwise fallback to regular price
+  const displayPrice = bundlePrice
+    ? bundlePrice.toFixed(2)
+    : (product as SimpleProduct).price?.replace(/[^0-9.]/g, '') || '0.00'
+
+  const displayQuantity = bundleQuantity || 1
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg border-t border-gray-200 z-50">
@@ -52,19 +52,40 @@ export function MobileBottomCart({ product, isOutOfStock }: MobileBottomCartProp
           </div>
         ) : (
           <div className="flex items-center justify-between gap-2">
-            {/* Bundle info and price */}
+            {/* Price and bundle info */}
             <div className="flex flex-col">
-              <span className="text-lg font-semibold text-gray-900">{displayPrice}</span>
-              {bundleContext?.selectedBundle && bundleContext.selectedBundle.quantity > 1 && (
+              <span className="text-lg font-semibold text-gray-900">${displayPrice}</span>
+              {bundleTitle && displayQuantity > 1 && (
                 <span className="text-xs text-gray-600">
-                  {bundleContext.selectedBundle.title} - {bundleContext.selectedBundle.quantity}{' '}
-                  items
+                  {bundleTitle} - {displayQuantity} items
                 </span>
               )}
             </div>
 
-            {/* Cart options */}
-            <CartOptionsWithBundles product={product} />
+            {/* Quantity display and add to cart */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center bg-gray-50 rounded px-2 py-1">
+                <span className="text-sm text-gray-600 mr-1">Qty:</span>
+                <span className="font-medium">{displayQuantity}</span>
+              </div>
+
+              <SimpleCartOptions
+                product={product}
+                value={displayQuantity}
+                bundleContext={
+                  bundlePrice
+                    ? {
+                        selectedBundle: {
+                          id: bundleTitle?.toLowerCase() || 'bundle',
+                          title: bundleTitle || 'Bundle',
+                          quantity: displayQuantity,
+                          price: bundlePrice,
+                        },
+                      }
+                    : null
+                }
+              />
+            </div>
           </div>
         )}
       </div>

@@ -27,6 +27,7 @@ import { formatProductDescription } from '@/utils/advanced-wp-processor'
 import { BundlePricingWrapper } from '@/components/bundle-pricing-wrapper'
 import { CartOptionsWithBundles } from '@/components/cart-options-with-bundles'
 import { BundleAwarePrice } from '@/components/bundle-aware-price'
+import { BundleMobileBottomCart } from '@/components/bundle-mobile-bottom-cart'
 
 export interface ShopProductProps {
   product: Product
@@ -661,8 +662,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                 salePrice={salePriceForBundles}
                 className="mb-4"
               >
-                {/* Mobile Bottom Cart will be rendered inside bundle context */}
-                <MobileBottomCart product={product} isOutOfStock={isOutOfStock} />
+                <BundleMobileBottomCart product={product} isOutOfStock={isOutOfStock} />
               </BundlePricingWrapper>
             ) : (
               <MobileBottomCart product={product} isOutOfStock={isOutOfStock} />
