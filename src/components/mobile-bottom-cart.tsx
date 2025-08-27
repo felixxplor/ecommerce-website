@@ -4,23 +4,19 @@ import { AlertTriangle } from 'lucide-react'
 import { Product, SimpleProduct } from '@/graphql'
 import { useEffect, useState } from 'react'
 import { SimpleCartOptions } from '@/client/simple-cart-options'
+import { useBundleContext, useHasBundleContext } from '@/components/bundle-pricing-wrapper'
 
 interface MobileBottomCartProps {
   product: Product
   isOutOfStock: boolean
-  bundlePrice?: number
-  bundleQuantity?: number
-  bundleTitle?: string
 }
 
-export function MobileBottomCart({
-  product,
-  isOutOfStock,
-  bundlePrice,
-  bundleQuantity,
-  bundleTitle,
-}: MobileBottomCartProps) {
+export function MobileBottomCart({ product, isOutOfStock }: MobileBottomCartProps) {
   const [isMobile, setIsMobile] = useState(false)
+
+  // Get bundle context
+  const hasBundleContext = useHasBundleContext()
+  const bundleContext = useBundleContext()
 
   useEffect(() => {
     const handleResize = () => {
@@ -35,12 +31,17 @@ export function MobileBottomCart({
   // Only render on mobile
   if (!isMobile) return null
 
-  // Use bundle price if provided, otherwise fallback to regular price
-  const displayPrice = bundlePrice
-    ? bundlePrice.toFixed(2)
-    : (product as SimpleProduct).price?.replace(/[^0-9.]/g, '') || '0.00'
+  // Get price and quantity from bundle context if available
+  const displayPrice =
+    hasBundleContext && bundleContext?.selectedBundle
+      ? bundleContext.selectedBundle.price.toFixed(2)
+      : (product as SimpleProduct).price?.replace(/[^0-9.]/g, '') || '0.00'
 
-  const displayQuantity = bundleQuantity || 1
+  const displayQuantity =
+    hasBundleContext && bundleContext?.selectedBundle ? bundleContext.selectedBundle.quantity : 1
+
+  const bundleTitle =
+    hasBundleContext && bundleContext?.selectedBundle ? bundleContext.selectedBundle.title : null
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg border-t border-gray-200 z-50">
@@ -72,18 +73,7 @@ export function MobileBottomCart({
               <SimpleCartOptions
                 product={product}
                 value={displayQuantity}
-                bundleContext={
-                  bundlePrice
-                    ? {
-                        selectedBundle: {
-                          id: bundleTitle?.toLowerCase() || 'bundle',
-                          title: bundleTitle || 'Bundle',
-                          quantity: displayQuantity,
-                          price: bundlePrice,
-                        },
-                      }
-                    : null
-                }
+                bundleContext={bundleContext}
               />
             </div>
           </div>
