@@ -47,19 +47,14 @@ export function SimpleCartOptions({ ...props }: CartOptionsProps) {
   const { fetching, mutate } = useCartMutations(databaseId)
   const { onOpen } = useDrawerStore()
 
-  // Update local value when bundle changes
+  // Update local value when bundle changes - FIXED: Always update when bundle changes
   useEffect(() => {
     if (bundleContext?.selectedBundle) {
       setLocalValue(bundleContext.selectedBundle.quantity)
-    }
-  }, [bundleContext?.selectedBundle])
-
-  // Update local value when value prop changes
-  useEffect(() => {
-    if (value !== undefined && value !== localValue) {
+    } else if (value !== undefined) {
       setLocalValue(value)
     }
-  }, [value, localValue])
+  }, [bundleContext?.selectedBundle, value])
 
   // Check if product is out of stock
   const outOfStock =
@@ -111,6 +106,11 @@ export function SimpleCartOptions({ ...props }: CartOptionsProps) {
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // FIXED: Don't allow manual quantity change when bundle is selected
+    if (bundleContext?.selectedBundle) {
+      return // Prevent manual quantity changes when using bundles
+    }
+
     let _value = Number(event.target.value)
     if (maxQuantity !== undefined && _value > maxQuantity) {
       _value = maxQuantity
@@ -123,6 +123,11 @@ export function SimpleCartOptions({ ...props }: CartOptionsProps) {
   }
 
   const increase = () => {
+    // FIXED: Don't allow manual quantity change when bundle is selected
+    if (bundleContext?.selectedBundle) {
+      return // Prevent manual quantity changes when using bundles
+    }
+
     let _value = Number(localValue) + 1
     if (maxQuantity !== undefined && _value > maxQuantity) {
       _value = maxQuantity
@@ -132,6 +137,11 @@ export function SimpleCartOptions({ ...props }: CartOptionsProps) {
   }
 
   const decrease = () => {
+    // FIXED: Don't allow manual quantity change when bundle is selected
+    if (bundleContext?.selectedBundle) {
+      return // Prevent manual quantity changes when using bundles
+    }
+
     let _value = Number(localValue) - 1
     if (_value < 1) {
       _value = 1
@@ -159,10 +169,13 @@ export function SimpleCartOptions({ ...props }: CartOptionsProps) {
         {/* Quantity controls */}
         <div className="flex items-center">
           <button
-            className="h-10 w-10 flex items-center justify-center rounded-l-md border border-gray-300 text-gray-600"
+            className={cn(
+              'h-10 w-10 flex items-center justify-center rounded-l-md border border-gray-300 text-gray-600',
+              bundleContext?.selectedBundle ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'
+            )}
             onClick={decrease}
             type="button"
-            disabled={fetching || executing}
+            disabled={fetching || executing || !!bundleContext?.selectedBundle}
             aria-label="Decrease quantity"
           >
             <svg
@@ -181,17 +194,23 @@ export function SimpleCartOptions({ ...props }: CartOptionsProps) {
             value={localValue}
             className=""
             classNameError="hidden"
-            classNameInput="h-10 w-12 border-t border-b border-gray-300 p-1 text-center outline-none"
+            classNameInput={cn(
+              'h-10 w-12 border-t border-b border-gray-300 p-1 text-center outline-none',
+              bundleContext?.selectedBundle ? 'bg-gray-50 cursor-not-allowed' : ''
+            )}
             onChange={handleChange}
-            disabled={fetching || executing}
+            disabled={fetching || executing || !!bundleContext?.selectedBundle}
             {...rest}
           />
 
           <button
-            className="h-10 w-10 flex items-center justify-center rounded-r-md border border-gray-300 text-gray-600"
+            className={cn(
+              'h-10 w-10 flex items-center justify-center rounded-r-md border border-gray-300 text-gray-600',
+              bundleContext?.selectedBundle ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'
+            )}
             onClick={increase}
             type="button"
-            disabled={fetching || executing}
+            disabled={fetching || executing || !!bundleContext?.selectedBundle}
             aria-label="Increase quantity"
           >
             <svg
@@ -207,12 +226,13 @@ export function SimpleCartOptions({ ...props }: CartOptionsProps) {
           </button>
         </div>
 
-        {/* Price - Show bundle price if available */}
+        {/* FIXED: Price - Show bundle price with proper formatting */}
         <div>
           <span className="text-lg font-semibold text-gray-900">
+            $
             {bundleContext?.selectedBundle
-              ? `${bundleContext.selectedBundle.price.toFixed(2)}`
-              : `${(product as SimpleProduct).price?.replace(/[^0-9.]/g, '')}`}
+              ? bundleContext.selectedBundle.price.toFixed(2)
+              : (product as SimpleProduct).price?.replace(/[^0-9.]/g, '') || '0.00'}
           </span>
         </div>
 
@@ -236,10 +256,13 @@ export function SimpleCartOptions({ ...props }: CartOptionsProps) {
           <label className="text-sm font-medium text-gray-500 w-20">Quantity</label>
           <div className="flex items-center">
             <button
-              className="h-10 w-10 flex items-center justify-center rounded-l-md border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
+              className={cn(
+                'h-10 w-10 flex items-center justify-center rounded-l-md border border-gray-300 text-gray-600 transition-colors',
+                bundleContext?.selectedBundle ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'
+              )}
               onClick={decrease}
               type="button"
-              disabled={fetching || executing}
+              disabled={fetching || executing || !!bundleContext?.selectedBundle}
               aria-label="Decrease quantity"
             >
               <svg
@@ -258,17 +281,23 @@ export function SimpleCartOptions({ ...props }: CartOptionsProps) {
               value={localValue}
               className=""
               classNameError="hidden"
-              classNameInput="h-10 w-16 border-t border-b border-gray-300 p-1 text-center outline-none"
+              classNameInput={cn(
+                'h-10 w-16 border-t border-b border-gray-300 p-1 text-center outline-none',
+                bundleContext?.selectedBundle ? 'bg-gray-50 cursor-not-allowed' : ''
+              )}
               onChange={handleChange}
-              disabled={fetching || executing}
+              disabled={fetching || executing || !!bundleContext?.selectedBundle}
               {...rest}
             />
 
             <button
-              className="h-10 w-10 flex items-center justify-center rounded-r-md border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
+              className={cn(
+                'h-10 w-10 flex items-center justify-center rounded-r-md border border-gray-300 text-gray-600 transition-colors',
+                bundleContext?.selectedBundle ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'
+              )}
               onClick={increase}
               type="button"
-              disabled={fetching || executing}
+              disabled={fetching || executing || !!bundleContext?.selectedBundle}
               aria-label="Increase quantity"
             >
               <svg
