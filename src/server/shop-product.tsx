@@ -26,6 +26,7 @@ import MobileBottomCart from '@/components/mobile-bottom-cart'
 import { formatProductDescription } from '@/utils/advanced-wp-processor'
 import { BundlePricingWrapper } from '@/components/bundle-pricing-wrapper'
 import { CartOptionsWithBundles } from '@/components/cart-options-with-bundles'
+import { BundleAwarePrice } from '@/components/bundle-aware-price'
 
 export interface ShopProductProps {
   product: Product
@@ -421,6 +422,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                   )}
 
                   {/* Mobile Price Display - only show if not using bundles */}
+                  {/* Mobile Price Display - now bundle-aware */}
                   {!isOutOfStock && (
                     <div
                       className="flex flex-col gap-2 mb-4"
@@ -430,37 +432,17 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                     >
                       <meta itemProp="priceCurrency" content="AUD" />
                       <meta itemProp="price" content={currentPrice} />
-                      <meta
-                        itemProp="availability"
-                        content={
-                          isOutOfStock
-                            ? 'https://schema.org/OutOfStock'
-                            : 'https://schema.org/InStock'
-                        }
-                      />
+                      <meta itemProp="availability" content="https://schema.org/InStock" />
                       <link
                         itemProp="url"
                         href={`https://www.gizmooz.com/products/${product.slug}`}
                       />
 
-                      {/* Price line */}
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-bold text-gray-900">${currentPrice}</span>
-                        {hasDiscount && (
-                          <span className="text-gray-500">
-                            <span>Was</span> <span className="line-through">${regularPrice}</span>
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Savings badge line */}
-                      {hasDiscount && (
-                        <div className="flex items-center">
-                          <span className="bg-yellow-400 text-black text-sm font-bold px-3 py-1 rounded-sm">
-                            SAVE ${savingsAmount}
-                          </span>
-                        </div>
-                      )}
+                      <BundleAwarePrice
+                        basePrice={basePriceForBundles}
+                        salePrice={salePriceForBundles}
+                        originalRegularPrice={parseFloat(regularPrice)}
+                      />
                     </div>
                   )}
 
@@ -582,48 +564,32 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                 {/* Desktop Bundle Pricing with Cart Options */}
                 {!isOutOfStock ? (
                   <div className="mb-6">
-                    {/* Price Display - Always show this first */}
-                    <div
-                      className="flex flex-col gap-2 mb-4"
-                      itemProp="offers"
-                      itemScope
-                      itemType="https://schema.org/Offer"
-                    >
-                      <meta itemProp="priceCurrency" content="AUD" />
-                      <meta itemProp="price" content={currentPrice} />
-                      <meta itemProp="availability" content="https://schema.org/InStock" />
-                      <link
-                        itemProp="url"
-                        href={`https://www.gizmooz.com/products/${product.slug}`}
-                      />
-
-                      {/* Price line */}
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-semibold text-gray-900">
-                          ${currentPrice}
-                        </span>
-                        {hasDiscount && (
-                          <span className="text-gray-500">
-                            <span>Was</span> <span className="line-through">${regularPrice}</span>
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Savings badge line */}
-                      {hasDiscount && (
-                        <div className="flex items-center">
-                          <span className="bg-yellow-400 text-black text-sm font-bold px-3 py-1 rounded-sm">
-                            SAVE ${savingsAmount}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Bundle Pricing Wrapper - This should enhance, not replace the price display */}
                     <BundlePricingWrapper
                       basePrice={basePriceForBundles}
                       salePrice={salePriceForBundles}
                     >
+                      {/* Price Display - now bundle-aware */}
+                      <div
+                        className="flex flex-col gap-2 mb-4"
+                        itemProp="offers"
+                        itemScope
+                        itemType="https://schema.org/Offer"
+                      >
+                        <meta itemProp="priceCurrency" content="AUD" />
+                        <meta itemProp="price" content={currentPrice} />
+                        <meta itemProp="availability" content="https://schema.org/InStock" />
+                        <link
+                          itemProp="url"
+                          href={`https://www.gizmooz.com/products/${product.slug}`}
+                        />
+
+                        <BundleAwarePrice
+                          basePrice={basePriceForBundles}
+                          salePrice={salePriceForBundles}
+                          originalRegularPrice={parseFloat(regularPrice)}
+                        />
+                      </div>
+
                       <CartOptionsWithBundles product={product} />
                     </BundlePricingWrapper>
                   </div>
