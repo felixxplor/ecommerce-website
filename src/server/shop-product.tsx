@@ -320,6 +320,98 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                   <ProductImage product={product} />
                 </div>
 
+                {/* Mobile product header section - appears after image on mobile only */}
+                <div className="lg:hidden mt-6 space-y-4">
+                  <h1 className="text-3xl font-medium mb-2">{product.name}</h1>
+
+                  {/* Review Count Badge */}
+                  <div
+                    className="flex items-center gap-2 mb-3"
+                    itemProp="aggregateRating"
+                    itemScope
+                    itemType="https://schema.org/AggregateRating"
+                  >
+                    <meta itemProp="ratingValue" content={averageRating.toFixed(1)} />
+                    <meta itemProp="reviewCount" content={reviewCount.toString()} />
+                    <div className="flex text-yellow-400">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-4 h-4 ${
+                            i < Math.round(averageRating) ? 'fill-current' : ''
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <a
+                      href="#reviews"
+                      className="text-sm cursor-pointer hover:text-primary transition-colors underline"
+                    >
+                      {reviewCount} {reviewCount === 1 ? 'Review' : 'Reviews'}
+                    </a>
+                  </div>
+
+                  {/* Product Badges Section */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {hasSalesCategory && (
+                      <Badge className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 h-8">
+                        Sale
+                      </Badge>
+                    )}
+
+                    {hasFreeShipping && (
+                      <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white flex items-center gap-1 px-3 py-1 h-8">
+                        <Truck className="h-3 w-3" />
+                        Free Shipping
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Bundle-aware price display - will show bundle price when available */}
+                  {!isOutOfStock && (
+                    <div
+                      className="flex flex-col gap-2 mb-4"
+                      itemProp="offers"
+                      itemScope
+                      itemType="https://schema.org/Offer"
+                    >
+                      <meta itemProp="priceCurrency" content="AUD" />
+                      <meta itemProp="availability" content="https://schema.org/InStock" />
+                      <link
+                        itemProp="url"
+                        href={`https://www.gizmooz.com/products/${product.slug}`}
+                      />
+
+                      <BundleAwarePrice
+                        basePrice={basePriceForBundles}
+                        salePrice={salePriceForBundles}
+                        originalRegularPrice={parseFloat(regularPrice)}
+                      />
+                    </div>
+                  )}
+
+                  {/* Out of stock message */}
+                  {isOutOfStock && (
+                    <div className="flex items-center gap-3 mb-4">
+                      <AlertTriangle className="h-5 w-5 text-red-500" />
+                      <span className="font-medium text-red-700">Out of Stock</span>
+                    </div>
+                  )}
+
+                  {/* Mobile shipping information */}
+                  <div className="flex items-center gap-2 mt-6 text-gray-700">
+                    <Truck className="h-4 w-4" />
+                    <p className="text-sm">
+                      Leave warehouses in <b>1-2 business days</b>
+                    </p>
+                  </div>
+
+                  {/* Mobile payment info */}
+                  <div className="mt-4">
+                    <SecurePaymentInfo />
+                  </div>
+                </div>
+
                 {/* Tabs section in left column */}
                 <Tabs defaultValue={tab} className="w-full mt-8">
                   <TabsList className="border-b border-gray-200 w-full flex gap-4 sm:gap-8 h-auto bg-transparent mb-6 overflow-x-auto scrollbar-hide">
@@ -597,7 +689,7 @@ export async function ShopProduct({ product, tab = 'description' }: ShopProductP
                 </div>
 
                 {/* Mobile bottom cart - now shares the same context */}
-                <MobileBottomCart product={product} isOutOfStock={isOutOfStock} />
+                <BundleMobileBottomCart product={product} isOutOfStock={isOutOfStock} />
               </BundlePricingWrapper>
             ) : (
               <>
