@@ -298,7 +298,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
       payload: { fetching: true } as SessionContext,
     })
 
-    return getSessionApiCall(true).then(async (sessionPayload) => {
+    return getSessionApiCall().then(async (sessionPayload) => {
       // We only need the cart data, no need to fetch auth URLs again
       if (typeof sessionPayload === 'string') {
         dispatch({
