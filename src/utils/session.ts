@@ -40,23 +40,23 @@ async function apiCall<T>(url: string, input: globalThis.RequestInit) {
 
     if (json?.errors || response.status !== 200) {
       if (isDev()) {
-        // console.error('API Error:', {
-        //   status: response.status,
-        //   statusText: response.statusText,
-        //   errors: json?.errors,
-        //   url,
-        // })
+        console.error('API Error:', {
+          status: response.status,
+          statusText: response.statusText,
+          errors: json?.errors,
+          url,
+        })
       }
       throw new Error(json.errors?.message || `Failed to fetch: ${url}`)
     }
 
     return json
   } catch (error) {
-    // console.error('API Call Error:', {
-    //   url,
-    //   error,
-    //   input,
-    // })
+    console.error('API Call Error:', {
+      url,
+      error,
+      input,
+    })
     throw error
   }
 }
@@ -67,23 +67,22 @@ function saveCredentials(authToken: string, sessionToken?: string, refreshToken?
     return
   }
 
-  // Only store auth token in sessionStorage, nothing else
   sessionStorage.setItem('woo-auth-token', authToken)
 
-  // Store refresh token if provided
   if (refreshToken) {
     localStorage.setItem('woo-refresh-token', refreshToken)
   }
 
-  // Store session token if provided
   if (sessionToken) {
-    localStorage.setItem('woo-session-token' as string, sessionToken)
-    // Set WooCommerce session
+    localStorage.setItem('woo-session-token', sessionToken)
   }
 }
 
 function saveSessionToken(sessionToken: string) {
-  localStorage.setItem('woo-session-token' as string, sessionToken)
+  if (isSSR() || !sessionToken) {
+    return
+  }
+  localStorage.setItem('woo-session-token', sessionToken)
 }
 
 export function hasCredentials() {
@@ -94,11 +93,7 @@ export function hasCredentials() {
   const authToken = sessionStorage.getItem('woo-auth-token')
   const refreshToken = localStorage.getItem('woo-refresh-token')
 
-  if (!!sessionToken && !!authToken && !!refreshToken) {
-    return true
-  }
-
-  return false
+  return !!(sessionToken && authToken && refreshToken)
 }
 
 function setAuthTokenExpiry() {
@@ -111,6 +106,7 @@ function authTokenIsExpired() {
   if (!authTimeout || Number(authTimeout) < time()) {
     return true
   }
+  return false
 }
 
 type FetchAuthTokenResponse = {
@@ -121,7 +117,6 @@ type FetchAuthTokenResponse = {
 async function fetchAuthToken() {
   const refreshToken = localStorage.getItem('woo-refresh-token')
   if (!refreshToken) {
-    // eslint-disable-next-line no-console
     isDev() && console.error('Unauthorized')
     return null
   }
@@ -157,15 +152,16 @@ type LoginResponse = {
   refreshToken: string
   sessionToken: string
 }
+
 export async function login(username: string, password: string): Promise<boolean | string> {
   try {
     const sessionResponse = await fetch('/api/auth', { method: 'GET' })
     const sessionData = await sessionResponse.json()
     if (sessionData.sessionToken) {
-      localStorage.setItem('woo-session', sessionData.sessionToken)
+      localStorage.setItem('woo-session-token', sessionData.sessionToken)
     }
   } catch (error) {
-    // console.error('Failed to get new session:', error)
+    console.error('Failed to get new session:', error)
   }
 
   let json: LoginResponse
@@ -213,9 +209,6 @@ export async function register(
   return true
 }
 
-/**
- * Change password for logged in customer.
- */
 export const changePassword = async (
   currentPassword: string,
   newPassword: string
@@ -229,25 +222,20 @@ export const changePassword = async (
     const client = getClient()
     client.setHeader('Authorization', `Bearer ${authToken}`)
 
-    // Verify current password
     const verifyResponse = await client.request<VerifyPasswordMutation>(VerifyPasswordDocument, {
       password: currentPassword,
     })
 
-    // Check for errors in the response
     if (!verifyResponse.verifyCustomerPassword?.success) {
-      // Return the error message from the GraphQL response
       return verifyResponse.verifyCustomerPassword?.message || 'Current password is incorrect'
     }
 
-    // Get customer ID
     const { customer } = await client.request<GetCustomerDetailsQuery>(GetCustomerDetailsDocument)
 
     if (!customer?.id) {
       return 'Customer not found'
     }
 
-    // Update to new password
     const response = await client.request<UpdateCustomerMutation>(UpdateCustomerDocument, {
       input: {
         id: customer.id,
@@ -261,7 +249,6 @@ export const changePassword = async (
 
     return true
   } catch (error) {
-    // This catches GraphQL errors
     if (error instanceof ClientError) {
       const graphqlError = error.response?.errors?.[0]
       return graphqlError?.message || 'Failed to change password'
@@ -287,66 +274,116 @@ type FetchSessionTokenResponse = {
   sessionToken: string
 }
 
-async function fetchSessionToken() {
-  const json = await apiCall<FetchSessionTokenResponse>('/api/auth', { method: 'GET' })
+// FIXED: Better error handling and logging
+async function fetchSessionToken(): Promise<string | null> {
+  try {
+    console.log('Fetching new session token from /api/auth...')
 
-  const { sessionToken } = json
+    const json = await apiCall<FetchSessionTokenResponse>('/api/auth', { method: 'GET' })
 
-  sessionToken && saveSessionToken(sessionToken)
-  return sessionToken
+    const { sessionToken } = json
+
+    if (sessionToken) {
+      saveSessionToken(sessionToken)
+      console.log('Successfully fetched session token:', sessionToken.substring(0, 20) + '...')
+      return sessionToken
+    }
+
+    console.error('No session token in response:', json)
+    return null
+  } catch (error) {
+    console.error('Failed to fetch session token:', error)
+    return null
+  }
 }
 
-async function getSessionToken() {
-  let sessionToken = localStorage.getItem('woo-session-token')
-  if (!sessionToken) {
-    sessionToken = await fetchSessionToken()
+// FIXED: Always ensure a session token exists
+async function getSessionToken(): Promise<string> {
+  if (isSSR()) {
+    throw new Error('Cannot get session token on server side')
   }
+
+  let sessionToken = localStorage.getItem('woo-session-token')
+
+  // If no session token exists, ALWAYS fetch a new one
+  if (!sessionToken) {
+    console.log('No stored session token, fetching new one...')
+    sessionToken = await fetchSessionToken()
+
+    // If fetchSessionToken also fails, we have a bigger problem
+    if (!sessionToken) {
+      throw new Error('Unable to obtain session token from server')
+    }
+  }
+
+  console.log('Using session token:', sessionToken.substring(0, 20) + '...')
   return sessionToken
 }
 
 export function hasRefreshToken() {
   const refreshToken = localStorage.getItem('woo-refresh-token')
-
   return !!refreshToken
 }
 
 export function hasAuthToken() {
   const authToken = sessionStorage.getItem('woo-auth-token')
-
   return !!authToken
 }
 
 export type FetchSessionResponse = {
   customer: Customer
   cart: Cart
+  sessionToken?: string
 }
 
+// FIXED: Guaranteed session token handling
 export async function getSession(): Promise<FetchSessionResponse | string> {
-  const authToken = await getAuthToken()
-  const sessionToken = await getSessionToken()
-  let json: FetchSessionResponse
   try {
-    json = await apiCall<FetchSessionResponse>('/api/session', {
-      method: 'POST',
-      body: JSON.stringify({
-        sessionToken,
-        authToken,
-      }),
-    })
+    const authToken = await getAuthToken()
+    const sessionToken = await getSessionToken() // This now ALWAYS returns a string
+
+    console.log(
+      'Making session request with guaranteed token:',
+      sessionToken.substring(0, 20) + '...'
+    )
+
+    let json: FetchSessionResponse
+    try {
+      json = await apiCall<FetchSessionResponse>('/api/session', {
+        method: 'POST',
+        body: JSON.stringify({
+          sessionToken,
+          authToken,
+        }),
+      })
+    } catch (error) {
+      return (error as GraphQLError)?.message || (error as string)
+    }
+
+    // Handle session token updates from API response
+    const { customer } = json
+
+    // Check if API returned an updated token in the response
+    if (json.sessionToken && json.sessionToken !== sessionToken) {
+      console.log('API returned updated session token, saving...')
+      saveSessionToken(json.sessionToken)
+    } else if (customer.sessionToken && customer.sessionToken !== sessionToken) {
+      console.log('Customer object has updated session token, saving...')
+      saveSessionToken(customer.sessionToken as string)
+    }
+
+    return json
   } catch (error) {
-    return (error as GraphQLError)?.message || (error as string)
+    console.error('getSession failed:', error)
+    return (error as Error).message || 'Session fetch failed'
   }
-
-  const { customer } = json
-  saveSessionToken(customer.sessionToken as string)
-
-  return json
 }
 
 type FetchCartResponse = {
   cart: Cart
-  sessionToken: string
+  sessionToken?: string
 }
+
 export type CartAction =
   | {
       mutation: 'add'
@@ -369,27 +406,40 @@ export type CartAction =
       all?: boolean
     }
 
+// FIXED: Guaranteed session token handling
 export async function updateCart(input: CartAction): Promise<Cart | string> {
-  const sessionToken = await getSessionToken()
-  const authToken = await getAuthToken()
-  let json: FetchCartResponse
   try {
-    json = await apiCall<FetchCartResponse>('/api/cart', {
-      method: 'POST',
-      body: JSON.stringify({
-        sessionToken,
-        authToken,
-        input,
-      }),
-    })
+    const authToken = await getAuthToken()
+    const sessionToken = await getSessionToken() // Always returns a string now
+
+    console.log('Making cart update with guaranteed token:', sessionToken.substring(0, 20) + '...')
+
+    let json: FetchCartResponse
+    try {
+      json = await apiCall<FetchCartResponse>('/api/cart', {
+        method: 'POST',
+        body: JSON.stringify({
+          sessionToken,
+          authToken,
+          input,
+        }),
+      })
+    } catch (error) {
+      return (error as GraphQLError)?.message || (error as string)
+    }
+
+    // Handle session token updates
+    const { cart } = json
+    if (json.sessionToken && json.sessionToken !== sessionToken) {
+      console.log('Cart API returned updated session token, saving...')
+      saveSessionToken(json.sessionToken)
+    }
+
+    return cart
   } catch (error) {
-    return (error as GraphQLError)?.message || (error as string)
+    console.error('updateCart failed:', error)
+    return (error as Error).message || 'Cart update failed'
   }
-
-  const { cart } = json
-  saveSessionToken(json.sessionToken)
-
-  return cart
 }
 
 export type FetchAuthURLResponse = {
@@ -397,6 +447,7 @@ export type FetchAuthURLResponse = {
   checkoutUrl: string
   accountUrl: string
 }
+
 export async function fetchAuthURLs(): Promise<FetchAuthURLResponse | string> {
   const authToken = await getAuthToken()
   const sessionToken = await getSessionToken()
@@ -429,9 +480,10 @@ export function deleteCredentials() {
   }
 
   // Clear tokens
-  localStorage.removeItem('woo-session-token' as string)
+  localStorage.removeItem('woo-session-token')
   sessionStorage.removeItem('woo-auth-token')
   localStorage.removeItem('woo-refresh-token')
   localStorage.removeItem('woo-session')
+  localStorage.removeItem('woo-session-backup')
   sessionStorage.removeItem(process.env.AUTH_TOKEN_EXPIRY_SS_KEY as string)
 }
