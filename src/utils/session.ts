@@ -320,24 +320,10 @@ export type FetchSessionResponse = {
   customer: Customer
   cart: Cart
 }
-export async function getSession(forceRefresh = false): Promise<FetchSessionResponse | string> {
+
+export async function getSession(): Promise<FetchSessionResponse | string> {
   const authToken = await getAuthToken()
-
-  // If forceRefresh is true, fetch a new session token instead of using the stored one
-  let sessionToken: string | null
-  if (forceRefresh) {
-    sessionToken = await fetchSessionToken()
-  } else {
-    sessionToken = await getSessionToken()
-  }
-
-  // Check for a backup session from payment redirects
-  const backupSession = localStorage.getItem('woo-session-backup')
-  if (backupSession && !sessionToken) {
-    sessionToken = backupSession
-    localStorage.removeItem('woo-session-backup') // Clean up after use
-  }
-
+  const sessionToken = await getSessionToken()
   let json: FetchSessionResponse
   try {
     json = await apiCall<FetchSessionResponse>('/api/session', {
